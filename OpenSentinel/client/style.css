@@ -210,11 +210,8 @@ button:active {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 40px;
-    height: 40px;
-    background: white; /* Placeholder for SVG */
-    mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 19h20L12 2zm0 3.5L18.5 17h-13L12 5.5z"/></svg>') no-repeat center;
-    -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 19h20L12 2zm0 3.5L18.5 17h-13L12 5.5z"/></svg>') no-repeat center;
-    background-color: var(--primary);
+    width: 80px;
+    height: auto;
     transform: translateZ(10px);
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
 }

@@ -215,3 +215,27 @@ button:active {
     transform: translateZ(10px);
     filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
 }
+
+/* Footer */
+.demo-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    z-index: 100;
+}
+
+.demo-footer-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.demo-footer-link:hover {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+}

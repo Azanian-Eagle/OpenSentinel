@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSentinel | Privacy-First Verification</title>
+    <link rel="stylesheet" href="assets/css/demo.css">
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-grid"></div>
+    </div>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="card-container" id="card">
+        <div class="glass-card">
+            <img src="assets/images/logo.png" alt="Azanian Eagle" class="logo-eagle">
+            <div class="badge">Azanian Eagle Project</div>
+            <h1>OpenSentinel</h1>
+            <p class="subtitle">Non-invasive, privacy-first AI verification. <br>Interact naturally.</p>
+
+            <div class="input-group">
+                <input type="text" placeholder="Type something to prove humanity..." id="testInput">
+            </div>
+
+            <button id="verifyBtn">Verify Humanity</button>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/sensor.js"></script>
+    <script>
+        // 3D Tilt Effect
+        const card = document.getElementById('card');
+        const container = document.body;
+
+        container.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on leave
+        container.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        // Initialize OpenSentinel
+        OpenSentinel.init({ endpoint: '/verify' });
+
+        const btn = document.getElementById('verifyBtn');
+        const resultDiv = document.getElementById('result');
+        const input = document.getElementById('testInput');
+
+        btn.addEventListener('click', async () => {
+            if (!input.value) {
+                input.focus();
+                return;
+            }
+
+            // Button Loading State
+            const originalText = btn.textContent;
+            btn.textContent = "Analyzing Behavior...";
+            btn.style.opacity = "0.8";
+            btn.disabled = true;
+            resultDiv.className = "";
+            resultDiv.classList.remove('visible');
+
+            // Simulate a slight network delay for effect if local is too fast
+            // await new Promise(r => setTimeout(r, 500));
+
+            const result = await OpenSentinel.verify();
+
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.disabled = false;
+
+            resultDiv.textContent = `Score: ${result.score.toFixed(2)} - ${result.message}`;
+            resultDiv.classList.add('visible');
+
+            if (result.passed) {
+                resultDiv.className = "success visible";
+                // Trigger confetti or success effect here ideally
+            } else {
+                resultDiv.className = "failure visible";
+            }
+        });
+    </script>
+</body>
+</html>

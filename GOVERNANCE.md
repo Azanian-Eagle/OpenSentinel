@@ -4,7 +4,8 @@ OpenSentinel is an open-source project managed by the Azanian Eagle community.
 
 ## Roles
 
-- **Maintainers**: Have write access to the repository and can merge pull requests.
+- **Lead Maintainer**: **rmngqibisa** (Primary Code Owner & Administrator)
+- **Maintainers**: Have write access to the repository and can merge pull requests (requires Lead Maintainer approval).
 - **Contributors**: Submit pull requests and issues.
 
 ## Decision Making
@@ -13,7 +14,7 @@ Decisions are made by consensus among maintainers. Major architectural changes r
 
 ## Branch Protection Rules
 
-To ensure the integrity of the codebase, the `main` branch is protected by the following rules:
+To ensure the integrity of the codebase, the `master` branch is protected by the following rules:
 
 1.  **Code Review & Ownership**:
     *   All Pull Requests require approval from at least one Code Owner as defined in `.github/CODEOWNERS`.
@@ -24,7 +25,7 @@ To ensure the integrity of the codebase, the `main` branch is protected by the f
     *   CI/CD pipeline must pass (tests, linting, security audit).
     *   `cargo test` must pass.
     *   `cargo audit` must pass (no known vulnerabilities).
-5.  **No Direct Pushes**: Direct pushes to `main` are disabled. Administrators must also follow these rules.
+5.  **No Direct Pushes**: Direct pushes to `master` are disabled. Administrators must also follow these rules.
 
 ## Security
 

@@ -1,15 +1,15 @@
 # This file defines a list of code owners who are responsible for maintaining this repository.
 # These owners will be automatically requested for review when a pull request is opened.
-# Defines @rmngqibisa as the primary maintainer for all areas.
+# Defines @rmngqibisa and @Azanian-Eagle as maintainers for all areas.
 
 # Global owners for everything
-*       @rmngqibisa
+*       @rmngqibisa @Azanian-Eagle
 
 # Backend
-server/ @rmngqibisa
+server/ @rmngqibisa @Azanian-Eagle
 
 # Frontend
-client/ @rmngqibisa
+client/ @rmngqibisa @Azanian-Eagle
 
 # GitHub Actions and Security
-.github/ @rmngqibisa
+.github/ @rmngqibisa @Azanian-Eagle

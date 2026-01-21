@@ -12,10 +12,10 @@
 We take security seriously. If you discover a vulnerability in OpenSentinel, please follow these steps:
 
 1.  **Do NOT open a public issue.**
-2.  Email the maintainers at `security@azn-eagle.example.com` (replace with actual email).
+2.  Email the maintainers at `azanian.eagle@gmail.com`.
 3.  Include a detailed description of the vulnerability, steps to reproduce, and potential impact.
 
-We will acknowledge your report within 48 hours and provide a timeline for a fix.
+We will acknowledge your report within 72 hours and provide a timeline for a fix.
 
 ## Security Practices
 

@@ -59,4 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
             glitchText.style.setProperty('--before-top', `${r2}px`);
         }, 2000);
     }
+
+    // Auto-update Year
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
 });

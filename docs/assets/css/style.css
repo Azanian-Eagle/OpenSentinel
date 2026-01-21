@@ -472,6 +472,17 @@ footer {
     font-weight: 700;
 }
 
+.github-footer-link {
+    color: #888;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.github-footer-link:hover {
+    color: var(--accent-primary);
+}
+
 .footer-links h4, .footer-support h4 {
     color: var(--accent-primary);
     margin-bottom: 1rem;

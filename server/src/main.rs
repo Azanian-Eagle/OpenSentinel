@@ -19,7 +19,7 @@ struct VerifyResponse {
 }
 
 async fn verify(data: web::Json<VerifyRequest>) -> impl Responder {
-    log::info!("Received verification request");
+    log::info!("Received verification request from UA: {}", data.user_agent);
 
     let score = calculate_score(&data);
     let passed = score > 0.5;
@@ -61,7 +61,8 @@ fn calculate_score(data: &VerifyRequest) -> f64 {
         let end = data.mouse_events.last().unwrap().2;
         let duration = end - start;
 
-        if duration > 1000.0 { // spent at least 1 second
+        if duration > 1000.0 {
+            // spent at least 1 second
             score += 0.2;
         }
     }
@@ -70,7 +71,7 @@ fn calculate_score(data: &VerifyRequest) -> f64 {
     if !data.key_events.is_empty() {
         // Humans don't type instantly
         if data.key_events.len() > 2 {
-             score += 0.2;
+            score += 0.2;
         }
     }
 

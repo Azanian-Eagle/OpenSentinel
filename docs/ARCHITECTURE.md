@@ -6,29 +6,29 @@ OpenSentinel is designed for high performance, privacy, and ease of use.
 
 ### Backend
 - **Language**: Rust
-- **Framework**: Actix-web (or Axum)
+- **Framework**: Actix-web
 - **Reason**: Memory safety, concurrency, and extremely low latency suitable for high-traffic verification.
 
 ### Frontend (Client)
-- **Language**: TypeScript / Vanilla JavaScript
+- **Language**: Vanilla JavaScript (ES6+)
 - **Size**: < 20kb (gzipped)
 - **Mechanism**: Captures telemetry (mouse, keyboard, touch, accelerometer) and sends a compressed payload to the server.
-- **Reason**: Accessibility and performance. No heavy WASM required for basic telemetry, though WASM is supported for advanced crypto/hashing if needed.
+- **Reason**: Accessibility and performance. No heavy WASM required for basic telemetry.
 
-### AI Model
+### AI Model (Planned)
 - **Type**: Anomaly Detection (Isolation Forest or Autoencoder)
 - **Format**: ONNX
 - **Inference**: `ort` crate in Rust.
-- **Reason**: ONNX allows interoperability. Lightweight models allow for low-latency inference on CPU.
+- **Current Implementation**: Heuristic-based behavioral analysis (Proof of Concept).
 
 ## Data Flow
 
 1.  **Collection**: Client collects behavioral data during user interaction (or passive monitoring).
 2.  **Transmission**: Data is sanitized and sent to `/verify` endpoint.
-3.  **Inference**: Server extracts features and feeds them to the ONNX model.
-4.  **Verdict**: Server returns a "risk score" (0.0 - 1.0).
+3.  **Inference**: Server extracts features and evaluates them (currently via heuristics, planned via ONNX model).
+4.  **Verdict**: Server returns a "risk score" (0.0 - 1.0) and a pass/fail boolean.
 
 ## Infrastructure
 - **Containerization**: Docker
-- **Deployment**: GCP Cloud Run (Serverless)
+- **Deployment**: Any container runtime (e.g., Kubernetes, Cloud Run).
 - **Database**: Redis (optional, for rate limiting/replay protection).

@@ -2,6 +2,7 @@
 name = "opensentinel-server"
 version = "0.1.0"
 edition = "2021"
+keywords = ["captcha", "security", "web", "privacy", "bot-detection"]
 
 [dependencies]
 actix-web = "4"

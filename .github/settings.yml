@@ -1,5 +1,15 @@
 repository:
   # See https://github.com/probot/settings for documentation
+  topics:
+    - captcha
+    - security
+    - privacy
+    - rust
+    - javascript
+    - behavioral-analysis
+    - bot-detection
+    - gdpr-compliant
+    - opensentinel
   default_branch: master
   allow_squash_merge: true
   allow_merge_commit: false

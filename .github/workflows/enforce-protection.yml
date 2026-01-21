@@ -1,0 +1,24 @@
+name: Enforce Branch Protection
+
+on:
+  public:
+  workflow_dispatch:
+
+jobs:
+  protect-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Enforce Branch Protection
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "Error: ADMIN_TOKEN secret is not set."
+            echo "Please add a Personal Access Token (PAT) with 'repo' scope as ADMIN_TOKEN in Repository Secrets."
+            exit 1
+          fi
+          chmod +x scripts/protect_branch.sh
+          ./scripts/protect_branch.sh

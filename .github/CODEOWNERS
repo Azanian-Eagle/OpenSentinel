@@ -1,0 +1,14 @@
+# This file defines a list of code owners who are responsible for maintaining this repository.
+# These owners will be automatically requested for review when a pull request is opened.
+
+# Global owners for everything
+*       @OpenSentinel/maintainers
+
+# Backend
+server/ @OpenSentinel/backend-team
+
+# Frontend
+client/ @OpenSentinel/frontend-team
+
+# GitHub Actions and Security
+.github/ @OpenSentinel/security-team

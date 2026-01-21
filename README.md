@@ -44,6 +44,8 @@ Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models 
 
 To ensure strict branch protection and compliance with governance standards, this repository uses a script to configure GitHub protection rules.
 
+### Manual Setup
+
 1. Ensure you have a `GITHUB_TOKEN` with `repo` scope.
 2. Run the configuration script:
 
@@ -51,6 +53,13 @@ To ensure strict branch protection and compliance with governance standards, thi
 export GITHUB_TOKEN=your_token_here
 ./scripts/protect_branch.sh
 ```
+
+### Automated Enforcement
+
+This repository includes a GitHub Action to automatically re-apply protections if the repository visibility changes (e.g., made public).
+
+1. Create a Personal Access Token (PAT) with `repo` scope.
+2. Add it to **Settings > Secrets and variables > Actions** as a Repository Secret named `ADMIN_TOKEN`.
 
 This enforces:
 - Required status checks (test, security-audit, lint)

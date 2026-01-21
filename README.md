@@ -40,6 +40,24 @@ Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models 
 </script>
 ```
 
+## Repository Setup
+
+To ensure strict branch protection and compliance with governance standards, this repository uses a script to configure GitHub protection rules.
+
+1. Ensure you have a `GITHUB_TOKEN` with `repo` scope.
+2. Run the configuration script:
+
+```bash
+export GITHUB_TOKEN=your_token_here
+./scripts/protect_branch.sh
+```
+
+This enforces:
+- Required status checks (test, security-audit, lint)
+- Code owner reviews
+- Signed commits
+- Linear history
+
 ## License
 
 MIT

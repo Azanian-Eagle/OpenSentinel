@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSentinel | Azanian Eagle</title>
+    <meta name="description" content="OpenSentinel: A free, open-source, non-invasive AI CAPTCHA replacement by Azanian Eagle.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-grid"></div>
+    <div class="vignette"></div>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo-container">
+                <img src="assets/images/logo.png" alt="Azanian Eagle Logo" class="logo">
+                <span class="brand-name">Azanian Eagle</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#tech">Tech</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" class="github-link">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
+                <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
+                <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis.</p>
+                <div class="cta-group">
+                    <a href="#install" class="btn primary-btn">Get Started</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank">View Code</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="shield-3d tilt-element" data-tilt>
+                    <div class="shield-inner">
+                        <img src="assets/images/logo.png" alt="OpenSentinel Shield">
+                        <div class="pulse-ring"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <h2 class="section-title">System Capabilities</h2>
+            <div class="grid">
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                        </svg>
+                    </div>
+                    <h3>Non-Invasive</h3>
+                    <p>No more traffic lights or crosswalks. We analyse behaviour, not patience.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                        </svg>
+                    </div>
+                    <h3>High Performance</h3>
+                    <p>Built with Rust (Actix-web) for blazing fast, memory-safe verification.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/>
+                        </svg>
+                    </div>
+                    <h3>Privacy First</h3>
+                    <p>GDPR compliant. No persistent tracking or third-party data selling.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                            <path d="M20.24 3.76C19.06 2.58 17.5 2 15.91 2 12.33 2 9.07 4.14 7.6 7.6l1.32 1.32C9.9 6.27 12.18 4.71 14.62 4.71c1.17 0 2.22.45 2.99 1.22.77.77 1.22 1.82 1.22 2.99 0 2.44-1.56 4.72-4.21 5.7L15.94 16c-3.46-1.47-5.6-4.73-5.6-8.31 0-1.59.58-3.15 1.76-4.33L10.69 2.1C8.75 2 6.81 2.74 5.33 4.22c-2.93 2.93-2.93 7.68 0 10.61l.02.02c-1.2.7-2.3 1.79-3.04 3.09C2.08 18.42 2 19.19 2 20c.81 0 1.58-.08 2.06-.31 1.3-.74 2.39-1.84 3.09-3.04l.02.02c2.93 2.93 7.68 2.93 10.61 0 2.93-2.93 2.93-7.68 0-10.61l-1.32-1.32c1.47-1.48 2.22-3.42 2.22-5.36 0-1.59-.58-3.15-1.76-4.33z"/>
+                        </svg>
+                    </div>
+                    <h3>Ultra Lightweight</h3>
+                    <p>Frontend sensor is <20kb. Zero heavy WASM payloads.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tech" class="tech-stack">
+            <h2 class="section-title">Technical Might</h2>
+            <div class="tech-container">
+                <div class="tech-card tilt-element" data-tilt>
+                    <span class="tech-label">Backend</span>
+                    <span class="tech-value">Rust / Actix-web</span>
+                    <div class="tech-bar"><div class="fill" style="width: 95%"></div></div>
+                </div>
+                <div class="tech-card tilt-element" data-tilt>
+                    <span class="tech-label">Frontend</span>
+                    <span class="tech-value">Vanilla JS (ES6+)</span>
+                    <div class="tech-bar"><div class="fill" style="width: 80%"></div></div>
+                </div>
+                <div class="tech-card tilt-element" data-tilt>
+                    <span class="tech-label">AI Engine</span>
+                    <span class="tech-value">ONNX (Planned)</span>
+                    <div class="tech-bar"><div class="fill" style="width: 60%"></div></div>
+                </div>
+                <div class="tech-card tilt-element" data-tilt>
+                    <span class="tech-label">Architecture</span>
+                    <span class="tech-value">Dockerized</span>
+                    <div class="tech-bar"><div class="fill" style="width: 90%"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="install" class="install">
+            <h2 class="section-title">Integration</h2>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="filename">integration.html</span>
+                </div>
+                <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  OpenSentinel.init({ endpoint: '/verify' });
+&lt;/script&gt;</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="assets/images/logo.png" alt="Azanian Eagle">
+                <p>Forged by Azanian Eagle</p>
+            </div>
+            <div class="footer-links">
+                <h4>Projects</h4>
+                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank">Eagle's Choice</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank">OpenSentinel</a>
+            </div>
+            <div class="footer-support">
+                <h4>Support Us</h4>
+                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank">
+                    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
+                </a>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2024 Azanian Eagle. Open Source MIT License.
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

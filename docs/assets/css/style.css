@@ -470,10 +470,12 @@ footer {
 .footer-brand p {
     color: #fff;
     font-weight: 700;
+    transition: color 0.3s, text-shadow 0.3s;
 }
 
 .github-footer-link {
     color: #888;
+    text-decoration: none;
     transition: color 0.3s;
     display: flex;
     align-items: center;
@@ -481,6 +483,11 @@ footer {
 
 .github-footer-link:hover {
     color: var(--accent-primary);
+}
+
+.github-footer-link:hover p {
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
 }
 
 .footer-links h4, .footer-support h4 {

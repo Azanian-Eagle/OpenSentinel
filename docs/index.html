@@ -27,6 +27,24 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        .container-limit {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Navbar specific fix to ensure it spans full width but content is centered */
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <div class="background-grid"></div>
@@ -34,43 +52,47 @@
 
     <header>
         <nav class="navbar">
-            <div class="logo-container">
-                <img src="assets/images/logo.png" alt="Azanian Eagle Logo" class="logo">
-                <span class="brand-name">Azanian Eagle</span>
-            </div>
-            <div class="nav-links">
-                <a href="#how-it-works">How It Works</a>
-                <a href="#features">Features</a>
-                <a href="#use-cases">Use Cases</a>
-                <a href="#faq">FAQ</a>
-                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
+            <div class="container-limit navbar-content">
+                <div class="logo-container">
+                    <img src="assets/images/logo.png" alt="Azanian Eagle Logo" class="logo">
+                    <span class="brand-name">Azanian Eagle</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#features">Features</a>
+                    <a href="#use-cases">Use Cases</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
+                </div>
             </div>
         </nav>
     </header>
 
     <main>
         <section class="hero">
-            <div class="hero-content">
-                <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
-                <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
-                <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis.</p>
-                <div class="cta-group">
-                    <a href="#install" class="btn primary-btn">Get Started</a>
-                    <a href="demo.html" class="btn secondary-btn">Live Demo</a>
-                    <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">View Code</a>
+            <div class="container-limit" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div class="hero-content">
+                    <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
+                    <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
+                    <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis.</p>
+                    <div class="cta-group">
+                        <a href="#install" class="btn primary-btn">Get Started</a>
+                        <a href="demo.html" class="btn secondary-btn">Live Demo</a>
+                        <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">View Code</a>
+                    </div>
                 </div>
-            </div>
-            <div class="hero-visual">
-                <div class="shield-3d tilt-element" data-tilt>
-                    <div class="shield-inner">
-                        <img src="assets/images/logo.png" alt="OpenSentinel Shield">
-                        <div class="pulse-ring"></div>
+                <div class="hero-visual">
+                    <div class="shield-3d tilt-element" data-tilt>
+                        <div class="shield-inner">
+                            <img src="assets/images/logo.png" alt="OpenSentinel Shield">
+                            <div class="pulse-ring"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="how-it-works" class="how-it-works" style="margin-top: 4rem;">
+        <section id="how-it-works" class="how-it-works container-limit" style="margin-top: 4rem;">
             <h2 class="section-title">How It Works</h2>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
@@ -88,7 +110,7 @@
             </div>
         </section>
 
-        <section id="features" class="features" style="margin-top: 4rem;">
+        <section id="features" class="features container-limit" style="margin-top: 4rem;">
             <h2 class="section-title">System Capabilities</h2>
             <div class="grid">
                 <div class="card tilt-element" data-tilt>
@@ -130,7 +152,7 @@
             </div>
         </section>
 
-        <section id="use-cases" class="use-cases" style="margin-top: 4rem;">
+        <section id="use-cases" class="use-cases container-limit" style="margin-top: 4rem;">
             <h2 class="section-title">Where to Deploy</h2>
             <div class="grid">
                 <div class="card tilt-element" data-tilt>
@@ -156,7 +178,7 @@
             </div>
         </section>
 
-        <section id="tech" class="tech-stack">
+        <section id="tech" class="tech-stack container-limit">
             <h2 class="section-title">Technical Might</h2>
             <div class="tech-container">
                 <div class="tech-card tilt-element" data-tilt>
@@ -182,7 +204,7 @@
             </div>
         </section>
 
-        <section id="faq" class="faq" style="margin-top: 4rem;">
+        <section id="faq" class="faq container-limit" style="margin-top: 4rem;">
             <h2 class="section-title">Frequently Asked Questions</h2>
             <div class="grid" style="grid-template-columns: 1fr; gap: 1rem; max-width: 800px; margin: 0 auto;">
                 <div class="card tilt-element" data-tilt style="text-align: left;">
@@ -200,7 +222,7 @@
             </div>
         </section>
 
-        <section id="about" class="about" style="margin-top: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <section id="about" class="about container-limit" style="margin-top: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h2 class="section-title">About Azanian Eagle</h2>
             <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
                 <p style="margin-bottom: 1rem;">Azanian Eagle is a proudly South African open-source organisation committed to <strong>digital sovereignty</strong> and <strong>privacy</strong>. Forged in the heart of Mzansi, we build robust tools that empower developers to secure their applications without relying on data-harvesting Big Tech monopolies.</p>
@@ -209,7 +231,7 @@
             </div>
         </section>
 
-        <section id="install" class="install">
+        <section id="install" class="install container-limit">
             <h2 class="section-title">Integration</h2>
             <div class="code-wrapper">
                 <div class="code-header">
@@ -227,7 +249,7 @@
     </main>
 
     <footer>
-        <div class="footer-content">
+        <div class="footer-content container-limit">
             <div class="footer-brand">
                 <img src="assets/images/logo.png" alt="Azanian Eagle">
                 <a href="https://azanian-eagle.github.io/" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle Website">
@@ -251,9 +273,8 @@
                 </a>
             </div>
         </div>
-        <div class="footer-bottom" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+        <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
             <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; white-space: nowrap;">
-                <span style="font-size: 1.5rem;">🇿🇦</span>
                 <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
             </div>
             <div class="copyright">

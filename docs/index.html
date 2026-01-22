@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-ZA">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,8 +21,10 @@
             </div>
             <div class="nav-links">
                 <a href="#features">Features</a>
+                <a href="#use-cases">Use Cases</a>
                 <a href="#tech">Tech</a>
-                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" class="github-link">GitHub</a>
+                <a href="#about">About</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
             </div>
         </nav>
     </header>
@@ -36,7 +38,7 @@
                 <div class="cta-group">
                     <a href="#install" class="btn primary-btn">Get Started</a>
                     <a href="demo.html" class="btn secondary-btn">Live Demo</a>
-                    <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank">View Code</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">View Code</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -77,7 +79,7 @@
                         </svg>
                     </div>
                     <h3>Privacy First</h3>
-                    <p>GDPR compliant. No persistent tracking or third-party data selling.</p>
+                    <p>GDPR and POPIA compliant. No persistent tracking or third-party data selling.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
                     <div class="card-icon">
@@ -87,6 +89,32 @@
                     </div>
                     <h3>Ultra Lightweight</h3>
                     <p>Frontend sensor is <20kb. Zero heavy WASM payloads.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="use-cases" class="use-cases" style="margin-top: 4rem;">
+            <h2 class="section-title">Where to Deploy</h2>
+            <div class="grid">
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon" style="font-size: 2rem;">🛡️</div>
+                    <h3>Registration Forms</h3>
+                    <p>Stop fake accounts and bot farms from polluting your user database without adding friction for real humans.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon" style="font-size: 2rem;">🔑</div>
+                    <h3>Login Pages</h3>
+                    <p>Defend against credential stuffing and brute-force attacks while keeping the login process seamless.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon" style="font-size: 2rem;">💬</div>
+                    <h3>Comment Sections</h3>
+                    <p>Maintain high-quality discourse by filtering out spam bots and automated trolls.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <div class="card-icon" style="font-size: 2rem;">🛒</div>
+                    <h3>Checkout Flows</h3>
+                    <p>Prevent scalper bots from hoarding limited stock during high-demand product launches.</p>
                 </div>
             </div>
         </section>
@@ -117,6 +145,14 @@
             </div>
         </section>
 
+        <section id="about" class="about" style="margin-top: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h2 class="section-title">About Azanian Eagle</h2>
+            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin-bottom: 1rem;">Azanian Eagle is a proudly South African open-source organisation committed to digital sovereignty and privacy. Forged in the heart of Mzansi, we build robust tools that empower developers to secure their applications without relying on data-harvesting Big Tech monopolies.</p>
+                <p>Our mission is to provide local-first, privacy-respecting alternatives that honour the user's dignity. We believe that security should not come at the cost of privacy.</p>
+            </div>
+        </section>
+
         <section id="install" class="install">
             <h2 class="section-title">Integration</h2>
             <div class="code-wrapper">
@@ -138,10 +174,10 @@
         <div class="footer-content">
             <div class="footer-brand">
                 <img src="assets/images/logo.png" alt="Azanian Eagle">
-                <a href="https://azanian-eagle.github.io/" target="_blank" class="github-footer-link" aria-label="Azanian Eagle Website">
+                <a href="https://azanian-eagle.github.io/" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle Website">
                 <p>Forged by Azanian Eagle</p>
                 </a>
-                <a href="https://github.com/Azanian-Eagle" target="_blank" class="github-footer-link" aria-label="Azanian Eagle GitHub">
+                <a href="https://github.com/Azanian-Eagle" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle GitHub">
                     <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
@@ -149,18 +185,24 @@
             </div>
             <div class="footer-links">
                 <h4>Projects</h4>
-                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank">Eagle's Choice</a>
-                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank">OpenSentinel</a>
+                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank" rel="noopener noreferrer">Eagle's Choice</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer">OpenSentinel</a>
             </div>
             <div class="footer-support">
                 <h4>Support Us</h4>
-                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank">
+                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank" rel="noopener noreferrer">
                     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
                 </a>
             </div>
         </div>
-        <div class="copyright">
-            &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT License.
+        <div class="footer-bottom" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+            <div class="proudly-za" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <span style="font-size: 1.5rem;">🇿🇦</span>
+                <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
+            </div>
+            <div class="copyright">
+                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT License.
+            </div>
         </div>
     </footer>
 

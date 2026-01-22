@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenSentinel | Azanian Eagle</title>
-    <meta name="description" content="OpenSentinel: A free, open-source, non-invasive AI CAPTCHA replacement by Azanian Eagle.">
+    <meta name="description" content="OpenSentinel: A free, open-source, non-invasive AI CAPTCHA replacement by Azanian Eagle. Privacy-first, zero-click bot protection powered by Rust.">
+    <meta name="keywords" content="CAPTCHA, behavioral analysis, bot protection, privacy-first, GDPR, POPIA, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cyber security">
+    <meta name="author" content="Azanian Eagle">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://azanian-eagle.github.io/OpenSentinel/">
+    <meta property="og:title" content="OpenSentinel | The Future of Non-Invasive Bot Protection">
+    <meta property="og:description" content="A free, open-source, privacy-first AI CAPTCHA replacement by Azanian Eagle. Powered by Rust and behavioral analysis. Forged in Mzansi.">
+    <meta property="og:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://azanian-eagle.github.io/OpenSentinel/">
+    <meta property="twitter:title" content="OpenSentinel | Azanian Eagle">
+    <meta property="twitter:description" content="Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi.">
+    <meta property="twitter:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -20,10 +39,10 @@
                 <span class="brand-name">Azanian Eagle</span>
             </div>
             <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
                 <a href="#features">Features</a>
                 <a href="#use-cases">Use Cases</a>
-                <a href="#tech">Tech</a>
-                <a href="#about">About</a>
+                <a href="#faq">FAQ</a>
                 <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
             </div>
         </nav>
@@ -51,7 +70,25 @@
             </div>
         </section>
 
-        <section id="features" class="features">
+        <section id="how-it-works" class="how-it-works" style="margin-top: 4rem;">
+            <h2 class="section-title">How It Works</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3>1. Passive Monitoring</h3>
+                    <p>The lightweight client sensor (&lt;20kb) silently observes user interactions—mouse trajectories, keystroke dynamics, and device telemetry—without interrupting the user flow.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>2. Privacy-Preserving Analysis</h3>
+                    <p>Data is processed locally where possible. Only essential behavioural metadata is sent to the backend. We verify humanity without tracking identity.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>3. Rust-Powered Decision</h3>
+                    <p>Our high-performance Actix-web backend analyses the telemetry against human patterns using statistical models (and soon ONNX AI), returning a verification token in milliseconds.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features" style="margin-top: 4rem;">
             <h2 class="section-title">System Capabilities</h2>
             <div class="grid">
                 <div class="card tilt-element" data-tilt>
@@ -145,11 +182,30 @@
             </div>
         </section>
 
+        <section id="faq" class="faq" style="margin-top: 4rem;">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem; max-width: 800px; margin: 0 auto;">
+                <div class="card tilt-element" data-tilt style="text-align: left;">
+                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Is OpenSentinel really free?</h3>
+                    <p>Yes. OpenSentinel is 100% open-source software (MIT License). You can host it yourself without paying a cent in licensing fees.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="text-align: left;">
+                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Does it track users?</h3>
+                    <p>No. Unlike Big Tech alternatives, we do not use cookies to track users across the web. We only analyse behaviour within the specific interaction context to verify humanity.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="text-align: left;">
+                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Is it accessible?</h3>
+                    <p>We strive for inclusivity. Since there are no visual puzzles to solve, OpenSentinel is inherently more accessible to users with visual impairments than traditional image CAPTCHAs.</p>
+                </div>
+            </div>
+        </section>
+
         <section id="about" class="about" style="margin-top: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h2 class="section-title">About Azanian Eagle</h2>
             <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <p style="margin-bottom: 1rem;">Azanian Eagle is a proudly South African open-source organisation committed to digital sovereignty and privacy. Forged in the heart of Mzansi, we build robust tools that empower developers to secure their applications without relying on data-harvesting Big Tech monopolies.</p>
-                <p>Our mission is to provide local-first, privacy-respecting alternatives that honour the user's dignity. We believe that security should not come at the cost of privacy.</p>
+                <p style="margin-bottom: 1rem;">Azanian Eagle is a proudly South African open-source organisation committed to <strong>digital sovereignty</strong> and <strong>privacy</strong>. Forged in the heart of Mzansi, we build robust tools that empower developers to secure their applications without relying on data-harvesting Big Tech monopolies.</p>
+                <p style="margin-bottom: 1rem;">We believe in the spirit of <em>Ubuntu</em>—"I am because we are." Our code is shared freely to uplift the global developer community while championing local technological independence.</p>
+                <p><strong>Our Philosophy:</strong> Security should not come at the cost of human dignity or privacy. We build software that respects the user, defends the developer, and honours the open web.</p>
             </div>
         </section>
 
@@ -196,7 +252,7 @@
             </div>
         </div>
         <div class="footer-bottom" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
-            <div class="proudly-za" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; white-space: nowrap;">
                 <span style="font-size: 1.5rem;">🇿🇦</span>
                 <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
             </div>

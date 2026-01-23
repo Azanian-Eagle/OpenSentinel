@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navLinks.classList.toggle('active');
+            document.body.classList.toggle('no-scroll');
         });
 
         // Close menu when a link is clicked
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
                 navLinks.classList.remove('active');
+                document.body.classList.remove('no-scroll');
             });
         });
 
@@ -52,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!navLinks.contains(e.target) && !hamburger.contains(e.target) && navLinks.classList.contains('active')) {
                 hamburger.classList.remove('active');
                 navLinks.classList.remove('active');
+                document.body.classList.remove('no-scroll');
             }
         });
     }

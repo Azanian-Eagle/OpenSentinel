@@ -370,22 +370,3 @@ footer {
         padding: 3rem 1.5rem 2rem;
     }
 }
-
-@media (max-width: 480px) {
-    .glass-card {
-        padding: 20px;
-    }
-
-    .card-container {
-        width: 95%;
-        margin: 2rem auto;
-    }
-
-    h1 {
-        font-size: 1.8rem;
-    }
-
-    footer {
-        padding: 2rem 5% 1rem;
-    }
-}

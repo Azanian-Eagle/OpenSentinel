@@ -19,6 +19,10 @@
     padding: 0;
 }
 
+html {
+    height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-dark);
@@ -30,6 +34,7 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     perspective: 1000px;
+    margin: 0; /* Ensure no default margin */
 }
 
 /* Animated Background */
@@ -70,7 +75,7 @@ body {
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out;
     margin: 4rem 0; /* Add margin to separate from top and footer */
-    flex: 1;
+    flex: 1 0 auto; /* Grow to fill space, allowing footer to push down */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -246,6 +251,8 @@ footer {
     width: 100%;
     position: relative;
     z-index: 10;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+    margin-top: auto; /* Push footer to bottom */
 }
 
 .footer-content {

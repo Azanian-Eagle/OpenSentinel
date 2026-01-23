@@ -2,7 +2,7 @@
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 
-**An Azanian Eagle Project**
+**An [Azanian Eagle](https://Azanian-Eagle.github.io/) Project**
 
 OpenSentinel is a free, open-source, non-invasive AI CAPTCHA replacement designed to revolutionise the current outdated market. It prioritizes privacy, accessibility, and security without compromising user experience.
 

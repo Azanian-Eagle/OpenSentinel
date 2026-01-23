@@ -24,6 +24,10 @@ body {
     line-height: 1.6;
 }
 
+body.no-scroll {
+    overflow: hidden;
+}
+
 /* Background Effects */
 .background-grid {
     position: fixed;

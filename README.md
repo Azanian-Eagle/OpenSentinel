@@ -4,6 +4,22 @@
 
 OpenSentinel is a free, open-source, non-invasive AI CAPTCHA replacement designed to revolutionise the current outdated market. It prioritizes privacy, accessibility, and security without compromising user experience.
 
+## Quickstart
+
+Get up and running in seconds.
+
+```bash
+# Clone the repository
+git clone https://github.com/Azanian-Eagle/OpenSentinel.git
+cd OpenSentinel
+
+# Run the server (Requires Rust)
+cd server
+cargo run
+```
+
+The server will start at `http://localhost:8080`. You can visit this URL to see the demo client.
+
 ## Features
 
 - **Non-Invasive**: Uses client-side behavioural analysis (mouse movements, keystroke dynamics, device telemetry) instead of annoying image puzzles.
@@ -21,7 +37,6 @@ Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models 
 ### Prerequisites
 
 - Rust (latest stable)
-- Node.js (optional, for client builds if we add a bundler)
 
 ### Backend
 
@@ -38,6 +53,21 @@ Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models 
 <script>
   OpenSentinel.init({ endpoint: '/verify' });
 </script>
+```
+
+## Validation & Testing
+
+OpenSentinel includes an integration test suite to verify its ability to distinguish between bots and humans.
+
+To run the tests:
+
+```bash
+# Install dependencies
+pip install playwright
+playwright install
+
+# Run the integration tests
+python3 tests/integration_tests.py
 ```
 
 ## Repository Setup

@@ -86,7 +86,7 @@ export GITHUB_TOKEN=your_token_here
 
 ### Automated Enforcement
 
-This repository includes a GitHub Action to automatically re-apply protections if the repository visibility changes (e.g., made public).
+This repository includes a GitHub Action to automatically re-apply protections if the repository visibility changes.
 
 1. Create a Personal Access Token (PAT) with `repo` scope.
 2. Add it to **Settings > Secrets and variables > Actions** as a Repository Secret named `ADMIN_TOKEN`.

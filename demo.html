@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSentinel Demo | Azanian Eagle</title>
+    <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="icon" href="assets/images/logo.png">
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-grid"></div>
+    </div>
+
+    <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-family: sans-serif; z-index: 100;">&larr; Back to Home</a>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="card-container" id="card">
+        <div class="glass-card">
+            <img src="assets/images/logo.png" alt="Azanian Eagle" class="logo-eagle">
+            <div class="badge">Azanian Eagle Project</div>
+            <h1>OpenSentinel</h1>
+            <p class="subtitle">Non-invasive, privacy-first AI verification. <br>Interact naturally.</p>
+
+            <div class="input-group">
+                <input type="text" placeholder="Type something to prove humanity..." id="testInput">
+            </div>
+
+            <button id="verifyBtn">Verify Humanity</button>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content container-limit">
+            <div class="footer-brand">
+                <img src="assets/images/logo.png" alt="Azanian Eagle">
+                <a href="https://azanian-eagle.github.io/" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle Website">
+                <p>Forged by Azanian Eagle</p>
+                </a>
+                <a href="https://github.com/Azanian-Eagle" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle GitHub">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer-links">
+                <h4>Projects</h4>
+                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank" rel="noopener noreferrer">Eagle's Choice</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer">OpenSentinel</a>
+            </div>
+            <div class="footer-support">
+                <h4>Support Us</h4>
+                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank" rel="noopener noreferrer">
+                    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+            <div class="copyright" style="border-top: none; padding-top: 0;">
+                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT License.
+            </div>
+            <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap;">
+                <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/sensor.js"></script>
+    <script>
+        // 3D Tilt Effect
+        const card = document.getElementById('card');
+        const container = document.body;
+
+        container.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on leave
+        container.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        // Update year
+        const yearSpan = document.getElementById('current-year');
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // Initialize OpenSentinel
+        OpenSentinel.init({ endpoint: '/verify' });
+
+        // Ported from server/src/main.rs (Behavior Analysis Logic)
+        function verifyData(mouseEvents, keyEvents) {
+            let score = 0.0;
+
+            // 1. Minimum Data Requirements
+            if (mouseEvents.length < 5 && keyEvents.length === 0) {
+                return { passed: false, score: 0.0, message: "Insufficient data" };
+            }
+
+            // 2. Mouse Movement Analysis
+            if (mouseEvents.length > 10) {
+                const linearityScore = analyzeMouseLinearity(mouseEvents);
+                const speedScore = analyzeMouseSpeed(mouseEvents);
+
+                score += linearityScore * 0.4;
+                score += speedScore * 0.2;
+            } else if (mouseEvents.length > 0) {
+                 score += 0.1;
+            }
+
+            // 3. Keystroke Dynamics
+            if (keyEvents.length > 0) {
+                const keystrokeScore = analyzeKeystrokes(keyEvents);
+                score += keystrokeScore * 0.4;
+            } else {
+                if (score > 0.5) {
+                    score += 0.2; // Bonus for good mouse behavior without keys
+                }
+            }
+
+            if (score > 1.0) score = 1.0;
+
+            // Threshold matches Rust backend
+            const passed = score > 0.7;
+            const message = passed
+                ? "Verification successful. Human behavior pattern confirmed."
+                : "Verification failed. Automated behavior pattern detected.";
+
+            return { passed, score, message };
+        }
+
+        function analyzeMouseLinearity(events) {
+            if (events.length < 3) return 1.0;
+
+            const start = events[0];
+            const end = events[events.length - 1];
+
+            // ax + by + c = 0
+            const a = start[1] - end[1];
+            const b = end[0] - start[0];
+            const c = start[0] * end[1] - end[0] * start[1];
+            const denominator = Math.sqrt(a * a + b * b);
+
+            if (denominator === 0) return 0.0;
+
+            let totalDeviation = 0.0;
+            for (const point of events) {
+                const distance = Math.abs(a * point[0] + b * point[1] + c) / denominator;
+                totalDeviation += distance;
+            }
+
+            const avgDeviation = totalDeviation / events.length;
+            if (avgDeviation < 0.5) return 0.0; // Bot (too straight)
+
+            return 1.0;
+        }
+
+        function analyzeMouseSpeed(events) {
+            let variances = [];
+            let totalSpeed = 0.0;
+            let count = 0;
+
+            for (let i = 0; i < events.length - 1; i++) {
+                const p1 = events[i];
+                const p2 = events[i+1];
+
+                const dx = p2[0] - p1[0];
+                const dy = p2[1] - p1[1];
+                const dt = p2[2] - p1[2]; // timestamp is 3rd element
+
+                if (dt > 0) {
+                    const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+                    variances.push(speed);
+                    totalSpeed += speed;
+                    count++;
+                }
+            }
+
+            if (count === 0) return 0.0;
+
+            const avgSpeed = totalSpeed / count;
+
+            const variance = variances.reduce((acc, s) => acc + Math.pow(s - avgSpeed, 2), 0) / count;
+
+            if (variance < 0.0001) return 0.0; // Constant speed => Bot
+            if (avgSpeed > 5.0) return 0.0; // Superhuman speed => Bot
+
+            return 1.0;
+        }
+
+        function analyzeKeystrokes(events) {
+            if (events.length < 2) return 0.5;
+
+            let intervals = [];
+            for (let i = 0; i < events.length - 1; i++) {
+                const t1 = events[i][1]; // timestamp is 2nd element
+                const t2 = events[i+1][1];
+                intervals.push(t2 - t1);
+            }
+
+            const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+
+            if (avgInterval < 50.0) return 0.0; // Superhuman typing
+
+            const variance = intervals.reduce((acc, i) => acc + Math.pow(i - avgInterval, 2), 0) / intervals.length;
+
+            if (variance < 10.0) return 0.0; // Robotic typing
+
+            return 1.0;
+        }
+
+        // Mock verification for GitHub Pages Demo (Client-side Analysis)
+        OpenSentinel.verify = async function() {
+             await new Promise(r => setTimeout(r, 1500)); // Network delay simulation
+
+             // Analyze the actual captured data
+             // mouseEvents: [[x, y, ts], ...]
+             // keyEvents: [[code, ts], ...]
+             const result = verifyData(this.mouseEvents, this.keyEvents);
+
+             console.log("Analysis Result:", result);
+             return result;
+        };
+
+        const btn = document.getElementById('verifyBtn');
+        const resultDiv = document.getElementById('result');
+        const input = document.getElementById('testInput');
+
+        btn.addEventListener('click', async () => {
+            if (!input.value) {
+                input.focus();
+                return;
+            }
+
+            // Button Loading State
+            const originalText = btn.textContent;
+            btn.textContent = "Analyzing Behavior...";
+            btn.style.opacity = "0.8";
+            btn.disabled = true;
+            resultDiv.className = "";
+            resultDiv.classList.remove('visible');
+
+            const result = await OpenSentinel.verify();
+
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.disabled = false;
+
+            resultDiv.textContent = `Score: ${result.score.toFixed(2)} - ${result.message}`;
+            resultDiv.classList.add('visible');
+
+            if (result.passed) {
+                resultDiv.className = "success visible";
+            } else {
+                resultDiv.className = "failure visible";
+            }
+        });
+    </script>
+</body>
+</html>

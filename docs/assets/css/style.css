@@ -525,15 +525,24 @@ footer {
 @media (max-width: 768px) {
     .navbar {
         padding: 1rem 5%;
+        flex-direction: column;
+        gap: 1rem;
     }
 
     .nav-links {
-        display: none;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-links a {
+        font-size: 0.8rem;
     }
 
     .hero {
         flex-direction: column-reverse;
-        padding-top: 100px;
+        padding: 140px 5% 5rem;
         text-align: center;
         gap: 3rem;
     }
@@ -544,6 +553,11 @@ footer {
 
     .cta-group {
         justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .features, .tech-stack, .install {
+        padding: 4rem 5%;
     }
 
     .footer-content {
@@ -559,6 +573,14 @@ footer {
     border-radius: 8px;
     border: 1px solid var(--glass-border);
     background: var(--glass-bg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
 }
 
 .comparison-table th {

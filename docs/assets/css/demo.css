@@ -5,6 +5,12 @@
     --card-bg: rgba(255, 255, 255, 0.05);
     --text-main: #ffffff;
     --text-muted: #8b9bb4;
+
+    /* Added for compatibility with style.css footer */
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent-primary: var(--primary);
+    --text-color: var(--text-main);
+    --font-code: monospace;
 }
 
 * {
@@ -19,9 +25,10 @@ body {
     color: var(--text-main);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     perspective: 1000px;
 }
 
@@ -62,6 +69,11 @@ body {
     max-width: 500px;
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out;
+    margin: 4rem 0; /* Add margin to separate from top and footer */
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .glass-card {
@@ -73,6 +85,7 @@ body {
     padding: 40px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     transform-style: preserve-3d;
+    width: 100%;
 }
 
 /* Content Elements */
@@ -216,26 +229,101 @@ button:active {
     filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
 }
 
-/* Footer */
-.demo-footer {
-    position: absolute;
-    bottom: 20px;
+/* Helpers */
+.container-limit {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
     width: 100%;
-    text-align: center;
-    z-index: 100;
+    box-sizing: border-box;
 }
 
-.demo-footer-link {
-    color: rgba(255, 255, 255, 0.7);
+/* Footer */
+footer {
+    border-top: 1px solid var(--glass-border);
+    background: #020202;
+    padding: 4rem 10% 2rem;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-brand img {
+    height: 30px;
+}
+
+.footer-brand p {
+    color: #fff;
+    font-weight: 700;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.github-footer-link {
+    color: #888;
     text-decoration: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
 }
 
-.demo-footer-link:hover {
-    color: var(--primary);
-    text-shadow: 0 0 10px var(--primary);
+.github-footer-link:hover {
+    color: var(--accent-primary);
+}
+
+.github-footer-link:hover p {
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+.footer-links h4, .footer-support h4 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.footer-links a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.copyright {
+    text-align: center;
+    color: #555;
+    font-size: 0.8rem;
+    padding-top: 2rem;
+    border-top: 1px solid #111;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 }

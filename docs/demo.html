@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenSentinel Demo | Azanian Eagle</title>
+    <title>OpenSentinel Live Demo | Azanian Eagle</title>
+    <meta name="description" content="Experience OpenSentinel's non-invasive bot protection live. Client-side behavioural analysis demo. No puzzles, just privacy-first security.">
     <link rel="stylesheet" href="assets/css/demo.css">
     <link rel="icon" href="assets/images/logo.png">
 </head>
@@ -22,7 +23,7 @@
             <img src="assets/images/logo.png" alt="Azanian Eagle" class="logo-eagle">
             <div class="badge">Azanian Eagle Project</div>
             <h1>OpenSentinel</h1>
-            <p class="subtitle">Non-invasive, privacy-first AI verification. <br>Interact naturally.</p>
+            <p class="subtitle">Non-invasive, privacy-first behavioural verification. <br>Interact naturally.</p>
 
             <div class="input-group">
                 <input type="text" placeholder="Type something to prove humanity..." id="testInput">
@@ -121,7 +122,7 @@
                 score += keystrokeScore * 0.4;
             } else {
                 if (score > 0.5) {
-                    score += 0.2; // Bonus for good mouse behavior without keys
+                    score += 0.2; // Bonus for good mouse behaviour without keys
                 }
             }
 
@@ -130,8 +131,8 @@
             // Threshold matches Rust backend
             const passed = score > 0.7;
             const message = passed
-                ? "Verification successful. Human behavior pattern confirmed."
-                : "Verification failed. Automated behavior pattern detected.";
+                ? "Verification successful. Human behaviour pattern confirmed."
+                : "Verification failed. Automated behaviour pattern detected.";
 
             return { passed, score, message };
         }
@@ -241,7 +242,7 @@
 
             // Button Loading State
             const originalText = btn.textContent;
-            btn.textContent = "Analyzing Behavior...";
+            btn.textContent = "Analysing Behaviour...";
             btn.style.opacity = "0.8";
             btn.disabled = true;
             resultDiv.className = "";

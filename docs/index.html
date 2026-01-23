@@ -62,8 +62,6 @@
             width: 100%;
             box-sizing: border-box;
         }
-
-        /* Navbar specific fix to ensure it spans full width but content is centered */
         .navbar-content {
             display: flex;
             justify-content: space-between;
@@ -84,10 +82,10 @@
                     <span class="brand-name">Azanian Eagle</span>
                 </div>
                 <div class="nav-links">
-                    <a href="#how-it-works">How It Works</a>
-                    <a href="#features">Features</a>
-                    <a href="#use-cases">Use Cases</a>
-                    <a href="#faq">FAQ</a>
+                    <a href="#why-it-matters">Why It Matters</a>
+                    <a href="#solution">Solution</a>
+                    <a href="#for-who">For You</a>
+                    <a href="#comparison">Compare</a>
                     <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
                 </div>
             </div>
@@ -100,7 +98,7 @@
                 <div class="hero-content">
                     <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
                     <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
-                    <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis.</p>
+                    <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi to protect the Open Web.</p>
                     <div class="cta-group">
                         <a href="#install" class="btn primary-btn">Get Started</a>
                         <a href="demo.html" class="btn secondary-btn">Live Demo</a>
@@ -118,148 +116,151 @@
             </div>
         </section>
 
-        <section id="how-it-works" class="how-it-works container-limit" style="margin-top: 4rem;">
-            <h2 class="section-title">How It Works</h2>
+        <!-- New Section: The Problem -->
+        <section id="why-it-matters" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Problem: You Are The Product</h2>
+            <div class="grid">
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Unpaid Labour</h3>
+                    <p>Every time you click a traffic light, you are training a corporation's AI model for free. Your time is being monetised without your consent.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Privacy Invasion</h3>
+                    <p>Traditional CAPTCHAs often rely on tracking cookies and browser fingerprinting to identify you, following your movements across the entire web.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Accessibility Barriers</h3>
+                    <p>Visual puzzles are a nightmare for visually impaired users and often frustrate legitimate users, leading to lower conversion rates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: The Solution -->
+        <section id="solution" class="how-it-works container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                OpenSentinel shifts the paradigm from "Challenge-Response" to "Passive Observation". We verify humanity by analysing <em>how</em> you interact, not <em>what</em> you identify.
+            </p>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
-                    <h3>1. Passive Monitoring</h3>
-                    <p>The lightweight client sensor (&lt;20kb) silently observes user interactions—mouse trajectories, keystroke dynamics, and device telemetry—without interrupting the user flow.</p>
+                    <h3>1. Passive Telemetry</h3>
+                    <p>Our ultra-lightweight sensor (<20kb) observes mouse linearity, speed variance, and keystroke dynamics. Humans are imperfect; bots are precise.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3>2. Privacy-Preserving Analysis</h3>
-                    <p>Data is processed locally where possible. Only essential behavioural metadata is sent to the backend. We verify humanity without tracking identity.</p>
+                    <h3>2. Local Analysis</h3>
+                    <p>We process data locally where possible. We do not need your identity, only the "shape" of your interaction. This ensures POPIA and GDPR compliance.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3>3. Rust-Powered Decision</h3>
-                    <p>Our high-performance Actix-web backend analyses the telemetry against human patterns using statistical models (and soon ONNX AI), returning a verification token in milliseconds.</p>
+                    <h3>3. Rust Performance</h3>
+                    <p>The backend is built in Rust (Actix-web), offering blazing fast verification speeds and memory safety that legacy systems cannot match.</p>
                 </div>
             </div>
         </section>
 
-        <section id="features" class="features container-limit" style="margin-top: 4rem;">
-            <h2 class="section-title">System Capabilities</h2>
-            <div class="grid">
-                <div class="card tilt-element" data-tilt>
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                        </svg>
-                    </div>
-                    <h3>Non-Invasive</h3>
-                    <p>No more traffic lights or crosswalks. We analyse behaviour, not patience.</p>
+        <!-- New Section: Target Audience -->
+        <section id="for-who" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Who Is This For?</h2>
+
+            <div class="audience-grid" style="display: grid; gap: 2rem;">
+                <!-- For Developers -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-primary);">
+                    <h3>👨‍💻 For Developers</h3>
+                    <p>Stop wrestling with bloated, invasive scripts. OpenSentinel gives you:</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Drop-in Integration:</strong> 2 lines of code.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Open Source:</strong> Audit the code yourself. MIT Licensed.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Lightweight:</strong> No heavy WASM payloads slowing down your TTI.</li>
+                    </ul>
                 </div>
-                <div class="card tilt-element" data-tilt>
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                        </svg>
-                    </div>
-                    <h3>High Performance</h3>
-                    <p>Built with Rust (Actix-web) for blazing fast, memory-safe verification.</p>
+
+                <!-- For Funders -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid #ffbd2e;">
+                    <h3>💼 For Funders & Financiers</h3>
+                    <p>Invest in the future of the private web. The market is desperate for an ethical alternative.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">🚀 <strong>Market Gap:</strong> Privacy legislation (GDPR, POPIA) is creating a vacuum for compliant tools.</li>
+                        <li style="margin-bottom: 0.5rem;">🌍 <strong>Digital Sovereignty:</strong> A "Proudly South African" solution for the global market.</li>
+                        <li style="margin-bottom: 0.5rem;">📈 <strong>Scalability:</strong> Built on Rust for massive concurrent throughput at low cost.</li>
+                    </ul>
                 </div>
-                <div class="card tilt-element" data-tilt>
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/>
-                        </svg>
-                    </div>
-                    <h3>Privacy First</h3>
-                    <p>GDPR and POPIA compliant. No persistent tracking or third-party data selling.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                            <path d="M20.24 3.76C19.06 2.58 17.5 2 15.91 2 12.33 2 9.07 4.14 7.6 7.6l1.32 1.32C9.9 6.27 12.18 4.71 14.62 4.71c1.17 0 2.22.45 2.99 1.22.77.77 1.22 1.82 1.22 2.99 0 2.44-1.56 4.72-4.21 5.7L15.94 16c-3.46-1.47-5.6-4.73-5.6-8.31 0-1.59.58-3.15 1.76-4.33L10.69 2.1C8.75 2 6.81 2.74 5.33 4.22c-2.93 2.93-2.93 7.68 0 10.61l.02.02c-1.2.7-2.3 1.79-3.04 3.09C2.08 18.42 2 19.19 2 20c.81 0 1.58-.08 2.06-.31 1.3-.74 2.39-1.84 3.09-3.04l.02.02c2.93 2.93 7.68 2.93 10.61 0 2.93-2.93 2.93-7.68 0-10.61l-1.32-1.32c1.47-1.48 2.22-3.42 2.22-5.36 0-1.59-.58-3.15-1.76-4.33z"/>
-                        </svg>
-                    </div>
-                    <h3>Ultra Lightweight</h3>
-                    <p>Frontend sensor is <20kb. Zero heavy WASM payloads.</p>
+
+                <!-- For The Public -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-secondary);">
+                    <h3>✊ For The Public</h3>
+                    <p>Reclaim your digital experience.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">🔒 <strong>Privacy:</strong> We don't track you across the web.</li>
+                        <li style="margin-bottom: 0.5rem;">⚡ <strong>Speed:</strong> No more clicking hydrants or bicycles. Just browse.</li>
+                        <li style="margin-bottom: 0.5rem;">🇿🇦 <strong>Local Innovation:</strong> Supporting South African tech development.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section id="use-cases" class="use-cases container-limit" style="margin-top: 4rem;">
-            <h2 class="section-title">Where to Deploy</h2>
-            <div class="grid">
+        <!-- New Section: Comparison Table -->
+        <section id="comparison" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Competitive Edge</h2>
+            <div class="comparison-table-wrapper" style="overflow-x: auto;">
+                <table class="comparison-table" style="width: 100%; border-collapse: collapse; color: #e0e0e0;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 1px solid #333;">Feature</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: var(--accent-primary);">OpenSentinel</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Big Tech CAPTCHA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">User Experience</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Annoying Puzzles</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (GDPR/POPIA)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Grey Area / Tracking</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">AI Training</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ No Training on Users</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Uses Your Data</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Code Transparency</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Black Box</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Performance</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Native Rust</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Heavy JS/WASM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- New Section: Vision -->
+        <section id="vision" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Project Vision</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
-                    <div class="card-icon" style="font-size: 2rem;">🛡️</div>
-                    <h3>Registration Forms</h3>
-                    <p>Stop fake accounts and bot farms from polluting your user database without adding friction for real humans.</p>
+                    <h3>Phase 1: Heuristics</h3>
+                    <p>Current Stage. Statistical analysis of mouse linearity, speed, and keystroke flight times to filter 90% of basic bots.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <div class="card-icon" style="font-size: 2rem;">🔑</div>
-                    <h3>Login Pages</h3>
-                    <p>Defend against credential stuffing and brute-force attacks while keeping the login process seamless.</p>
+                    <h3>Phase 2: AI Integration</h3>
+                    <p>Integration of lightweight ONNX models to detect advanced procedural bot patterns without sending sensitive data to the cloud.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <div class="card-icon" style="font-size: 2rem;">💬</div>
-                    <h3>Comment Sections</h3>
-                    <p>Maintain high-quality discourse by filtering out spam bots and automated trolls.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <div class="card-icon" style="font-size: 2rem;">🛒</div>
-                    <h3>Checkout Flows</h3>
-                    <p>Prevent scalper bots from hoarding limited stock during high-demand product launches.</p>
+                    <h3>Phase 3: Federation</h3>
+                    <p>A decentralised network of OpenSentinel instances sharing threat intelligence without sharing user identities.</p>
                 </div>
             </div>
         </section>
 
-        <section id="tech" class="tech-stack container-limit">
-            <h2 class="section-title">Technical Might</h2>
-            <div class="tech-container">
-                <div class="tech-card tilt-element" data-tilt>
-                    <span class="tech-label">Backend</span>
-                    <span class="tech-value">Rust / Actix-web</span>
-                    <div class="tech-bar"><div class="fill" style="width: 95%"></div></div>
-                </div>
-                <div class="tech-card tilt-element" data-tilt>
-                    <span class="tech-label">Frontend</span>
-                    <span class="tech-value">Vanilla JS (ES6+)</span>
-                    <div class="tech-bar"><div class="fill" style="width: 80%"></div></div>
-                </div>
-                <div class="tech-card tilt-element" data-tilt>
-                    <span class="tech-label">AI Engine</span>
-                    <span class="tech-value">ONNX (Planned)</span>
-                    <div class="tech-bar"><div class="fill" style="width: 60%"></div></div>
-                </div>
-                <div class="tech-card tilt-element" data-tilt>
-                    <span class="tech-label">Architecture</span>
-                    <span class="tech-value">Dockerized</span>
-                    <div class="tech-bar"><div class="fill" style="width: 90%"></div></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="faq" class="faq container-limit" style="margin-top: 4rem;">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <div class="grid" style="grid-template-columns: 1fr; gap: 1rem; max-width: 800px; margin: 0 auto;">
-                <div class="card tilt-element" data-tilt style="text-align: left;">
-                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Is OpenSentinel really free?</h3>
-                    <p>Yes. OpenSentinel is 100% open-source software (MIT License). You can host it yourself without paying a cent in licensing fees.</p>
-                </div>
-                <div class="card tilt-element" data-tilt style="text-align: left;">
-                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Does it track users?</h3>
-                    <p>No. Unlike Big Tech alternatives, we do not use cookies to track users across the web. We only analyse behaviour within the specific interaction context to verify humanity.</p>
-                </div>
-                <div class="card tilt-element" data-tilt style="text-align: left;">
-                    <h3 style="margin-bottom: 0.5rem; color: #00ff88;">Is it accessible?</h3>
-                    <p>We strive for inclusivity. Since there are no visual puzzles to solve, OpenSentinel is inherently more accessible to users with visual impairments than traditional image CAPTCHAs.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="about container-limit" style="margin-top: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
-            <h2 class="section-title">About Azanian Eagle</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <p style="margin-bottom: 1rem;">Azanian Eagle is a proudly South African open-source organisation committed to <strong>digital sovereignty</strong> and <strong>privacy</strong>. Forged in the heart of Mzansi, we build robust tools that empower developers to secure their applications without relying on data-harvesting Big Tech monopolies.</p>
-                <p style="margin-bottom: 1rem;">We believe in the spirit of <em>Ubuntu</em>—"I am because we are." Our code is shared freely to uplift the global developer community while championing local technological independence.</p>
-                <p><strong>Our Philosophy:</strong> Security should not come at the cost of human dignity or privacy. We build software that respects the user, defends the developer, and honours the open web.</p>
-            </div>
-        </section>
-        <br/>
-        <br/>
-        <section id="install" class="install container-limit">
-            <h2 class="section-title">Integration</h2>
+        <section id="install" class="install container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Ready to Integrate?</h2>
             <div class="code-wrapper">
                 <div class="code-header">
                     <span class="dot red"></span>
@@ -269,8 +270,25 @@
                 </div>
                 <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
 &lt;script&gt;
+  // Initialize OpenSentinel
+  // The endpoint is your Rust backend
   OpenSentinel.init({ endpoint: '/verify' });
 &lt;/script&gt;</code></pre>
+            </div>
+        </section>
+
+        <section id="about" class="about container-limit" style="margin-top: 6rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <h2 class="section-title">About Azanian Eagle</h2>
+            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    Azanian Eagle is a <strong>South African open-source initiative</strong> dedicated to reclaiming digital independence. We believe that security tools should be accessible, transparent, and respectful of human rights.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    In an era where personal data is the new oil, we are building the infrastructure for a privacy-first internet. Our software is forged in Mzansi, but built for the world. We adhere to the highest standards of code quality and ethical engineering.
+                </p>
+                <p>
+                    <strong>Our Mission:</strong> To provide developers with robust, free, and secure alternatives to Big Tech monopolies, fostering a global ecosystem of digital sovereignty.
+                </p>
             </div>
         </section>
     </main>

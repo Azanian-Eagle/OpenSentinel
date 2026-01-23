@@ -552,3 +552,42 @@ footer {
         text-align: center;
     }
 }
+
+/* Comparison Table */
+.comparison-table-wrapper {
+    margin: 2rem 0;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+}
+
+.comparison-table th {
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.comparison-table td {
+    font-size: 0.95rem;
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Audience Grid - specific overrides */
+.audience-grid .card {
+    transition: all 0.3s ease;
+}
+
+.audience-grid .card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* Responsive adjustments for table */
+@media (max-width: 600px) {
+    .comparison-table th, .comparison-table td {
+        padding: 0.75rem !important;
+        font-size: 0.8rem !important;
+    }
+}

@@ -67,7 +67,7 @@ fn calculate_score(data: &VerifyRequest) -> f64 {
         // If mouse score was perfect (0.6), we need to boost it if no keys required?
         // Let's assume keys are optional but good.
         if score > 0.5 {
-             score += 0.2; // Bonus for good mouse behavior without keys
+            score += 0.2; // Bonus for good mouse behavior without keys
         }
     }
 
@@ -136,19 +136,25 @@ fn analyze_mouse_speed(events: &[(f64, f64, f64)]) -> f64 {
         let dt = p2.2 - p1.2;
 
         if dt > 0.0 {
-            let speed = (dx*dx + dy*dy).sqrt() / dt;
+            let speed = (dx * dx + dy * dy).sqrt() / dt;
             variances.push(speed);
             total_speed += speed;
             count += 1;
         }
     }
 
-    if count == 0 { return 0.0; }
+    if count == 0 {
+        return 0.0;
+    }
 
     let avg_speed = total_speed / count as f64;
 
     // Calculate variance of speed
-    let variance: f64 = variances.iter().map(|s| (s - avg_speed).powi(2)).sum::<f64>() / count as f64;
+    let variance: f64 = variances
+        .iter()
+        .map(|s| (s - avg_speed).powi(2))
+        .sum::<f64>()
+        / count as f64;
 
     // If variance is effectively zero, speed is perfectly constant => Bot
     if variance < 0.0001 {
@@ -183,10 +189,15 @@ fn analyze_keystrokes(events: &[(String, f64)]) -> f64 {
     }
 
     // Variance check
-    let variance: f64 = intervals.iter().map(|i| (i - avg_interval).powi(2)).sum::<f64>() / intervals.len() as f64;
+    let variance: f64 = intervals
+        .iter()
+        .map(|i| (i - avg_interval).powi(2))
+        .sum::<f64>()
+        / intervals.len() as f64;
 
     // Perfectly consistent typing (variance ~ 0) => Bot
-    if variance < 10.0 { // 10ms variance is still very robotic
+    if variance < 10.0 {
+        // 10ms variance is still very robotic
         return 0.0;
     }
 

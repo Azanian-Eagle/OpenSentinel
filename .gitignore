@@ -4,3 +4,4 @@ target/
 .DS_Store
 node_modules/
 dist/
+verification_screenshot.png

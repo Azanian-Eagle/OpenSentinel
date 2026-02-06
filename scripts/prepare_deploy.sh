@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 # Clean up previous build
 rm -rf dist
@@ -26,5 +27,8 @@ npx javascript-obfuscator docs/assets/js/ --output dist/docs/assets/js/ --option
 
 # Add .nojekyll to prevent Jekyll processing
 touch dist/.nojekyll
+
+# Ensure correct permissions for deployment
+chmod -R 755 dist
 
 echo "Build complete. Output in dist/"

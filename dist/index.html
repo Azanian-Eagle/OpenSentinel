@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSentinel | Privacy-First Bot Protection by Azanian Eagle</title>
+    <meta name="description" content="OpenSentinel by Azanian Eagle: The free, open-source, non-invasive alternative to CAPTCHA. Protect your site with behavioural analysis, not puzzles. Privacy-first, POPIA compliant, and forged in Mzansi. No third-party AI training.">
+    <meta name="keywords" content="behavioural analysis, behavioral biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cyber security, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic">
+    <meta name="author" content="Azanian Eagle">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OpenSentinel">
+    <meta property="og:locale" content="en_ZA">
+    <meta property="og:url" content="https://azanian-eagle.github.io/OpenSentinel/">
+    <meta property="og:title" content="OpenSentinel | Privacy-First Bot Protection from South Africa">
+    <meta property="og:description" content="A free, open-source, privacy-first AI CAPTCHA replacement by Azanian Eagle. Powered by Rust and behavioural analysis. Forged in Mzansi. No third-party AI training.">
+    <meta property="og:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@AzanianEagle">
+    <meta property="twitter:creator" content="@AzanianEagle">
+    <meta property="twitter:url" content="https://azanian-eagle.github.io/OpenSentinel/">
+    <meta property="twitter:title" content="OpenSentinel | Privacy-First Bot Protection">
+    <meta property="twitter:description" content="Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi.">
+    <meta property="twitter:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "OpenSentinel",
+      "operatingSystem": "Any",
+      "applicationCategory": "SecurityApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Azanian Eagle",
+        "url": "https://azanian-eagle.github.io/"
+      },
+      "description": "A free, open-source, non-invasive AI CAPTCHA replacement that protects privacy and verifies humanity using behavioural analysis."
+    }
+    </script>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        .container-limit {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+    <div class="vignette"></div>
+
+    <header>
+        <nav class="navbar">
+            <div class="container-limit navbar-content">
+                <a href="index.html" class="logo-container" style="text-decoration: none;">
+                    <img src="assets/images/logo.png" alt="Azanian Eagle Logo" class="logo">
+                    <span class="brand-name">OpenSentinel</span>
+                </a>
+                <button class="hamburger" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-links">
+                    <a href="#why-it-matters">Why It Matters</a>
+                    <a href="#solution">Solution</a>
+                    <a href="#for-who">For You</a>
+                    <a href="#comparison">Compare</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container-limit" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div class="hero-content">
+                    <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
+                    <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
+                    <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi to protect the Open Web.</p>
+                    <div class="cta-group">
+                        <a href="#install" class="btn primary-btn">Get Started</a>
+                        <a href="demo.html" class="btn secondary-btn">Live Demo</a>
+                        <a href="https://github.com/azanian-eagle/OpenSentinel" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">View Code</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="shield-3d tilt-element" data-tilt>
+                        <div class="shield-inner">
+                            <img src="assets/images/logo.png" alt="OpenSentinel Shield">
+                            <div class="pulse-ring"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: The Problem -->
+        <section id="why-it-matters" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Problem: You Are The Product</h2>
+            <div class="grid">
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Unpaid Labour</h3>
+                    <p>Every time you click a traffic light, you are training a corporation's AI model for free. Your time is being monetised without your consent.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Privacy Invasion</h3>
+                    <p>Traditional CAPTCHAs often rely on tracking cookies and browser fingerprinting to identify you, following your movements across the entire web.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Accessibility Barriers</h3>
+                    <p>Visual puzzles are a nightmare for visually impaired users and often frustrate legitimate users, leading to lower conversion rates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: The Solution -->
+        <section id="solution" class="how-it-works container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                OpenSentinel shifts the paradigm from "Challenge-Response" to "Passive Observation". We verify humanity by analysing <em>how</em> you interact, not <em>what</em> you identify.
+            </p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3>1. Passive Telemetry</h3>
+                    <p>Our ultra-lightweight sensor (<20kb) observes mouse linearity, speed variance, and keystroke dynamics. Humans are imperfect; bots are precise.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>2. Local Analysis</h3>
+                    <p>We process data locally where possible. We do not need your identity, only the "shape" of your interaction. This ensures POPIA and GDPR compliance.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>3. Rust Performance</h3>
+                    <p>The backend is built in Rust (Actix-web), offering blazing fast verification speeds and memory safety that legacy systems cannot match.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: Target Audience -->
+        <section id="for-who" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Who Is This For?</h2>
+
+            <div class="audience-grid" style="display: grid; gap: 2rem;">
+                <!-- For Developers -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-primary);">
+                    <h3>👨‍💻 For Developers</h3>
+                    <p>Stop wrestling with bloated, invasive scripts. OpenSentinel gives you:</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Drop-in Integration:</strong> 2 lines of code.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Open Source:</strong> Audit the code yourself. MIT Licensed.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Lightweight:</strong> No heavy WASM payloads slowing down your TTI.</li>
+                    </ul>
+                </div>
+
+                <!-- For Funders -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid #ffbd2e;">
+                    <h3>💼 For Funders & Financiers</h3>
+                    <p>Invest in the future of the private web. The market is desperate for an ethical alternative.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">🚀 <strong>Market Gap:</strong> Privacy legislation (GDPR, POPIA) is creating a vacuum for compliant tools.</li>
+                        <li style="margin-bottom: 0.5rem;">🌍 <strong>Digital Sovereignty:</strong> A "Proudly South African" solution for the global market.</li>
+                        <li style="margin-bottom: 0.5rem;">📈 <strong>Scalability:</strong> Built on Rust for massive concurrent throughput at low cost.</li>
+                    </ul>
+                </div>
+
+                <!-- For The Public -->
+                <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-secondary);">
+                    <h3>✊ For The Public</h3>
+                    <p>Reclaim your digital experience.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
+                        <li style="margin-bottom: 0.5rem;">🔒 <strong>Privacy:</strong> We don't track you across the web.</li>
+                        <li style="margin-bottom: 0.5rem;">⚡ <strong>Speed:</strong> No more clicking hydrants or bicycles. Just browse.</li>
+                        <li style="margin-bottom: 0.5rem;">🇿🇦 <strong>Local Innovation:</strong> Supporting South African tech development.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: Comparison Table -->
+        <section id="comparison" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">The Competitive Edge</h2>
+            <div class="comparison-table-wrapper" style="overflow-x: auto;">
+                <table class="comparison-table" style="width: 100%; border-collapse: collapse; color: #e0e0e0;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 1px solid #333;">Feature</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: var(--accent-primary);">OpenSentinel</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Big Tech CAPTCHA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">User Experience</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Annoying Puzzles</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (GDPR/POPIA)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Grey Area / Tracking</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">AI Training</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ No Training on Users</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Uses Your Data</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Code Transparency</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Black Box</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Performance</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Native Rust</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Heavy JS/WASM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- New Section: Vision -->
+        <section id="vision" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Project Vision</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3>Phase 1: Heuristics</h3>
+                    <p>Current Stage. Statistical analysis of mouse linearity, speed, and keystroke flight times to filter 90% of basic bots.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>Phase 2: AI Integration</h3>
+                    <p>Integration of lightweight ONNX models to detect advanced procedural bot patterns without sending sensitive data to the cloud.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>Phase 3: Federation</h3>
+                    <p>A decentralised network of OpenSentinel instances sharing threat intelligence without sharing user identities.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="install" class="install container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Ready to Integrate?</h2>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="filename">integration.html</span>
+                </div>
+                <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  // Initialize OpenSentinel
+  // The endpoint is your Rust backend
+  OpenSentinel.init({ endpoint: '/verify' });
+&lt;/script&gt;</code></pre>
+            </div>
+        </section>
+
+        <section id="about" class="about container-limit" style="margin-top: 6rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <h2 class="section-title">About OpenSentinel</h2>
+            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>OpenSentinel is a South African open-source initiative</strong> dedicated to reclaiming digital independence. We believe that security tools should be accessible, transparent, and respectful of human rights.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    In an era where personal data is the new oil, we are building the infrastructure for a privacy-first internet. Our software is forged in Mzansi, but built for the world. We adhere to the highest standards of code quality and ethical engineering.
+                </p>
+                <p>
+                    <strong>Our Mission:</strong> To provide developers with robust, free, and secure alternatives to Big Tech monopolies, fostering a global ecosystem of digital sovereignty.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content container-limit">
+            <div class="footer-brand">
+                <img src="assets/images/logo.png" alt="Azanian Eagle">
+                <a href="https://azanian-eagle.github.io/" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle Website">
+                <p>Forged by Azanian Eagle</p>
+                </a>
+                <a href="https://github.com/Azanian-Eagle" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle GitHub">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer-links">
+                <h4>Projects</h4>
+                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank" rel="noopener noreferrer">Eagle's Choice</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer">OpenSentinel</a>
+            </div>
+            <div class="footer-support">
+                <h4>Support Us</h4>
+                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank" rel="noopener noreferrer">
+                    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+            <div class="copyright" style="border-top: none; padding-top: 0;">
+                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT License.
+            </div>
+            <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap;">
+                <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

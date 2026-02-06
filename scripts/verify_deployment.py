@@ -9,6 +9,23 @@ import os
 PORT = 8000
 DIST_DIR = "dist"
 
+def print_structure():
+    print(f"--- Structure of {DIST_DIR} ---")
+    if not os.path.exists(DIST_DIR):
+        print("dist directory does not exist!")
+        return
+
+    for root, dirs, files in os.walk(DIST_DIR):
+        level = root.replace(DIST_DIR, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = ' ' * 4 * (level + 1)
+        # Limit file listing to avoid spam
+        for f in files[:5]:
+            print(f"{subindent}{f}")
+        if len(files) > 5:
+            print(f"{subindent}... ({len(files)-5} more)")
+
 def start_server():
     try:
         os.chdir(DIST_DIR)
@@ -163,6 +180,8 @@ if __name__ == "__main__":
     if not os.path.exists(DIST_DIR):
         print(f"ERROR: {DIST_DIR} directory not found. Run ./scripts/prepare_deploy.sh first.")
         sys.exit(1)
+
+    print_structure()
 
     # Start server in background thread
     server_thread = threading.Thread(target=start_server, daemon=True)

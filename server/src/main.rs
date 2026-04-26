@@ -1,3 +1,5 @@
+mod ml;
+
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
@@ -38,103 +40,79 @@ async fn verify(data: web::Json<VerifyRequest>) -> impl Responder {
 }
 
 fn calculate_score(data: &VerifyRequest) -> f64 {
-    let mut score = 0.0;
-
     // 1. Minimum Data Requirements
     if data.mouse_events.len() < 5 && data.key_events.is_empty() {
         return 0.0;
     }
 
-    // 2. Mouse Movement Analysis (Linearity & Speed)
-    if data.mouse_events.len() > 10 {
-        let linearity_score = analyze_mouse_linearity(&data.mouse_events);
-        let speed_score = analyze_mouse_speed(&data.mouse_events);
+    // 2. Extract features
+    let mut avg_deviation = 0.0;
+    let mut avg_speed = 0.0;
+    let mut speed_variance = 0.0;
 
-        score += linearity_score * 0.4;
-        score += speed_score * 0.2;
-    } else if !data.mouse_events.is_empty() {
-        // Penalty for too few mouse events if they exist
-        score += 0.1;
+    if data.mouse_events.len() > 10 {
+        avg_deviation = calculate_avg_deviation(&data.mouse_events);
+        let (speed, var) = calculate_speed_stats(&data.mouse_events);
+        avg_speed = speed;
+        speed_variance = var;
     }
 
-    // 3. Keystroke Dynamics
-    if !data.key_events.is_empty() {
-        let keystroke_score = analyze_keystrokes(&data.key_events);
-        score += keystroke_score * 0.4;
-    } else {
-        // If only mouse used, re-weight mouse score to be out of 0.6 + base
-        // But for this simple implementation, if no keys, we rely on mouse.
-        // If mouse score was perfect (0.6), we need to boost it if no keys required?
-        // Let's assume keys are optional but good.
-        if score > 0.5 {
-            score += 0.2; // Bonus for good mouse behavior without keys
+    let mut keystroke_interval = 200.0; // Default human-like
+    let mut keystroke_variance = 50.0;
+
+    if data.key_events.len() >= 2 {
+        let (interval, var) = calculate_keystroke_stats(&data.key_events);
+        keystroke_interval = interval;
+        keystroke_variance = var;
+    }
+
+    // 3. Use ONNX model to predict if human or bot
+    match ml::predict_bot_probability(
+        avg_deviation,
+        avg_speed,
+        speed_variance,
+        keystroke_interval,
+        keystroke_variance,
+    ) {
+        Ok(human_prob) => human_prob,
+        Err(e) => {
+            log::error!("ML prediction failed: {}", e);
+            0.0 // Fail secure
         }
     }
-
-    // Cap score at 1.0
-    if score > 1.0 {
-        score = 1.0;
-    }
-
-    score
 }
 
-fn analyze_mouse_linearity(events: &[(f64, f64, f64)]) -> f64 {
-    // Human movements are rarely perfectly straight.
-    // Calculate deviation from the line connecting start and end points.
-
+fn calculate_avg_deviation(events: &[(f64, f64, f64)]) -> f64 {
     if events.len() < 3 {
-        return 1.0; // Not enough points to judge linearity
+        return 0.0;
     }
-
     let start = events.first().unwrap();
     let end = events.last().unwrap();
-
-    // Line equation ax + by + c = 0
-    // (y1 - y2)x + (x2 - x1)y + x1y2 - x2y1 = 0
     let a = start.1 - end.1;
     let b = end.0 - start.0;
     let c = start.0 * end.1 - end.0 * start.1;
     let denominator = (a * a + b * b).sqrt();
-
     if denominator == 0.0 {
-        return 0.0; // Start and end are same point, suspicious for "movement" > 10 points
+        return 0.0;
     }
 
     let mut total_deviation = 0.0;
-
     for point in events.iter() {
         let distance = (a * point.0 + b * point.1 + c).abs() / denominator;
         total_deviation += distance;
     }
-
-    let avg_deviation = total_deviation / events.len() as f64;
-
-    // If average deviation is extremely low (< 0.5px), it's likely a generated straight line.
-    if avg_deviation < 0.5 {
-        return 0.0; // Bot
-    }
-
-    // If it has some curve, it's good.
-    1.0
+    total_deviation / events.len() as f64
 }
 
-fn analyze_mouse_speed(events: &[(f64, f64, f64)]) -> f64 {
-    // Check for "teleportation" or impossible consistent speed
-    // Humans accelerate and decelerate (Fitts's Law ish).
-
+fn calculate_speed_stats(events: &[(f64, f64, f64)]) -> (f64, f64) {
     let mut variances = Vec::new();
     let mut total_speed = 0.0;
     let mut count = 0;
 
     for window in events.windows(2) {
-        let p1 = &window[0];
-        let p2 = &window[1];
-
-        let dx = p2.0 - p1.0;
-        let dy = p2.1 - p1.1;
-        let dt = p2.2 - p1.2;
-
+        let dx = window[1].0 - window[0].0;
+        let dy = window[1].1 - window[0].1;
+        let dt = window[1].2 - window[0].2;
         if dt > 0.0 {
             let speed = (dx * dx + dy * dy).sqrt() / dt;
             variances.push(speed);
@@ -142,66 +120,33 @@ fn analyze_mouse_speed(events: &[(f64, f64, f64)]) -> f64 {
             count += 1;
         }
     }
-
     if count == 0 {
-        return 0.0;
+        return (0.0, 0.0);
     }
-
     let avg_speed = total_speed / count as f64;
-
-    // Calculate variance of speed
-    let variance: f64 = variances
+    let variance = variances
         .iter()
         .map(|s| (s - avg_speed).powi(2))
         .sum::<f64>()
         / count as f64;
-
-    // If variance is effectively zero, speed is perfectly constant => Bot
-    if variance < 0.0001 {
-        return 0.0;
-    }
-
-    // Also check for superhuman speed (e.g. > 5 px/ms = 5000px/s is very fast)
-    if avg_speed > 5.0 {
-        return 0.0;
-    }
-
-    1.0
+    (avg_speed, variance)
 }
 
-fn analyze_keystrokes(events: &[(String, f64)]) -> f64 {
-    if events.len() < 2 {
-        return 0.5; // Neutral
-    }
-
+fn calculate_keystroke_stats(events: &[(String, f64)]) -> (f64, f64) {
     let mut intervals = Vec::new();
     for window in events.windows(2) {
-        let t1 = window[0].1;
-        let t2 = window[1].1;
-        intervals.push(t2 - t1);
+        intervals.push(window[1].1 - window[0].1);
     }
-
+    if intervals.is_empty() {
+        return (200.0, 50.0);
+    }
     let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
-
-    // Superhuman typing speed check (< 50ms per key consistently)
-    if avg_interval < 50.0 {
-        return 0.0;
-    }
-
-    // Variance check
-    let variance: f64 = intervals
+    let variance = intervals
         .iter()
         .map(|i| (i - avg_interval).powi(2))
         .sum::<f64>()
         / intervals.len() as f64;
-
-    // Perfectly consistent typing (variance ~ 0) => Bot
-    if variance < 10.0 {
-        // 10ms variance is still very robotic
-        return 0.0;
-    }
-
-    1.0
+    (avg_interval, variance)
 }
 
 #[actix_web::main]

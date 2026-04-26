@@ -25,6 +25,7 @@ The server will start at `http://localhost:8080`. You can visit this URL to see 
 ## Features
 
 - **Non-Invasive**: Uses client-side behavioural analysis (mouse movements, keystroke dynamics, device telemetry) instead of annoying image puzzles.
+- **AI-Powered Bot Detection**: Utilises a fast, locally run ONNX machine-learning model (Phase 2) to distinguish humans from procedural bots using behavioral variance, without sending data to the cloud.
 - **Zero-Click**: No user interaction required. The verification happens in the background.
 - **Privacy-First**: GDPR and POPIA (South Africa) compliant. No invasive tracking or persistent fingerprinting.
 - **Lightweight**: Client component is <20kb and accessible to all developers via a simple API.
@@ -39,6 +40,7 @@ Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models 
 ### Prerequisites
 
 - Rust (latest stable)
+- ONNX Runtime dependencies (automatically managed by `ort` crate on most systems, but requires build tools)
 
 ### Backend
 

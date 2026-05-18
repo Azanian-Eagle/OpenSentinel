@@ -220,40 +220,55 @@
         <!-- New Section: Comparison Table -->
         <section id="comparison" class="container-limit" style="margin-top: 6rem;">
             <h2 class="section-title">The Competitive Edge</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                See how OpenSentinel compares against industry leaders like Cloudflare Turnstile and hCaptcha. We provide true sovereignty without sacrificing usability or advanced protection.
+            </p>
             <div class="comparison-table-wrapper" style="overflow-x: auto;">
                 <table class="comparison-table" style="width: 100%; border-collapse: collapse; color: #e0e0e0;">
                     <thead>
                         <tr>
                             <th style="text-align: left; padding: 1rem; border-bottom: 1px solid #333;">Feature</th>
                             <th style="padding: 1rem; border-bottom: 1px solid #333; color: var(--accent-primary);">OpenSentinel</th>
-                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Big Tech CAPTCHA</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Cloudflare Turnstile</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">hCaptcha / reCAPTCHA</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">User Experience</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Annoying Puzzles</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction (Passive)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Mostly Invisible</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Interruptive Puzzles</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (GDPR/POPIA)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Grey Area / Tracking</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (POPIA/GDPR)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design (No Tracking)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Privacy-Preserving (Opaque)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Extensive Tracking</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">AI Training</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ No Training on Users</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Uses Your Data</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Third-Party AI Training</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero (Your Data Stays Yours)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Unknown / Opaque</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Unpaid Labour Engine</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Decentralised Threat Sharing</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Yes (Federated Network)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Centralised Enclosure</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Centralised Enclosure</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Code Transparency</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Black Box</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source (MIT)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Proprietary</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Proprietary</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Performance</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Native Rust</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Heavy JS/WASM</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">High Availability Fallback</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Decentralised Nodes</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Corporate CDN</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Corporate CDN</td>
                         </tr>
                     </tbody>
                 </table>
@@ -279,8 +294,36 @@
             </div>
         </section>
 
+        <!-- New Section: Decentralised Network Deep Dive -->
+        <section id="network" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Phase 3: The Decentralised Sentinel Network</h2>
+            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>Strength in Numbers, Privacy in Architecture:</strong> The greatest advantage of centralised systems like Cloudflare Turnstile is their vast network intelligence. OpenSentinel achieves this same collective immunity through a <em>Federated P2P Threat Intelligence Network</em>.
+                </p>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 2rem;">
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Anonymised Signatures</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">Nodes automatically share abstract mathematical representations of novel bot behaviours. No IP addresses or user data ever leave your server.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Resilient Client Fallback</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">Our robust `sensor.js` is network-aware. If your primary Rust backend is unreachable, the client seamlessly fails over to trusted peer nodes in your configuration.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Continuous Evolution</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">As nodes encounter new threats, the collective dataset is utilised to retrain and update the local ONNX machine-learning definitions, keeping the entire ecosystem ahead of the curve.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Updated Integration Section -->
         <section id="install" class="install container-limit" style="margin-top: 6rem;">
             <h2 class="section-title">Ready to Integrate?</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                Implementation is simple, but powerful. Our client is built for high availability and robust security.
+            </p>
             <div class="code-wrapper">
                 <div class="code-header">
                     <span class="dot red"></span>
@@ -290,10 +333,37 @@
                 </div>
                 <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  // Initialize OpenSentinel
-  // The endpoint is your Rust backend
-  OpenSentinel.init({ endpoint: '/verify' });
+  // Initialize OpenSentinel with network awareness
+  OpenSentinel.init({
+    // Primary backend
+    endpoints: ['https://api.yourdomain.com/verify', 'https://fallback.trust-node.com/verify'],
+
+    // Optional: Enable client-side Proof-of-Work to deter script abuse
+    enablePoW: true,
+
+    // Optional: Register callbacks
+    onSuccess: function(token) { console.log('Human verified'); },
+    onFailure: function() { console.log('Bot detected'); }
+  });
 &lt;/script&gt;</code></pre>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Node Operators</h3>
+                <p style="color: #aaa; margin-bottom: 1rem;">Running your own Rust backend is just as easy. Configure your trusted peers to join the decentralised network.</p>
+                <div class="code-wrapper" style="max-width: 600px; margin: 0 auto; text-align: left;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">.env</span>
+                    </div>
+                    <pre><code>PORT=8080
+# Enable Federated Threat Sharing
+FEDERATION_ENABLED=true
+# Comma-separated list of trusted peers
+TRUSTED_PEERS=https://node1.opensentinel.org,https://node2.partner.com</code></pre>
+                </div>
             </div>
         </section>
 

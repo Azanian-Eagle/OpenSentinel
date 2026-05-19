@@ -4,7 +4,7 @@
 
 **An [Azanian Eagle](https://Azanian-Eagle.github.io/) Project**
 
-OpenSentinel is a free, open-source, non-invasive AI CAPTCHA replacement designed to revolutionise the current outdated market. It prioritizes privacy, accessibility, and security without compromising user experience.
+OpenSentinel is a free, open-source, non-invasive AI CAPTCHA replacement designed to revolutionise the current outdated market. It prioritises privacy, accessibility, and security without compromising user experience.
 
 ## Quickstart
 
@@ -25,15 +25,18 @@ The server will start at `http://localhost:8080`. You can visit this URL to see 
 ## Features
 
 - **Non-Invasive**: Uses client-side behavioural analysis (mouse movements, keystroke dynamics, device telemetry) instead of annoying image puzzles.
-- **AI-Powered Bot Detection**: Utilises a fast, locally run ONNX machine-learning model (Phase 2) to distinguish humans from procedural bots using behavioral variance, without sending data to the cloud.
+- **AI-Powered Bot Detection**: Utilises a fast, locally run ONNX machine-learning model (Phase 2) to distinguish humans from procedural bots using behavioural variance, without sending data to the cloud.
 - **Zero-Click**: No user interaction required. The verification happens in the background.
 - **Privacy-First**: GDPR and POPIA (South Africa) compliant. No invasive tracking or persistent fingerprinting.
 - **Lightweight**: Client component is <20kb and accessible to all developers via a simple API.
 - **High Performance**: Rust-based backend for speed and memory safety.
+- **Decentralised Intelligence Sharing**: Federated network topology (Phase 3) allows independent nodes to exchange anonymised threat signatures. This provides collective network immunity without centralisation.
 
 ## Why OpenSentinel?
 
-Unlike reCAPTCHA or hCaptcha, OpenSentinel does not train third-party AI models on your users' time. It is a self-hostable, transparent solution that respects user dignity and privacy.
+Traditional bot mitigation services force users to solve interruptive visual puzzles, turning them into unpaid data labellers for corporate AI training. Furthermore, these systems often rely on invasive cross-site tracking and browser fingerprinting that compromise individual privacy.
+
+OpenSentinel addresses these issues by measuring the physics of user interaction locally. By shifting the paradigm from challenge-response tests to passive behavioural observation, we provide a self-hostable, transparent solution that strictly adheres to the principles of the General Data Protection Regulation (GDPR) and the Protection of Personal Information Act (POPIA). Because our threat detection model runs directly on your server, no sensitive user data is ever exposed to third-party providers.
 
 ## Installation
 

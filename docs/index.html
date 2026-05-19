@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenSentinel | Privacy-First Bot Protection by Azanian Eagle</title>
     <meta name="description" content="OpenSentinel by Azanian Eagle: The free, open-source, non-invasive alternative to CAPTCHA. Protect your site with behavioural analysis, not puzzles. Privacy-first, POPIA compliant, and forged in Mzansi. No third-party AI training.">
-    <meta name="keywords" content="behavioural analysis, behavioral biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cyber security, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic">
+    <meta name="keywords" content="behavioural analysis, behavioural biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cyber security, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic">
     <meta name="author" content="Azanian Eagle">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/">
@@ -121,6 +121,22 @@
             </div>
         </section>
 
+        <!-- New Section: Compliance -->
+        <section id="compliance" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Regulatory Compliance & Data Protection</h2>
+            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>Built for the Modern Regulatory Landscape:</strong> OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with the most stringent global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
+                </p>
+                <ul style="list-style: none; color: #aaa;">
+                    <li style="margin-bottom: 1rem;">✅ <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could potentially identify an individual user.</li>
+                    <li style="margin-bottom: 1rem;">✅ <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and fundamentally impossible to reverse-engineer into personal profiles.</li>
+                    <li style="margin-bottom: 1rem;">✅ <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never crosses international borders or leaves your sovereign control.</li>
+                    <li style="margin-bottom: 1rem;">✅ <strong>No Cross-Site Tracking:</strong> We fundamentally reject the use of tracking cookies, local storage beacons, or any mechanism designed to follow users across different websites. Your interactions on site A are entirely independent of your interactions on site B.</li>
+                </ul>
+            </div>
+        </section>
+
         <!-- New Section: The Problem -->
         <section id="why-it-matters" class="container-limit" style="margin-top: 6rem;">
             <h2 class="section-title">The Problem: You Are The Product</h2>
@@ -206,7 +222,7 @@
             <h2 class="section-title">Introducing Phase 2: AI Integration</h2>
             <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
-                    <strong>Next-Generation Bot Detection:</strong> OpenSentinel is proud to announce the successful integration of our Phase 2 ONNX machine-learning model. We have evolved beyond simple linear heuristics to true behavioral variance analysis.
+                    <strong>Next-Generation Bot Detection:</strong> OpenSentinel is proud to announce the successful integration of our Phase 2 ONNX machine-learning model. We have evolved beyond simple linear heuristics to true behavioural variance analysis.
                 </p>
                 <p style="margin-bottom: 1.5rem;">
                     By training a Random Forest classifier on vast datasets of synthetic human and procedural bot telemetry, our Rust-powered backend (utilising the highly-performant `ort` and `ndarray` crates) can now accurately predict bot probabilities in real-time. This lightweight model analyses cursor deviation, speed variance, and keystroke dynamics with remarkable precision.
@@ -318,20 +334,77 @@
             </div>
         </section>
 
-        <!-- Updated Integration Section -->
-        <section id="install" class="install container-limit" style="margin-top: 6rem;">
-            <h2 class="section-title">Ready to Integrate?</h2>
+        <!-- New Section: Technical Architecture -->
+        <section id="architecture" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Technical Architecture & How It Works</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
-                Implementation is purposefully designed to be incredibly simple, yet devastatingly powerful. Our highly optimised client is meticulously built from the ground up for both maximum high availability and impenetrable robust security.
+                OpenSentinel is a sophisticated fusion of highly optimised client-side sensors, blazing-fast Rust web services, and localised machine-learning inference. Here is a deep dive into the core mechanics.
             </p>
-            <div class="code-wrapper">
-                <div class="code-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                    <span class="filename">integration.html</span>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">1. The Sensor Array</h3>
+                    <p>When a user visits your protected application, our ultra-lightweight `sensor.js` immediately begins passive observation. It hooks into standard DOM events (mousemove, keydown) and records a high-resolution, multi-dimensional array of timestamps and coordinates. This payload is heavily obfuscated and dynamically encrypted on the client side to prevent tampering or reverse-engineering by malicious actors.</p>
                 </div>
-                <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">2. Cryptographic Proof-of-Work</h3>
+                    <p>To fundamentally deter automated script kiddies and massive DDoS attempts, the client optionally computes a mathematical Proof-of-Work (PoW) challenge (e.g., finding a specific SHA-256 hash collision) before the payload is even transmitted. This significantly increases the computational cost of spamming the API without affecting legitimate human users.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">3. Rust Backend & ONNX Inference</h3>
+                    <p>The encrypted payload is securely transmitted to your sovereign Rust backend via an Actix-web endpoint. The server decrypts the data, prevents replay attacks using strict timestamp and nonce tracking, and immediately passes the telemetry to our locally hosted ONNX machine-learning model. This Random Forest Classifier (powered by the `ort` and `ndarray` crates) calculates the statistical probability of bot behaviour in a matter of microseconds.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Updated Implementation Manual Section -->
+        <section id="install" class="install container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Implementation Manual & Alpha/Beta Testing</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                We are currently actively seeking Alpha and Beta testers to help refine the OpenSentinel ecosystem. Implementation is purposefully designed to be incredibly simple, yet devastatingly powerful. Follow this comprehensive manual to integrate our highly optimised, fault-tolerant system.
+            </p>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 2rem; text-align: left;">
+                <h3 style="color: #fff; margin-bottom: 1rem;">Step 1: Deploy the Sovereign Backend Node</h3>
+                <p style="color: #aaa; margin-bottom: 1rem;">Begin by deploying your own lightning-fast Rust backend. This ensures you maintain absolute control over the entire verification process and local machine-learning inference.</p>
+                <div class="code-wrapper" style="margin-bottom: 1rem;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">terminal</span>
+                    </div>
+                    <pre><code>git clone https://github.com/Azanian-Eagle/OpenSentinel.git
+cd OpenSentinel/server
+cargo build --release
+cargo run --release</code></pre>
+                </div>
+                <p style="color: #aaa; margin-bottom: 1rem;">Configure your environment variables to join the decentralised OpenSentinel threat intelligence network.</p>
+                <div class="code-wrapper" style="max-width: 600px;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">.env</span>
+                    </div>
+                    <pre><code>PORT=8080
+# Enable Federated Threat Sharing Protocol (Phase 3)
+FEDERATION_ENABLED=true
+# Comma-separated list of trusted peers on the network
+TRUSTED_PEERS=https://node1.opensentinel.org,https://node2.partner.com</code></pre>
+                </div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+                <h3 style="color: #fff; margin-bottom: 1rem;">Step 2: Integrate the Frontend Sensor</h3>
+                <p style="color: #aaa; margin-bottom: 1rem;">Include our ultra-lightweight client script directly into your web application. Initialise the sensor with your primary backend endpoint and optional fallback nodes to ensure absolute high availability.</p>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">integration.html</span>
+                    </div>
+                    <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
 &lt;script&gt;
   // Initialize OpenSentinel with advanced network awareness
   OpenSentinel.init({
@@ -342,27 +415,34 @@
     enablePoW: true,
 
     // Optional: Register callbacks for custom behaviour
-    onSuccess: function(token) { console.log('Human verified successfully.'); },
-    onFailure: function() { console.log('Automated bot behaviour detected.'); }
+    onSuccess: function(token) {
+        console.log('Human verified successfully. Proceeding with application logic.');
+        // Example: Enable submit button, inject token into form
+    },
+    onFailure: function() {
+        console.warn('Automated bot behaviour detected. Access denied.');
+    }
   });
 &lt;/script&gt;</code></pre>
+                </div>
             </div>
+        </section>
 
-            <div style="text-align: center; margin-top: 2rem;">
-                <h3 style="margin-bottom: 1rem;">Node Operators</h3>
-                <p style="color: #aaa; margin-bottom: 1rem;">Deploying and running your own lightning-fast Rust backend is a trivial task. Simply configure your trusted peers to join the decentralised OpenSentinel threat intelligence network.</p>
-                <div class="code-wrapper" style="max-width: 600px; margin: 0 auto; text-align: left;">
-                    <div class="code-header">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <span class="filename">.env</span>
-                    </div>
-                    <pre><code>PORT=8080
-# Enable Federated Threat Sharing Protocol
-FEDERATION_ENABLED=true
-# Comma-separated list of trusted peers on the network
-TRUSTED_PEERS=https://node1.opensentinel.org,https://node2.partner.com</code></pre>
+        <!-- New Section: Open Source Community & Governance -->
+        <section id="open-source" class="container-limit" style="margin-top: 6rem;">
+            <h2 class="section-title">Open-Source Community & Governance</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-primary);">
+                    <h3>🤝 Contributing to the Vision</h3>
+                    <p>Much like the foundational pillars of the open internet (such as Linux or Mozilla), OpenSentinel thrives on radical transparency and community collaboration. We actively encourage developers, security researchers, and data scientists to thoroughly audit our codebase, submit intricate pull requests, and help us continuously refine our machine-learning models. Please review our <code>CONTRIBUTING.md</code> guidelines on GitHub to get started.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid #ffbd2e;">
+                    <h3>🛡️ Security & Vulnerability Policy</h3>
+                    <p>Security is our absolute highest priority. We maintain a strict, comprehensive security disclosure policy. If you discover a potential vulnerability within the core Rust backend or the obfuscated client sensor, we urge you to report it privately via our designated security channels outlined in <code>SECURITY.md</code> before public disclosure. We are committed to patching critical issues immediately.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-secondary);">
+                    <h3>⚖️ Transparent Governance</h3>
+                    <p>The OpenSentinel project is governed by a strict Code of Conduct and a transparent technical steering model. All major architectural decisions (such as the integration of the ONNX models or the development of the Federated Protocol) are openly documented and heavily debated within public GitHub issues and structured Request for Comments (RFCs) to ensure the project remains truly community-driven.</p>
                 </div>
             </div>
         </section>

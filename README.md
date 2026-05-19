@@ -24,43 +24,74 @@ The server will immediately start binding to `http://localhost:8080`. You can vi
 
 ## The Philosophy & Why It Matters
 
-Every single time a user is forced to identify traffic lights or distorted text, they are unknowingly performing unpaid labour to train massive corporate artificial intelligence models. Traditional CAPTCHA systems rely on deeply invasive tracking cookies and browser fingerprinting that compromise digital sovereignty.
+Every single time a user is forced to identify traffic lights or distorted text, they are unknowingly performing unpaid labour to train massive corporate artificial intelligence models. Traditional CAPTCHA systems rely on deeply invasive tracking cookies and browser fingerprinting that fundamentally compromise digital sovereignty.
 
-OpenSentinel entirely shifts this paradigm. **Our absolute killer feature is that we categorically do not train any third-party AI.** We are building a self-hostable, transparent infrastructure that respects user dignity. By analysing the natural, inherent imperfections of human interaction rather than demanding explicit puzzle-solving, we protect the web while remaining strictly compliant with South Africa's POPIA and Europe's GDPR.
+OpenSentinel entirely shifts this paradigm. **Our absolute killer feature is that we categorically do not train any third-party AI.** We are building a self-hostable, radically transparent infrastructure that respects user dignity. By meticulously analysing the natural, inherent imperfections of human interaction rather than demanding explicit puzzle-solving, we protect the open web while remaining strictly compliant with stringent global data protection laws.
 
-## Core Features
+## Core Features & Technical Architecture
 
-- **Non-Invasive Verification**: Utilises a sophisticated client-side behavioural analysis engine (measuring mouse linearity, speed variance, and keystroke dynamics) instead of relying on frustrating, interruptive image puzzles.
-- **AI-Powered Bot Detection**: Deploys highly optimised, locally run ONNX machine-learning models (Phase 2 integration) to reliably distinguish humans from procedural bots using abstract behavioural variance—ensuring no sensitive data ever leaves your server.
-- **Zero-Click Operation**: Absolutely no active user interaction is explicitly required. The complex mathematical verification happens silently in the background whilst the user naturally browses your application.
-- **Privacy-First Architecture**: Completely GDPR and POPIA (South Africa) compliant by design. We utilise zero invasive tracking mechanics and absolutely no persistent device fingerprinting.
-- **Ultra-Lightweight Sensor**: The highly optimised JavaScript client component weighs in at strictly <20kb, remaining accessible to all developers via an incredibly simple, framework-agnostic API.
-- **High-Performance Infrastructure**: A blistering Rust-based backend engineered specifically for high concurrent throughput, minimal latency, and absolute memory safety.
-- **Federated Threat Intelligence**: (Phase 3) A fully decentralised peer-to-peer network where participating nodes securely share anonymised mathematical threat signatures to ensure collective immunity.
+- **Non-Invasive Verification Array**: Utilises a sophisticated client-side behavioural analysis engine that dynamically measures mouse movement linearity, cursor speed variance, and keystroke flight dynamics, entirely replacing frustrating image puzzles.
+- **AI-Powered Local Inference**: Deploys highly optimised, locally run ONNX machine-learning models (Phase 2 integration, powered by `ort` and `ndarray`) to reliably distinguish humans from procedural bots using abstract behavioural variance—ensuring absolutely no sensitive telemetry ever leaves your sovereign server.
+- **Zero-Click Operation**: Absolutely no active user interaction is explicitly required. The complex mathematical verification executes silently in the background whilst the user organically browses your application.
+- **Cryptographic Proof-of-Work**: To aggressively deter script kiddies and massive automated DDoS attempts, the client optionally computes a mathematical Proof-of-Work (PoW) challenge prior to payload transmission.
+- **Ultra-Lightweight Sensor**: The highly optimised JavaScript client component weighs in at strictly <20kb and dynamically encrypts payloads, remaining securely accessible to all developers via an incredibly simple, framework-agnostic API.
+- **High-Performance Infrastructure**: A blistering Rust and Actix-web based backend meticulously engineered specifically for high concurrent throughput, minimal latency, and absolute memory safety.
+- **Federated Threat Intelligence**: (Phase 3) A fully decentralised peer-to-peer network where participating nodes securely share anonymised mathematical threat signatures asynchronously to ensure collective immunity without relying on corporate CDNs.
 
-## Installation
+## Regulatory Compliance & Data Protection
+
+OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with the most stringent global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
+
+- **Zero Personally Identifiable Information (PII):** We categorically never collect IP addresses or browser fingerprints.
+- **Strict Data Minimisation:** We only measure abstract mathematical variance (e.g., speed, linearity), completely avoiding personal profiling.
+- **No Cross-Site Tracking:** We fundamentally reject tracking cookies and shared identifiers.
+
+## Implementation Manual (Alpha/Beta Testing)
+
+We are actively seeking Alpha and Beta testers to help refine the OpenSentinel ecosystem.
 
 ### Prerequisites
 
 - Rust (latest stable)
-- ONNX Runtime dependencies (automatically managed by `ort` crate on most systems, but requires build tools)
+- ONNX Runtime dependencies (automatically managed by the `ort` crate on most systems, but requires standard build tools)
 
-### Backend
+### Step 1: Deploy the Sovereign Backend
 
-1. Navigate to `server/`
-2. Run `cargo run`
+1. Navigate to the `server/` directory.
+2. Build and run the highly-optimised Rust service:
+   ```bash
+   cargo build --release
+   cargo run --release
+   ```
+3. *(Optional)* Configure your `.env` file to join the decentralised federated network:
+   ```env
+   FEDERATION_ENABLED=true
+   TRUSTED_PEERS=https://node1.opensentinel.org
+   ```
 
-### Frontend
+### Step 2: Integrate the Frontend Sensor
 
-1. Include the `client/src/sensor.js` in your HTML.
-2. Initialize the sensor.
+1. Include the ultra-lightweight `client/src/sensor.js` directly into your web application HTML.
+2. Initialise the sensor with advanced network awareness.
 
 ```html
 <script src="sensor.js"></script>
 <script>
-  OpenSentinel.init({ endpoint: '/verify' });
+  OpenSentinel.init({
+      endpoints: ['https://api.yourdomain.com/verify', 'https://fallback.trust-node.com/verify'],
+      enablePoW: true,
+      onSuccess: function(token) { console.log('Human verified successfully.'); },
+      onFailure: function() { console.warn('Automated bot behaviour detected.'); }
+  });
 </script>
 ```
+
+## Open-Source Community & Governance
+
+Much like the foundational pillars of the open internet (such as Linux or Mozilla), OpenSentinel thrives on radical transparency and community collaboration.
+
+- **Contributing:** We actively encourage developers, security researchers, and data scientists to thoroughly audit our codebase and submit intricate pull requests.
+- **Governance:** All major architectural decisions are openly documented and heavily debated within public GitHub issues to ensure the project remains truly community-driven.
 
 ## Validation & Testing
 

@@ -1,0 +1,7 @@
+127.0.0.1 - - [19/May/2026 15:45:28] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:28] "GET /assets/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:28] "GET /assets/js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:28] "GET /assets/images/logo.png HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:32] "GET /demo.html HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:32] "GET /assets/js/sensor.js HTTP/1.1" 200 -
+127.0.0.1 - - [19/May/2026 15:45:32] "GET /assets/css/demo.css HTTP/1.1" 200 -

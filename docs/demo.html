@@ -24,18 +24,38 @@
             <h1>OpenSentinel</h1>
             <p class="subtitle">Non-invasive, privacy-first behavioural verification.</p>
 
-            <div class="demo-explanation" style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; color: #ccc; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <strong style="color: var(--accent-primary); display: block; margin-bottom: 0.5rem;">How this demo works:</strong>
-                This is a simulated client-side port of our Rust backend logic. As you interact with this page naturally, our lightweight sensor dynamically measures your <em>mouse movement linearity</em>, <em>cursor speed variance</em>, and <em>keystroke flight dynamics</em>. We do not track your identity—we simply mathematically verify the organic imperfection of human behaviour versus the rigid precision of automated bots. Try moving your mouse naturally and typing a short phrase below.
+            <div class="demo-explanation" style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; text-align: left; font-size: 1rem; color: #ccc; border: 1px solid rgba(255, 255, 255, 0.1); line-height: 1.6;">
+                <strong style="color: var(--accent-primary); display: block; margin-bottom: 1rem; font-size: 1.2rem;">Understanding the Mechanics Behind the Magic</strong>
+                <p style="margin-bottom: 1rem;">This interactive demonstration serves as a live, client-side simulation of our sophisticated Rust backend logic. From the moment you load this page, our ultra-lightweight sensor meticulously and silently observes your organic interaction patterns.</p>
+
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li style="margin-bottom: 0.5rem;"><strong>Mouse Movement Linearity:</strong> We mathematically analyse the trajectory of your cursor. Bots move in perfect, computationally generated straight lines. Humans inherently possess slight tremors and micro-curves.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Cursor Speed Variance:</strong> We continually calculate the acceleration and deceleration of your movements. Automated scripts typically operate at a constant velocity or utilise highly predictable, robotic easing functions. Humans accelerate and decelerate with natural irregularity.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Keystroke Flight Dynamics:</strong> We precisely measure the specific intervals between individual key presses. The natural rhythm of human typing is fundamentally unique and completely impossible for standard automated bots to replicate accurately.</li>
+                </ul>
+
+                <p style="margin-bottom: 1rem;">Crucially, <strong>we absolutely do not track your identity, fingerprint your device, or store any personally identifiable information.</strong> We are purely calculating the statistical variance of your abstract behaviour in real-time. This ensures absolute compliance with stringent data protection regulations whilst completely eliminating the need for frustrating puzzles.</p>
+
+                <p><strong>Try it yourself:</strong> Move your mouse naturally across the screen and type a short, organic phrase into the input box below. Then, click the verification button to observe the real-time behavioural analysis score.</p>
             </div>
 
             <div class="input-group">
-                <input type="text" placeholder="Type something to prove humanity..." id="testInput">
+                <input type="text" placeholder="Type a natural phrase to prove your humanity..." id="testInput">
             </div>
 
-            <button id="verifyBtn">Verify Humanity</button>
+            <button id="verifyBtn">Analyse Behaviour</button>
 
             <div id="result"></div>
+
+            <div class="demo-cta" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.1rem;">Join the OpenSentinel Ecosystem</h3>
+                <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 1.5rem;">If you believe in a private, seamless web free from corporate AI training puzzles, your participation is vital. Whether you are a developer looking to integrate, an investor seeking to fund digital sovereignty, or an open-source contributor ready to write Rust code, we need your expertise.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="index.html#install" class="btn primary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Integrate Now</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="btn secondary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Contribute Code</a>
+                    <a href="https://buymeacoffee.com/azanianeagle" target="_blank" rel="noopener noreferrer" class="btn secondary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; border-color: #ffbd2e; color: #ffbd2e;">Support the Project</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -100,7 +120,7 @@
         // Initialize OpenSentinel
         OpenSentinel.init({ endpoint: '/verify' });
 
-        // Ported from server/src/main.rs (Behavior Analysis Logic)
+        // Ported from server/src/main.rs (Behaviour Analysis Logic)
         function verifyData(mouseEvents, keyEvents) {
             let score = 0.0;
 
@@ -111,8 +131,8 @@
 
             // 2. Mouse Movement Analysis
             if (mouseEvents.length > 10) {
-                const linearityScore = analyzeMouseLinearity(mouseEvents);
-                const speedScore = analyzeMouseSpeed(mouseEvents);
+                const linearityScore = analyseMouseLinearity(mouseEvents);
+                const speedScore = analyseMouseSpeed(mouseEvents);
 
                 score += linearityScore * 0.4;
                 score += speedScore * 0.2;
@@ -122,7 +142,7 @@
 
             // 3. Keystroke Dynamics
             if (keyEvents.length > 0) {
-                const keystrokeScore = analyzeKeystrokes(keyEvents);
+                const keystrokeScore = analyseKeystrokes(keyEvents);
                 score += keystrokeScore * 0.4;
             } else {
                 if (score > 0.5) {
@@ -141,7 +161,7 @@
             return { passed, score, message };
         }
 
-        function analyzeMouseLinearity(events) {
+        function analyseMouseLinearity(events) {
             if (events.length < 3) return 1.0;
 
             const start = events[0];
@@ -167,7 +187,7 @@
             return 1.0;
         }
 
-        function analyzeMouseSpeed(events) {
+        function analyseMouseSpeed(events) {
             let variances = [];
             let totalSpeed = 0.0;
             let count = 0;
@@ -200,7 +220,7 @@
             return 1.0;
         }
 
-        function analyzeKeystrokes(events) {
+        function analyseKeystrokes(events) {
             if (events.length < 2) return 0.5;
 
             let intervals = [];
@@ -225,7 +245,7 @@
         OpenSentinel.verify = async function() {
              await new Promise(r => setTimeout(r, 1500)); // Network delay simulation
 
-             // Analyze the actual captured data
+             // Analyse the actual captured data
              // mouseEvents: [[x, y, ts], ...]
              // keyEvents: [[code, ts], ...]
              const result = verifyData(this.mouseEvents, this.keyEvents);

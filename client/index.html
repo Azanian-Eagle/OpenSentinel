@@ -49,7 +49,10 @@
         });
 
         // Initialize OpenSentinel
-        OpenSentinel.init({ endpoint: '/verify' });
+        OpenSentinel.init({
+            endpoint: '/verify',
+            enablePoW: true
+        });
 
         const btn = document.getElementById('verifyBtn');
         const resultDiv = document.getElementById('result');

@@ -1,15 +1,15 @@
 mod ml;
 
-use actix_files as fs;
-use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
-use serde::{Deserialize, Serialize};
 use actix_cors::Cors;
+use actix_files as fs;
 use actix_web::HttpRequest;
+use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use std::collections::HashSet;
 use std::env;
 use std::sync::Mutex;
-use std::collections::HashSet;
-use sha2::{Sha256, Digest};
 use std::time::Duration;
 
 // Rate limiting, Replay protection, and Federation state
@@ -71,30 +71,44 @@ fn verify_pow(pow: &PoWData) -> bool {
 async fn verify(
     req: HttpRequest,
     encoded_data: web::Json<EncodedVerifyRequest>,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
 ) -> impl Responder {
-    let client_ip = req.peer_addr().map(|a| a.ip().to_string()).unwrap_or_else(|| "unknown".into());
+    let client_ip = req
+        .peer_addr()
+        .map(|a| a.ip().to_string())
+        .unwrap_or_else(|| "unknown".into());
 
     // 1. Decode Payload
-    let decoded_bytes = match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &encoded_data.data) {
+    let decoded_bytes = match base64::Engine::decode(
+        &base64::engine::general_purpose::STANDARD,
+        &encoded_data.data,
+    ) {
         Ok(b) => b,
-        Err(_) => return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Invalid payload encoding.".into(),
-        }),
+        Err(_) => {
+            return HttpResponse::BadRequest().json(VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Invalid payload encoding.".into(),
+            })
+        }
     };
 
     let data: RawVerifyRequest = match serde_json::from_slice(&decoded_bytes) {
         Ok(d) => d,
-        Err(_) => return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Invalid payload structure.".into(),
-        }),
+        Err(_) => {
+            return HttpResponse::BadRequest().json(VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Invalid payload structure.".into(),
+            })
+        }
     };
 
-    log::info!("Received verification request from IP: {}, UA: {}", client_ip, data.user_agent);
+    log::info!(
+        "Received verification request from IP: {}, UA: {}",
+        client_ip,
+        data.user_agent
+    );
 
     // 2. Replay Protection (Nonce & Timestamp)
     let current_time = std::time::SystemTime::now()
@@ -102,7 +116,8 @@ async fn verify(
         .unwrap()
         .as_millis() as i64;
 
-    if (current_time - data.timestamp).abs() > 300_000 { // 5 minutes window
+    if (current_time - data.timestamp).abs() > 300_000 {
+        // 5 minutes window
         return HttpResponse::BadRequest().json(VerifyResponse {
             score: 0.0,
             passed: false,
@@ -110,31 +125,45 @@ async fn verify(
         });
     }
 
-    if let Some(pow) = &data.pow {
-        let nonce_key = format!("{}-{}", pow.prefix, pow.nonce);
-        let mut seen = state.seen_nonces.lock().unwrap();
-        if seen.contains(&nonce_key) {
+    let pow = match &data.pow {
+        Some(p) => p,
+        None => {
             return HttpResponse::BadRequest().json(VerifyResponse {
                 score: 0.0,
                 passed: false,
-                message: "Replay attack detected.".into(),
+                message: "Missing Proof of Work.".into(),
             });
         }
-        seen.insert(nonce_key);
+    };
 
-        // Prevent set from growing indefinitely in memory
-        if seen.len() > 10000 {
-            seen.clear();
-        }
+    let nonce_key = format!("{}-{}", pow.prefix, pow.nonce);
+    let mut seen = state.seen_nonces.lock().unwrap();
+    if seen.contains(&nonce_key) {
+        return HttpResponse::BadRequest().json(VerifyResponse {
+            score: 0.0,
+            passed: false,
+            message: "Replay attack detected.".into(),
+        });
+    }
+    seen.insert(nonce_key);
 
-        // 3. Verify Proof of Work
-        if !verify_pow(pow) {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Invalid Proof of Work.".into(),
-            });
+    // Prevent set from growing indefinitely in memory
+    // A better approach would be to use a TTL cache (e.g. moka)
+    // For now, we drain a portion to prevent completely wiping the history at once
+    if seen.len() > 10000 {
+        let keys_to_remove: Vec<String> = seen.iter().take(5000).cloned().collect();
+        for key in keys_to_remove {
+            seen.remove(&key);
         }
+    }
+
+    // 3. Verify Proof of Work
+    if !verify_pow(pow) {
+        return HttpResponse::BadRequest().json(VerifyResponse {
+            score: 0.0,
+            passed: false,
+            message: "Invalid Proof of Work.".into(),
+        });
     }
 
     // 4. Calculate Score
@@ -191,25 +220,31 @@ async fn verify(
 // Endpoint to receive threat intelligence from federated peers
 async fn receive_threat_intel(
     intel: web::Json<ThreatIntelPayload>,
-    req: HttpRequest,
-    state: web::Data<AppState>
+    _req: HttpRequest,
+    state: web::Data<AppState>,
 ) -> impl Responder {
     if !state.federation_enabled {
         return HttpResponse::Forbidden().body("Federation is disabled on this node");
     }
 
-    // 1. IP Validation
-    let peer_ip = req.peer_addr().map(|a| a.ip().to_string()).unwrap_or_else(|| "unknown".into());
-    let mut is_trusted_ip = false;
+    // 1. Peer Validation
+    // We validate that the incoming source node matches one of our trusted peers.
+    let mut is_trusted = false;
     for trusted_peer in &state.trusted_peers {
-        if trusted_peer.contains(&peer_ip) {
-            is_trusted_ip = true;
+        // Simple string matching is insufficient if using IP vs Domain.
+        // In a real system, we'd resolve domains or rely purely on cryptographic signatures.
+        // For this prototype, we check if the declared source_node is in our trusted list.
+        if trusted_peer == &intel.source_node {
+            is_trusted = true;
             break;
         }
     }
 
-    if !is_trusted_ip && !state.trusted_peers.is_empty() {
-        log::warn!("Rejected threat intel from untrusted IP: {}", peer_ip);
+    if !is_trusted && !state.trusted_peers.is_empty() {
+        log::warn!(
+            "Rejected threat intel from untrusted source: {}",
+            intel.source_node
+        );
         return HttpResponse::Forbidden().json(VerifyResponse {
             score: 0.0,
             passed: false,
@@ -219,7 +254,10 @@ async fn receive_threat_intel(
 
     // 2. Data Validation
     if intel.score > 0.7 || intel.anonymized_signature.is_empty() {
-        log::warn!("Rejected invalid threat intel payload from {}", intel.source_node);
+        log::warn!(
+            "Rejected invalid threat intel payload from {}",
+            intel.source_node
+        );
         return HttpResponse::BadRequest().json(VerifyResponse {
             score: 0.0,
             passed: false,
@@ -231,8 +269,12 @@ async fn receive_threat_intel(
     // In a production environment, we verify a cryptographic signature (e.g., ECDSA or Ed25519) from the peer here.
     let _simulated_crypto_signature_verification = true;
 
-    log::info!("Ingesting validated threat intelligence from {}: Signature {} with score {}",
-        intel.source_node, intel.anonymized_signature, intel.score);
+    log::info!(
+        "Ingesting validated threat intelligence from {}: Signature {} with score {}",
+        intel.source_node,
+        intel.anonymized_signature,
+        intel.score
+    );
 
     // Write to a local threat intelligence database for model retraining
     if let Err(e) = std::fs::OpenOptions::new()
@@ -241,7 +283,11 @@ async fn receive_threat_intel(
         .open("threat_intel.log")
         .and_then(|mut f| {
             use std::io::Write;
-            writeln!(f, "{},{},{},{}", intel.timestamp, intel.source_node, intel.anonymized_signature, intel.score)
+            writeln!(
+                f,
+                "{},{},{},{}",
+                intel.timestamp, intel.source_node, intel.anonymized_signature, intel.score
+            )
         })
     {
         log::error!("Failed to write threat intel to disk: {}", e);
@@ -371,12 +417,16 @@ async fn main() -> std::io::Result<()> {
     let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
     let address = format!("0.0.0.0:{}", port);
 
-    let federation_enabled = env::var("FEDERATION_ENABLED").unwrap_or_else(|_| "false".to_string()) == "true";
+    let federation_enabled =
+        env::var("FEDERATION_ENABLED").unwrap_or_else(|_| "false".to_string()) == "true";
     let trusted_peers_env = env::var("TRUSTED_PEERS").unwrap_or_else(|_| "".to_string());
     let trusted_peers: Vec<String> = if trusted_peers_env.is_empty() {
         Vec::new()
     } else {
-        trusted_peers_env.split(',').map(|s| s.trim().to_string()).collect()
+        trusted_peers_env
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .collect()
     };
 
     let app_state = web::Data::new(AppState {
@@ -391,7 +441,10 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Starting OpenSentinel server at http://{}", address);
     if federation_enabled {
-        log::info!("Federation ENABLED. Trusted peers: {}", app_state.trusted_peers.len());
+        log::info!(
+            "Federation ENABLED. Trusted peers: {}",
+            app_state.trusted_peers.len()
+        );
     }
 
     HttpServer::new(move || {
@@ -406,7 +459,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(middleware::Logger::default())
             .service(web::resource("/verify").route(web::post().to(verify)))
-            .service(web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)))
+            .service(
+                web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
+            )
             // Serve static files from the client directory
             .service(fs::Files::new("/", "../client").index_file("index.html"))
     })

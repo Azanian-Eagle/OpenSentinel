@@ -4,17 +4,20 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::HttpRequest;
 use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
+use aes_gcm::{
+    aead::{Aead, KeyInit},
+    Aes256Gcm, Nonce,
+};
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 use std::collections::HashSet;
 use std::env;
+use std::io::Read;
 use std::sync::Mutex;
 use std::time::Duration;
-use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, Verifier};
-use std::collections::HashMap;
-use aes_gcm::{aead::{Aead, KeyInit}, Aes256Gcm, Nonce};
-use std::io::Read;
 
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
@@ -224,7 +227,10 @@ async fn verify(
         let anonymized_signature = hex::encode(hasher.finalize());
 
         let source_node = env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into());
-        let payload_str = format!("{}_{}_{}_{}", anonymized_signature, score, current_time, source_node);
+        let payload_str = format!(
+            "{}_{}_{}_{}",
+            anonymized_signature, score, current_time, source_node
+        );
 
         let signature = state.node_signing_key.as_ref().map(|key| {
             let sig = key.sign(payload_str.as_bytes());
@@ -284,7 +290,8 @@ async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
     }
 
     // Convert the [u8; 32] array into a comma-separated string
-    let key_string = state.payload_secret_key
+    let key_string = state
+        .payload_secret_key
         .iter()
         .map(|b| b.to_string())
         .collect::<Vec<String>>()
@@ -311,7 +318,10 @@ async fn receive_threat_intel(
     let peer_pubkey_opt = state.trusted_peers.get(&intel.source_node);
 
     if peer_pubkey_opt.is_none() && !state.trusted_peers.is_empty() {
-        log::warn!("Rejected threat intel from untrusted source: {}", intel.source_node);
+        log::warn!(
+            "Rejected threat intel from untrusted source: {}",
+            intel.source_node
+        );
         return HttpResponse::Forbidden().json(VerifyResponse {
             score: 0.0,
             passed: false,
@@ -356,9 +366,15 @@ async fn receive_threat_intel(
             }
         };
 
-        let payload_str = format!("{}_{}_{}_{}", intel.anonymized_signature, intel.score, intel.timestamp, intel.source_node);
+        let payload_str = format!(
+            "{}_{}_{}_{}",
+            intel.anonymized_signature, intel.score, intel.timestamp, intel.source_node
+        );
         if pubkey.verify(payload_str.as_bytes(), &signature).is_err() {
-            log::warn!("Cryptographic signature verification failed for peer: {}", intel.source_node);
+            log::warn!(
+                "Cryptographic signature verification failed for peer: {}",
+                intel.source_node
+            );
             return HttpResponse::Forbidden().json(VerifyResponse {
                 score: 0.0,
                 passed: false,
@@ -531,12 +547,19 @@ async fn main() -> std::io::Result<()> {
     let federation_enabled =
         env::var("FEDERATION_ENABLED").unwrap_or_else(|_| "false".to_string()) == "true";
     let trusted_peers_env = env::var("TRUSTED_PEERS").unwrap_or_else(|_| "".to_string());
-    let trusted_peers_keys_env = env::var("TRUSTED_PEERS_PUBKEYS").unwrap_or_else(|_| "".to_string());
+    let trusted_peers_keys_env =
+        env::var("TRUSTED_PEERS_PUBKEYS").unwrap_or_else(|_| "".to_string());
 
     let mut trusted_peers = HashMap::new();
     if !trusted_peers_env.is_empty() {
-        let peers: Vec<String> = trusted_peers_env.split(',').map(|s| s.trim().to_string()).collect();
-        let pubkeys: Vec<String> = trusted_peers_keys_env.split(',').map(|s| s.trim().to_string()).collect();
+        let peers: Vec<String> = trusted_peers_env
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .collect();
+        let pubkeys: Vec<String> = trusted_peers_keys_env
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .collect();
 
         for (i, peer) in peers.iter().enumerate() {
             let pubkey = if i < pubkeys.len() && !pubkeys[i].is_empty() {
@@ -575,12 +598,18 @@ async fn main() -> std::io::Result<()> {
                 key
             } else {
                 log::warn!("PAYLOAD_SECRET_KEY must be a 64-character hex string (32 bytes). Falling back to default insecure key.");
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+                [
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                    23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                ]
             }
         }
         Err(_) => {
             log::warn!("PAYLOAD_SECRET_KEY environment variable not set. Falling back to default insecure key. DO NOT USE IN PRODUCTION.");
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+            [
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                24, 25, 26, 27, 28, 29, 30, 31, 32,
+            ]
         }
     };
 
@@ -605,7 +634,9 @@ async fn main() -> std::io::Result<()> {
         if app_state.node_signing_key.is_some() {
             log::info!("Node cryptographic signing is ENABLED.");
         } else {
-            log::warn!("Node cryptographic signing is DISABLED (NODE_PRIVATE_KEY not set or invalid).");
+            log::warn!(
+                "Node cryptographic signing is DISABLED (NODE_PRIVATE_KEY not set or invalid)."
+            );
         }
     }
 

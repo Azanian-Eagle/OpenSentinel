@@ -71,6 +71,8 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
    TRUSTED_PEERS_PUBKEYS=80b91e92c2193b2bb08a1cbcc7e9d77f864e7dbde406d289dc6c8736e149f12d
    # Your own Node's hex-encoded Ed25519 private key for signing outgoing threat intel
    NODE_PRIVATE_KEY=your_private_key_hex
+   # 64-character hex string representing the 32-byte AES-GCM payload encryption key
+   PAYLOAD_SECRET_KEY=0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
    ```
 
 ### Step 2: Integrate the Frontend Sensor

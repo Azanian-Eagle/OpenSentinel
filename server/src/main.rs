@@ -14,6 +14,7 @@ use std::time::Duration;
 use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, Verifier};
 use std::collections::HashMap;
 use aes_gcm::{aead::{Aead, KeyInit}, Aes256Gcm, Nonce};
+use std::io::Read;
 
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
@@ -22,6 +23,7 @@ struct AppState {
     federation_enabled: bool,
     http_client: Client,
     node_signing_key: Option<SigningKey>,
+    payload_secret_key: [u8; 32],
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -121,13 +123,7 @@ async fn verify(
         });
     }
 
-    // Derived symmetric key (matching client side)
-    let raw_key = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-    ];
-
-    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&raw_key);
+    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
     let cipher = Aes256Gcm::new(key);
     let nonce = Nonce::from_slice(&iv_bytes);
 
@@ -273,6 +269,32 @@ async fn verify(
         passed,
         message: message.to_string(),
     })
+}
+
+// Serve sensor.js and dynamically inject the symmetric key
+async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
+    let mut file = match std::fs::File::open("../client/src/sensor.js") {
+        Ok(f) => f,
+        Err(_) => return HttpResponse::InternalServerError().body("Sensor script not found"),
+    };
+
+    let mut contents = String::new();
+    if file.read_to_string(&mut contents).is_err() {
+        return HttpResponse::InternalServerError().body("Failed to read sensor script");
+    }
+
+    // Convert the [u8; 32] array into a comma-separated string
+    let key_string = state.payload_secret_key
+        .iter()
+        .map(|b| b.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+
+    let injected_contents = contents.replace("__OPEN_SENTINEL_SECRET_KEY__", &key_string);
+
+    HttpResponse::Ok()
+        .content_type("application/javascript")
+        .body(injected_contents)
 }
 
 // Endpoint to receive threat intelligence from federated peers
@@ -544,6 +566,24 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
+    let payload_secret_key = match env::var("PAYLOAD_SECRET_KEY") {
+        Ok(val) => {
+            let mut key = [0u8; 32];
+            let bytes = hex::decode(&val).unwrap_or_else(|_| Vec::new());
+            if bytes.len() == 32 {
+                key.copy_from_slice(&bytes);
+                key
+            } else {
+                log::warn!("PAYLOAD_SECRET_KEY must be a 64-character hex string (32 bytes). Falling back to default insecure key.");
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+            }
+        }
+        Err(_) => {
+            log::warn!("PAYLOAD_SECRET_KEY environment variable not set. Falling back to default insecure key. DO NOT USE IN PRODUCTION.");
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+        }
+    };
+
     let app_state = web::Data::new(AppState {
         seen_nonces: Mutex::new(HashSet::new()),
         trusted_peers,
@@ -553,6 +593,7 @@ async fn main() -> std::io::Result<()> {
             .build()
             .unwrap(),
         node_signing_key,
+        payload_secret_key,
     });
 
     log::info!("Starting OpenSentinel server at http://{}", address);
@@ -583,6 +624,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
             )
+            .service(web::resource("/src/sensor.js").route(web::get().to(serve_sensor_js)))
             // Serve static files from the client directory
             .service(fs::Files::new("/", "../client").index_file("index.html"))
     })

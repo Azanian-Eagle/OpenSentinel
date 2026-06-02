@@ -83,12 +83,21 @@
 
         // Helper to encrypt the payload using AES-GCM and a shared key
         encryptPayload: async function(plainText) {
-            // For production, the key would be rotated and securely injected.
-            // We use a predefined derived symmetric key for the purpose of this beta implementation.
-            const rawKey = new Uint8Array([
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-            ]);
+            // The key is dynamically injected by the server at runtime.
+            // DO NOT modify the __OPEN_SENTINEL_SECRET_KEY__ placeholder below manually.
+            const injectedKeyString = "__OPEN_SENTINEL_SECRET_KEY__";
+
+            let rawKey;
+            // Fallback for local development if not injected (not recommended for prod)
+            if (injectedKeyString === "__OPEN" + "_SENTINEL_SECRET_KEY__") {
+                rawKey = new Uint8Array([
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+                ]);
+            } else {
+                // Parse the comma-separated injected key
+                rawKey = new Uint8Array(injectedKeyString.split(',').map(Number));
+            }
 
             const key = await crypto.subtle.importKey(
                 "raw",

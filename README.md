@@ -34,7 +34,7 @@ OpenSentinel entirely shifts this paradigm. **Our absolute killer feature is tha
 - **AI-Powered Local Inference**: Deploys highly optimised, locally run ONNX machine-learning models (Phase 2 integration, powered by `ort` and `ndarray`) to reliably distinguish humans from procedural bots using abstract behavioural variance—ensuring absolutely no sensitive telemetry ever leaves your sovereign server.
 - **Zero-Click Operation**: Absolutely no active user interaction is explicitly required. The complex mathematical verification executes silently in the background whilst the user organically browses your application.
 - **Cryptographic Proof-of-Work**: To aggressively deter script kiddies and massive automated DDoS attempts, the client optionally computes a mathematical Proof-of-Work (PoW) challenge prior to payload transmission.
-- **Ultra-Lightweight Sensor**: The highly optimised JavaScript client component weighs in at strictly <20kb and dynamically encrypts payloads, remaining securely accessible to all developers via an incredibly simple, framework-agnostic API.
+- **Ultra-Lightweight Sensor**: The highly optimised JavaScript client component weighs in at strictly <20kb and dynamically encrypts payloads via robust AES-GCM encryption, remaining securely accessible to all developers via an incredibly simple, framework-agnostic API.
 - **High-Performance Infrastructure**: A blistering Rust and Actix-web based backend meticulously engineered specifically for high concurrent throughput, minimal latency, and absolute memory safety.
 - **Federated Threat Intelligence**: (Phase 3) A fully decentralised peer-to-peer network where participating nodes securely share anonymised mathematical threat signatures asynchronously to ensure collective immunity without relying on corporate CDNs.
 
@@ -67,6 +67,12 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
    ```env
    FEDERATION_ENABLED=true
    TRUSTED_PEERS=https://node1.opensentinel.org
+   # Hex-encoded Ed25519 public keys of trusted peers for signature validation
+   TRUSTED_PEERS_PUBKEYS=80b91e92c2193b2bb08a1cbcc7e9d77f864e7dbde406d289dc6c8736e149f12d
+   # Your own Node's hex-encoded Ed25519 private key for signing outgoing threat intel
+   NODE_PRIVATE_KEY=your_private_key_hex
+   # 64-character hex string representing the 32-byte AES-GCM payload encryption key
+   PAYLOAD_SECRET_KEY=0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
    ```
 
 ### Step 2: Integrate the Frontend Sensor
@@ -78,7 +84,11 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
 <script src="sensor.js"></script>
 <script>
   OpenSentinel.init({
-      endpoints: ['https://api.yourdomain.com/verify', 'https://fallback.trust-node.com/verify'],
+      endpoints: [
+          'https://api.yourdomain.com/verify',
+          'https://node1.opensentinel.org/verify', // Public Fallback Node
+          'https://node2.opensentinel.org/verify'
+      ],
       enablePoW: true,
       onSuccess: function(token) { console.log('Human verified successfully.'); },
       onFailure: function() { console.warn('Automated bot behaviour detected.'); }

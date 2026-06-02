@@ -1,6 +1,10 @@
 (function(global) {
     const OpenSentinel = {
-        endpoints: ['/verify'], // Array of endpoints for high availability
+        endpoints: [
+            '/verify',
+            'https://node1.opensentinel.org/verify',
+            'https://node2.opensentinel.org/verify'
+        ], // Array of endpoints for high availability
         mouseEvents: [],
         keyEvents: [],
         maxEvents: 50, // Keep it lightweight
@@ -77,13 +81,64 @@
             }
         },
 
+        // Helper to encrypt the payload using AES-GCM and a shared key
+        encryptPayload: async function(plainText) {
+            // The key is dynamically injected by the server at runtime.
+            // DO NOT modify the __OPEN_SENTINEL_SECRET_KEY__ placeholder below manually.
+            const injectedKeyString = "__OPEN_SENTINEL_SECRET_KEY__";
+
+            let rawKey;
+            // Fallback for local development if not injected (not recommended for prod)
+            if (injectedKeyString === "__OPEN" + "_SENTINEL_SECRET_KEY__") {
+                rawKey = new Uint8Array([
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+                ]);
+            } else {
+                // Parse the comma-separated injected key
+                rawKey = new Uint8Array(injectedKeyString.split(',').map(Number));
+            }
+
+            const key = await crypto.subtle.importKey(
+                "raw",
+                rawKey,
+                { name: "AES-GCM" },
+                false,
+                ["encrypt"]
+            );
+
+            // Generate a random IV
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const encoder = new TextEncoder();
+            const encodedText = encoder.encode(plainText);
+
+            const cipherBuffer = await crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                encodedText
+            );
+
+            const cipherBytes = new Uint8Array(cipherBuffer);
+
+            // Convert to base64 for transport
+            const ivBase64 = btoa(String.fromCharCode.apply(null, iv));
+            const cipherBase64 = btoa(String.fromCharCode.apply(null, cipherBytes));
+
+            return {
+                iv: ivBase64,
+                ciphertext: cipherBase64
+            };
+        },
+
         verify: async function() {
             let pow = null;
             if (this.enablePoW) {
                 pow = await this.generatePoW();
             }
 
-            // Simple payload obfuscation (Base64) to prevent trivial tampering by script kiddies
             const rawPayload = {
                 mouse_events: this.mouseEvents,
                 key_events: this.keyEvents,
@@ -92,8 +147,12 @@
                 pow: pow
             };
 
+            // AES-GCM Encrypt the payload for secure transport
+            const encryptedData = await this.encryptPayload(JSON.stringify(rawPayload));
+
             const payload = {
-                data: btoa(JSON.stringify(rawPayload))
+                data: encryptedData.ciphertext,
+                iv: encryptedData.iv
             };
 
             let lastError = null;

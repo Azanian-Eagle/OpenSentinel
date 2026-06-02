@@ -4,20 +4,29 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::HttpRequest;
 use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
+use aes_gcm::{
+    aead::{Aead, KeyInit},
+    Aes256Gcm, Nonce,
+};
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 use std::collections::HashSet;
 use std::env;
+use std::io::Read;
 use std::sync::Mutex;
 use std::time::Duration;
 
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
     seen_nonces: Mutex<HashSet<String>>,
-    trusted_peers: Vec<String>,
+    trusted_peers: HashMap<String, Option<VerifyingKey>>, // Peer domain -> Optional Public Key
     federation_enabled: bool,
     http_client: Client,
+    node_signing_key: Option<SigningKey>,
+    payload_secret_key: [u8; 32],
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,12 +35,14 @@ struct ThreatIntelPayload {
     score: f64,
     timestamp: i64,
     source_node: String,
+    signature: Option<String>, // Hex-encoded ed25519 signature
 }
 
 // Client Obfuscated Payload
 #[derive(Deserialize, Debug)]
 struct EncodedVerifyRequest {
     data: String,
+    iv: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -78,8 +89,8 @@ async fn verify(
         .map(|a| a.ip().to_string())
         .unwrap_or_else(|| "unknown".into());
 
-    // 1. Decode Payload
-    let decoded_bytes = match base64::Engine::decode(
+    // 1. Decode and Decrypt Payload
+    let cipher_bytes = match base64::Engine::decode(
         &base64::engine::general_purpose::STANDARD,
         &encoded_data.data,
     ) {
@@ -88,12 +99,49 @@ async fn verify(
             return HttpResponse::BadRequest().json(VerifyResponse {
                 score: 0.0,
                 passed: false,
-                message: "Invalid payload encoding.".into(),
+                message: "Invalid data encoding.".into(),
             })
         }
     };
 
-    let data: RawVerifyRequest = match serde_json::from_slice(&decoded_bytes) {
+    let iv_bytes = match base64::Engine::decode(
+        &base64::engine::general_purpose::STANDARD,
+        &encoded_data.iv,
+    ) {
+        Ok(b) => b,
+        Err(_) => {
+            return HttpResponse::BadRequest().json(VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Invalid IV encoding.".into(),
+            })
+        }
+    };
+
+    if iv_bytes.len() != 12 {
+        return HttpResponse::BadRequest().json(VerifyResponse {
+            score: 0.0,
+            passed: false,
+            message: "Invalid IV length.".into(),
+        });
+    }
+
+    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
+    let cipher = Aes256Gcm::new(key);
+    let nonce = Nonce::from_slice(&iv_bytes);
+
+    let decrypted_bytes = match cipher.decrypt(nonce, cipher_bytes.as_ref()) {
+        Ok(b) => b,
+        Err(_) => {
+            return HttpResponse::BadRequest().json(VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Failed to decrypt payload.".into(),
+            })
+        }
+    };
+
+    let data: RawVerifyRequest = match serde_json::from_slice(&decrypted_bytes) {
         Ok(d) => d,
         Err(_) => {
             return HttpResponse::BadRequest().json(VerifyResponse {
@@ -178,14 +226,26 @@ async fn verify(
         hasher.update(features.as_bytes());
         let anonymized_signature = hex::encode(hasher.finalize());
 
+        let source_node = env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into());
+        let payload_str = format!(
+            "{}_{}_{}_{}",
+            anonymized_signature, score, current_time, source_node
+        );
+
+        let signature = state.node_signing_key.as_ref().map(|key| {
+            let sig = key.sign(payload_str.as_bytes());
+            hex::encode(sig.to_bytes())
+        });
+
         let intel = ThreatIntelPayload {
             anonymized_signature,
             score,
             timestamp: current_time,
-            source_node: env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into()),
+            source_node,
+            signature,
         };
 
-        let peers = state.trusted_peers.clone();
+        let peers = state.trusted_peers.keys().cloned().collect::<Vec<String>>();
         let client = state.http_client.clone();
 
         // Broadcast asynchronously without blocking the client response
@@ -217,6 +277,33 @@ async fn verify(
     })
 }
 
+// Serve sensor.js and dynamically inject the symmetric key
+async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
+    let mut file = match std::fs::File::open("../client/src/sensor.js") {
+        Ok(f) => f,
+        Err(_) => return HttpResponse::InternalServerError().body("Sensor script not found"),
+    };
+
+    let mut contents = String::new();
+    if file.read_to_string(&mut contents).is_err() {
+        return HttpResponse::InternalServerError().body("Failed to read sensor script");
+    }
+
+    // Convert the [u8; 32] array into a comma-separated string
+    let key_string = state
+        .payload_secret_key
+        .iter()
+        .map(|b| b.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+
+    let injected_contents = contents.replace("__OPEN_SENTINEL_SECRET_KEY__", &key_string);
+
+    HttpResponse::Ok()
+        .content_type("application/javascript")
+        .body(injected_contents)
+}
+
 // Endpoint to receive threat intelligence from federated peers
 async fn receive_threat_intel(
     intel: web::Json<ThreatIntelPayload>,
@@ -227,20 +314,10 @@ async fn receive_threat_intel(
         return HttpResponse::Forbidden().body("Federation is disabled on this node");
     }
 
-    // 1. Peer Validation
-    // We validate that the incoming source node matches one of our trusted peers.
-    let mut is_trusted = false;
-    for trusted_peer in &state.trusted_peers {
-        // Simple string matching is insufficient if using IP vs Domain.
-        // In a real system, we'd resolve domains or rely purely on cryptographic signatures.
-        // For this prototype, we check if the declared source_node is in our trusted list.
-        if trusted_peer == &intel.source_node {
-            is_trusted = true;
-            break;
-        }
-    }
+    // 1. Peer and Cryptographic Signature Validation
+    let peer_pubkey_opt = state.trusted_peers.get(&intel.source_node);
 
-    if !is_trusted && !state.trusted_peers.is_empty() {
+    if peer_pubkey_opt.is_none() && !state.trusted_peers.is_empty() {
         log::warn!(
             "Rejected threat intel from untrusted source: {}",
             intel.source_node
@@ -250,6 +327,60 @@ async fn receive_threat_intel(
             passed: false,
             message: "Unauthorized peer.".into(),
         });
+    }
+
+    // Verify cryptographic signature if a public key is configured for this peer
+    if let Some(Some(pubkey)) = peer_pubkey_opt {
+        let sig_hex = match &intel.signature {
+            Some(s) => s,
+            None => {
+                log::warn!("Missing signature from peer: {}", intel.source_node);
+                return HttpResponse::Forbidden().json(VerifyResponse {
+                    score: 0.0,
+                    passed: false,
+                    message: "Missing cryptographic signature.".into(),
+                });
+            }
+        };
+
+        let sig_bytes = match hex::decode(sig_hex) {
+            Ok(b) => b,
+            Err(_) => {
+                log::warn!("Invalid signature format from peer: {}", intel.source_node);
+                return HttpResponse::BadRequest().json(VerifyResponse {
+                    score: 0.0,
+                    passed: false,
+                    message: "Invalid signature format.".into(),
+                });
+            }
+        };
+
+        let signature = match Signature::from_slice(&sig_bytes) {
+            Ok(s) => s,
+            Err(_) => {
+                return HttpResponse::BadRequest().json(VerifyResponse {
+                    score: 0.0,
+                    passed: false,
+                    message: "Malformed signature.".into(),
+                });
+            }
+        };
+
+        let payload_str = format!(
+            "{}_{}_{}_{}",
+            intel.anonymized_signature, intel.score, intel.timestamp, intel.source_node
+        );
+        if pubkey.verify(payload_str.as_bytes(), &signature).is_err() {
+            log::warn!(
+                "Cryptographic signature verification failed for peer: {}",
+                intel.source_node
+            );
+            return HttpResponse::Forbidden().json(VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Signature verification failed.".into(),
+            });
+        }
     }
 
     // 2. Data Validation
@@ -264,10 +395,6 @@ async fn receive_threat_intel(
             message: "Invalid threat signature data.".into(),
         });
     }
-
-    // 3. Cryptographic Signature Validation (Placeholder for PR requirements)
-    // In a production environment, we verify a cryptographic signature (e.g., ECDSA or Ed25519) from the peer here.
-    let _simulated_crypto_signature_verification = true;
 
     log::info!(
         "Ingesting validated threat intelligence from {}: Signature {} with score {}",
@@ -420,13 +547,70 @@ async fn main() -> std::io::Result<()> {
     let federation_enabled =
         env::var("FEDERATION_ENABLED").unwrap_or_else(|_| "false".to_string()) == "true";
     let trusted_peers_env = env::var("TRUSTED_PEERS").unwrap_or_else(|_| "".to_string());
-    let trusted_peers: Vec<String> = if trusted_peers_env.is_empty() {
-        Vec::new()
-    } else {
-        trusted_peers_env
+    let trusted_peers_keys_env =
+        env::var("TRUSTED_PEERS_PUBKEYS").unwrap_or_else(|_| "".to_string());
+
+    let mut trusted_peers = HashMap::new();
+    if !trusted_peers_env.is_empty() {
+        let peers: Vec<String> = trusted_peers_env
             .split(',')
             .map(|s| s.trim().to_string())
-            .collect()
+            .collect();
+        let pubkeys: Vec<String> = trusted_peers_keys_env
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .collect();
+
+        for (i, peer) in peers.iter().enumerate() {
+            let pubkey = if i < pubkeys.len() && !pubkeys[i].is_empty() {
+                if let Ok(bytes) = hex::decode(&pubkeys[i]) {
+                    VerifyingKey::try_from(bytes.as_slice()).ok()
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            trusted_peers.insert(peer.clone(), pubkey);
+        }
+    }
+
+    let node_signing_key = env::var("NODE_PRIVATE_KEY").ok().and_then(|k| {
+        if let Ok(bytes) = hex::decode(k) {
+            let mut array = [0u8; 32];
+            if bytes.len() == 32 {
+                array.copy_from_slice(&bytes);
+                Some(SigningKey::from_bytes(&array))
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    });
+
+    let payload_secret_key = match env::var("PAYLOAD_SECRET_KEY") {
+        Ok(val) => {
+            let mut key = [0u8; 32];
+            let bytes = hex::decode(&val).unwrap_or_else(|_| Vec::new());
+            if bytes.len() == 32 {
+                key.copy_from_slice(&bytes);
+                key
+            } else {
+                log::warn!("PAYLOAD_SECRET_KEY must be a 64-character hex string (32 bytes). Falling back to default insecure key.");
+                [
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                    23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                ]
+            }
+        }
+        Err(_) => {
+            log::warn!("PAYLOAD_SECRET_KEY environment variable not set. Falling back to default insecure key. DO NOT USE IN PRODUCTION.");
+            [
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                24, 25, 26, 27, 28, 29, 30, 31, 32,
+            ]
+        }
     };
 
     let app_state = web::Data::new(AppState {
@@ -437,6 +621,8 @@ async fn main() -> std::io::Result<()> {
             .timeout(Duration::from_secs(3))
             .build()
             .unwrap(),
+        node_signing_key,
+        payload_secret_key,
     });
 
     log::info!("Starting OpenSentinel server at http://{}", address);
@@ -445,6 +631,13 @@ async fn main() -> std::io::Result<()> {
             "Federation ENABLED. Trusted peers: {}",
             app_state.trusted_peers.len()
         );
+        if app_state.node_signing_key.is_some() {
+            log::info!("Node cryptographic signing is ENABLED.");
+        } else {
+            log::warn!(
+                "Node cryptographic signing is DISABLED (NODE_PRIVATE_KEY not set or invalid)."
+            );
+        }
     }
 
     HttpServer::new(move || {
@@ -462,6 +655,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
             )
+            .service(web::resource("/src/sensor.js").route(web::get().to(serve_sensor_js)))
             // Serve static files from the client directory
             .service(fs::Files::new("/", "../client").index_file("index.html"))
     })

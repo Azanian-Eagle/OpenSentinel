@@ -226,7 +226,8 @@ async fn verify(
         hasher.update(features.as_bytes());
         let anonymized_signature = hex::encode(hasher.finalize());
 
-        let source_node = env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into());
+        let source_node = env::var("NODE_URL")
+            .unwrap_or_else(|_| env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into()));
         let payload_str = format!(
             "{}_{}_{}_{}",
             anonymized_signature, score, current_time, source_node
@@ -403,6 +404,19 @@ async fn receive_threat_intel(
         intel.score
     );
 
+    // Gossip Protocol: Prevent infinite loops by tracking seen signatures
+    {
+        let mut seen = state.seen_nonces.lock().unwrap();
+        if seen.contains(&intel.anonymized_signature) {
+            return HttpResponse::Ok().json(VerifyResponse {
+                score: 1.0,
+                passed: true,
+                message: "Threat intelligence already known.".into(),
+            });
+        }
+        seen.insert(intel.anonymized_signature.clone());
+    }
+
     // Write to a local threat intelligence database for model retraining
     if let Err(e) = std::fs::OpenOptions::new()
         .create(true)
@@ -419,6 +433,31 @@ async fn receive_threat_intel(
     {
         log::error!("Failed to write threat intel to disk: {}", e);
     }
+
+    // Gossip Protocol: Forward to other trusted peers
+    let peers: Vec<String> = state.trusted_peers.keys().cloned().collect();
+    let client = state.http_client.clone();
+    let source_node = intel.source_node.clone();
+    // We must clone the payload to forward it exactly as received (including the original signature)
+    let intel_payload = ThreatIntelPayload {
+        anonymized_signature: intel.anonymized_signature.clone(),
+        score: intel.score,
+        timestamp: intel.timestamp,
+        source_node: intel.source_node.clone(),
+        signature: intel.signature.clone(),
+    };
+
+    actix_web::rt::spawn(async move {
+        for peer in peers {
+            if peer == source_node {
+                continue;
+            }
+            let url = format!("{}/api/federation/intel", peer);
+            if let Err(e) = client.post(&url).json(&intel_payload).send().await {
+                log::debug!("Gossip forward failed to {}: {}", peer, e);
+            }
+        }
+    });
 
     HttpResponse::Ok().json(VerifyResponse {
         score: 1.0,

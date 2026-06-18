@@ -226,7 +226,8 @@ async fn verify(
         hasher.update(features.as_bytes());
         let anonymized_signature = hex::encode(hasher.finalize());
 
-        let source_node = env::var("NODE_URL").unwrap_or_else(|_| env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into()));
+        let source_node = env::var("NODE_URL")
+            .unwrap_or_else(|_| env::var("NODE_ID").unwrap_or_else(|_| "anonymous_node".into()));
         let payload_str = format!(
             "{}_{}_{}_{}",
             anonymized_signature, score, current_time, source_node

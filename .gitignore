@@ -6,3 +6,4 @@ node_modules/
 dist/
 verification_screenshot.png
 .venv/
+threat_intel.log

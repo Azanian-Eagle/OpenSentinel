@@ -68,13 +68,13 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
 3. *(Optional)* Configure your `.env` file to join the decentralised federated network:
    ```env
    FEDERATION_ENABLED=true
-   TRUSTED_PEERS=https://node1.opensentinel.org
+   TRUSTED_PEERS=https://node1.example.com
    # Hex-encoded Ed25519 public keys of trusted peers for signature validation
    TRUSTED_PEERS_PUBKEYS=80b91e92c2193b2bb08a1cbcc7e9d77f864e7dbde406d289dc6c8736e149f12d
    # Your own Node's hex-encoded Ed25519 private key for signing outgoing threat intel
    NODE_PRIVATE_KEY=your_private_key_hex
    # The public URL of this node, sent to peers as the source of threat intel
-   NODE_URL=https://node2.opensentinel.org
+   NODE_URL=https://node2.example.com
    # 64-character hex string representing the 32-byte AES-GCM payload encryption key
    PAYLOAD_SECRET_KEY=0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
    ```
@@ -90,8 +90,8 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
   OpenSentinel.init({
       endpoints: [
           'https://api.yourdomain.com/verify',
-          'https://node1.opensentinel.org/verify', // Public Fallback Node
-          'https://node2.opensentinel.org/verify'
+          'https://node1.example.com/verify', // Public Fallback Node
+          'https://node2.example.com/verify'
       ],
       enablePoW: true,
       onSuccess: function(token) { console.log('Human verified successfully.'); },

@@ -1,9 +1,7 @@
 (function(global) {
     const OpenSentinel = {
         endpoints: [
-            '/verify',
-            'https://node1.opensentinel.org/verify',
-            'https://node2.opensentinel.org/verify'
+            '/verify'
         ], // Array of endpoints for high availability
         mouseEvents: [],
         keyEvents: [],

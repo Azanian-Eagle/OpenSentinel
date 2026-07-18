@@ -40,7 +40,7 @@ pub fn predict_bot_probability(
     keystroke_interval: f64,
     keystroke_variance: f64,
 ) -> Result<f64, Box<dyn std::error::Error>> {
-    let session = get_session().map_err(|error| std::io::Error::new(std::io::ErrorKind::Other, error))?;
+    let session = get_session().map_err(std::io::Error::other)?;
     let mut session = session.lock().unwrap();
 
     let input_array = Array2::<f32>::from_shape_vec(

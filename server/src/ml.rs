@@ -19,15 +19,15 @@ pub fn get_session() -> Result<&'static Mutex<Session>, String> {
         .get_or_init(|| {
             let model_path = model_path();
 
-        let session = Session::builder()
-            .unwrap()
-            .with_optimization_level(GraphOptimizationLevel::Level3)
-            .unwrap()
-            .with_intra_threads(1)
-            .unwrap()
-            .commit_from_file(&model_path)
-            .map(Mutex::new)
-            .map_err(|error| format!("Failed to load ONNX model at {}: {}", model_path, error))
+            Session::builder()
+                .unwrap()
+                .with_optimization_level(GraphOptimizationLevel::Level3)
+                .unwrap()
+                .with_intra_threads(1)
+                .unwrap()
+                .commit_from_file(&model_path)
+                .map(Mutex::new)
+                .map_err(|error| format!("Failed to load ONNX model at {}: {}", model_path, error))
         })
         .as_ref()
         .map_err(|error| error.clone())
@@ -40,7 +40,7 @@ pub fn predict_bot_probability(
     keystroke_interval: f64,
     keystroke_variance: f64,
 ) -> Result<f64, Box<dyn std::error::Error>> {
-    let session = get_session().map_err(|error| std::io::Error::new(std::io::ErrorKind::Other, error))?;
+    let session = get_session().map_err(std::io::Error::other)?;
     let mut session = session.lock().unwrap();
 
     let input_array = Array2::<f32>::from_shape_vec(

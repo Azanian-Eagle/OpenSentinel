@@ -312,16 +312,14 @@ fn read_recent_threat_intel_records(
             Err(error) => return Err(error),
         };
 
-        for line in BufReader::new(file).lines() {
-            if let Ok(line) = line {
-                if let Some(record) = parse_threat_intel_record(&line, &log_source) {
-                    records.push(record);
-                }
+        for line in BufReader::new(file).lines().map_while(Result::ok) {
+            if let Some(record) = parse_threat_intel_record(&line, &log_source) {
+                records.push(record);
             }
         }
     }
 
-    records.sort_by(|left, right| right.timestamp.cmp(&left.timestamp));
+    records.sort_by_key(|right| std::cmp::Reverse(right.timestamp));
     if records.len() > limit {
         records.truncate(limit);
     }
@@ -1025,7 +1023,9 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/healthz").route(web::get().to(healthz)))
             .service(web::resource("/readyz").route(web::get().to(readyz)))
             .service(web::resource("/metrics").route(web::get().to(metrics)))
-            .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)))
+            .service(
+                web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
+            )
             .service(web::resource("/verify").route(web::post().to(verify)))
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
@@ -1055,13 +1055,14 @@ mod tests {
             node_signing_key: None,
             payload_secret_key: [7u8; 32],
             threat_intel_log_path: "threat_intel.log".to_string(),
+            threat_intel_max_bytes: 1024,
             rate_limit_max_requests: 60,
             rate_limit_window_ms: 60_000,
         })
     }
 
-    #[test]
-    fn parses_valid_payload_key() {
+    #[actix_web::test]
+    async fn parses_valid_payload_key() {
         let key = parse_payload_secret_key_value(
             "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
         )
@@ -1071,14 +1072,14 @@ mod tests {
         assert_eq!(key[31], 32);
     }
 
-    #[test]
-    fn rejects_invalid_payload_key_length() {
+    #[actix_web::test]
+    async fn rejects_invalid_payload_key_length() {
         let error = parse_payload_secret_key_value("0102").unwrap_err();
         assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
     }
 
-    #[test]
-    fn verifies_pow_hash_and_prefix() {
+    #[actix_web::test]
+    async fn verifies_pow_hash_and_prefix() {
         let prefix = "opensentinel".to_string();
         let mut nonce = 0u64;
 
@@ -1100,20 +1101,24 @@ mod tests {
         assert!(verify_pow(&pow));
     }
 
-    #[test]
-    fn rate_limit_blocks_after_threshold() {
+    #[actix_web::test]
+    async fn rate_limit_blocks_after_threshold() {
         let state = test_state(true);
 
         for _ in 0..60 {
             check_rate_limit("127.0.0.1", &state, 1_000).expect("first requests should pass");
         }
 
-        let response = check_rate_limit("127.0.0.1", &state, 1_000).expect_err("limit should trigger");
-        assert_eq!(response.status(), actix_web::http::StatusCode::TOO_MANY_REQUESTS);
+        let response =
+            check_rate_limit("127.0.0.1", &state, 1_000).expect_err("limit should trigger");
+        assert_eq!(
+            response.status(),
+            actix_web::http::StatusCode::TOO_MANY_REQUESTS
+        );
     }
 
-    #[test]
-    fn threat_intel_log_rotates_when_too_large() {
+    #[actix_web::test]
+    async fn threat_intel_log_rotates_when_too_large() {
         let temp_dir = std::env::temp_dir().join("opensentinel-rotate-test");
         let _ = std::fs::create_dir_all(&temp_dir);
 
@@ -1156,11 +1161,9 @@ mod tests {
             rate_limit_window_ms: 60_000,
         });
 
-        let app = test::init_service(
-            App::new()
-                .app_data(state)
-                .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel))),
-        )
+        let app = test::init_service(App::new().app_data(state).service(
+            web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
+        ))
         .await;
 
         let request = test::TestRequest::get()
@@ -1169,7 +1172,9 @@ mod tests {
         let response = test::call_service(&app, request).await;
         assert!(response.status().is_success());
 
-        let body = to_bytes(response.into_body()).await.expect("body should read");
+        let body = to_bytes(response.into_body())
+            .await
+            .expect("body should read");
         let text = String::from_utf8(body.to_vec()).expect("valid utf8 body");
         assert!(text.contains("node-b"));
 
@@ -1190,7 +1195,9 @@ mod tests {
         let response = test::call_service(&app, request).await;
         assert!(response.status().is_success());
 
-        let bytes = to_bytes(response.into_body()).await.expect("body should read");
+        let bytes = to_bytes(response.into_body())
+            .await
+            .expect("body should read");
         let body = String::from_utf8(bytes.to_vec()).expect("valid utf8 body");
         assert!(body.contains("\"status\":\"ok\""));
     }

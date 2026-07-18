@@ -2,14 +2,22 @@ use ndarray::Array2;
 use ort::session::builder::GraphOptimizationLevel;
 use ort::session::Session;
 use ort::value::Tensor;
+use std::env;
 use std::sync::Mutex;
 use std::sync::OnceLock;
 
-static SESSION: OnceLock<Mutex<Session>> = OnceLock::new();
+static SESSION: OnceLock<Result<Mutex<Session>, String>> = OnceLock::new();
 
-pub fn get_session() -> &'static Mutex<Session> {
-    SESSION.get_or_init(|| {
-        let model_path = "model.onnx";
+pub fn model_path() -> String {
+    env::var("OPEN_SENTINEL_MODEL_PATH")
+        .or_else(|_| env::var("MODEL_PATH"))
+        .unwrap_or_else(|_| "model.onnx".to_string())
+}
+
+pub fn get_session() -> Result<&'static Mutex<Session>, String> {
+    SESSION
+        .get_or_init(|| {
+            let model_path = model_path();
 
         let session = Session::builder()
             .unwrap()
@@ -17,10 +25,12 @@ pub fn get_session() -> &'static Mutex<Session> {
             .unwrap()
             .with_intra_threads(1)
             .unwrap()
-            .commit_from_file(model_path)
-            .expect("Failed to load ONNX model");
-        Mutex::new(session)
-    })
+            .commit_from_file(&model_path)
+            .map(Mutex::new)
+            .map_err(|error| format!("Failed to load ONNX model at {}: {}", model_path, error))
+        })
+        .as_ref()
+        .map_err(|error| error.clone())
 }
 
 pub fn predict_bot_probability(
@@ -30,7 +40,8 @@ pub fn predict_bot_probability(
     keystroke_interval: f64,
     keystroke_variance: f64,
 ) -> Result<f64, Box<dyn std::error::Error>> {
-    let mut session = get_session().lock().unwrap();
+    let session = get_session().map_err(|error| std::io::Error::new(std::io::ErrorKind::Other, error))?;
+    let mut session = session.lock().unwrap();
 
     let input_array = Array2::<f32>::from_shape_vec(
         (1, 5),

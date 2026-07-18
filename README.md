@@ -2,7 +2,7 @@
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Licence: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **An [Azanian Eagle](https://Azanian-Eagle.github.io/) Project**
 
@@ -17,12 +17,26 @@ Get your secure backend and testing environment up and running in a matter of se
 git clone https://github.com/Azanian-Eagle/OpenSentinel.git
 cd OpenSentinel
 
-# Navigate to the server directory and run the Rust backend
-cd server
-cargo run
+# Start the self-hosted service with Docker Compose
+cp .env.example .env
+docker compose up --build
 ```
 
-The server will immediately start binding to `http://localhost:8080`. You can visit this URL to securely interact with the demo client and test the behavioural sensor.
+The server will bind to `http://localhost:8080`. Visit that URL to use the client and verify the service is healthy.
+
+### Production Release
+
+For a reusable deployment, use the published backend image from GitHub Container Registry or the release tarball attached to tagged releases.
+
+```bash
+docker pull ghcr.io/azanian-eagle/opensentinel:latest
+```
+
+The release tarball includes the backend binary, the ONNX model, `.env.example`, and `docker-compose.yml` for self-hosted setup.
+It also includes the client assets so the binary can serve the web UI outside the source tree.
+For the tarball, the packaged env sample points `OPEN_SENTINEL_MODEL_PATH` to `model.onnx` and `OPEN_SENTINEL_CLIENT_DIR` to `client`.
+The Docker Compose path also persists `data/` so threat-intel logs survive container restarts.
+Threat intel logs rotate once they reach the configured `THREAT_INTEL_MAX_BYTES` limit.
 
 ## The Philosophy & Why It Matters
 
@@ -59,25 +73,32 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
 
 ### Step 1: Deploy the Sovereign Backend
 
-1. Navigate to the `server/` directory.
-2. Build and run the highly-optimised Rust service:
-   ```bash
-   cargo build --release
-   cargo run --release
-   ```
-3. *(Optional)* Configure your `.env` file to join the decentralised federated network:
-   ```env
-   FEDERATION_ENABLED=true
-   TRUSTED_PEERS=https://node1.example.com
-   # Hex-encoded Ed25519 public keys of trusted peers for signature validation
-   TRUSTED_PEERS_PUBKEYS=80b91e92c2193b2bb08a1cbcc7e9d77f864e7dbde406d289dc6c8736e149f12d
-   # Your own Node's hex-encoded Ed25519 private key for signing outgoing threat intel
-   NODE_PRIVATE_KEY=your_private_key_hex
-   # The public URL of this node, sent to peers as the source of threat intel
-   NODE_URL=https://node2.example.com
-   # 64-character hex string representing the 32-byte AES-GCM payload encryption key
-   PAYLOAD_SECRET_KEY=0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
-   ```
+Create a `.env` file from the provided template and set the required secret key.
+
+Run the service with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+Optional federation settings belong in the same `.env` file:
+
+```env
+FEDERATION_ENABLED=true
+TRUSTED_PEERS=https://node1.example.com
+# Hex-encoded Ed25519 public keys of trusted peers for signature validation
+TRUSTED_PEERS_PUBKEYS=80b91e92c2193b2bb08a1cbcc7e9d77f864e7dbde406d289dc6c8736e149f12d
+# Your own Node's hex-encoded Ed25519 private key for signing outgoing threat intel
+NODE_PRIVATE_KEY=your_private_key_hex
+# The public URL of this node, sent to peers as the source of threat intel
+NODE_URL=https://node2.example.com
+# 64-character hex string representing the 32-byte AES-GCM payload encryption key
+PAYLOAD_SECRET_KEY=0102030405060708090a0b4c0d0e0f101112131415161718191a1b1c1d1e1f20
+# Optional: override the ONNX model location when running outside the repo root
+OPEN_SENTINEL_MODEL_PATH=/app/server/model.onnx
+```
+
+If you want to run the Rust backend directly without Docker, export `PAYLOAD_SECRET_KEY` first and then run `cargo run --release` from the `server/` directory.
 
 ### Step 2: Integrate the Frontend Sensor
 
@@ -144,11 +165,12 @@ This repository includes a GitHub Action to automatically re-apply protections i
 2. Add it to **Settings > Secrets and variables > Actions** as a Repository Secret named `ADMIN_TOKEN`.
 
 This enforces:
+
 - Required status checks (test, security-audit, lint)
 - Code owner reviews
 - Signed commits
 - Linear history
 
-## License
+## Licence
 
 MIT

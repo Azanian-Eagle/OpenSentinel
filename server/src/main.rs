@@ -15,18 +15,24 @@ use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::env;
-use std::io::Read;
+use std::io::{BufRead, BufReader, Read};
 use std::sync::Mutex;
 use std::time::Duration;
 
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
     seen_nonces: Mutex<HashSet<String>>,
+    request_counts: Mutex<HashMap<String, (u32, i64)>>,
+    metrics: Mutex<HashMap<&'static str, u64>>,
     trusted_peers: HashMap<String, Option<VerifyingKey>>, // Peer domain -> Optional Public Key
     federation_enabled: bool,
     http_client: Client,
     node_signing_key: Option<SigningKey>,
     payload_secret_key: [u8; 32],
+    threat_intel_log_path: String,
+    threat_intel_max_bytes: u64,
+    rate_limit_max_requests: u32,
+    rate_limit_window_ms: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -69,6 +75,28 @@ struct VerifyResponse {
     message: String,
 }
 
+#[derive(Serialize)]
+struct HealthResponse {
+    status: &'static str,
+    version: &'static str,
+    federation_enabled: bool,
+}
+
+#[derive(Serialize)]
+struct ReadyResponse {
+    status: &'static str,
+    model_path: String,
+}
+
+#[derive(Serialize)]
+struct RecentThreatIntelRecord {
+    timestamp: i64,
+    source_node: String,
+    anonymized_signature: String,
+    score: f64,
+    log_source: String,
+}
+
 fn verify_pow(pow: &PoWData) -> bool {
     let mut hasher = Sha256::new();
     let msg = format!("{}{}", pow.prefix, pow.nonce);
@@ -79,11 +107,281 @@ fn verify_pow(pow: &PoWData) -> bool {
     hash_hex.starts_with("000") && hash_hex == pow.hash
 }
 
+fn client_dir() -> String {
+    env::var("OPEN_SENTINEL_CLIENT_DIR")
+        .or_else(|_| env::var("CLIENT_DIR"))
+        .unwrap_or_else(|_| "../client".to_string())
+}
+
+fn data_dir() -> String {
+    env::var("OPEN_SENTINEL_DATA_DIR")
+        .or_else(|_| env::var("DATA_DIR"))
+        .unwrap_or_else(|_| "data".to_string())
+}
+
+fn allowed_origins() -> Vec<String> {
+    let origins = env::var("ALLOWED_ORIGINS")
+        .or_else(|_| env::var("CORS_ALLOWED_ORIGINS"))
+        .unwrap_or_else(|_| "http://localhost:8080,http://127.0.0.1:8080".to_string());
+
+    origins
+        .split(',')
+        .map(|origin| origin.trim())
+        .filter(|origin| !origin.is_empty())
+        .map(|origin| origin.to_string())
+        .collect()
+}
+
+fn build_cors(allowed_origins: &[String]) -> Cors {
+    let mut cors = Cors::default()
+        .allow_any_method()
+        .allow_any_header()
+        .max_age(3600);
+
+    for origin in allowed_origins {
+        cors = cors.allowed_origin(origin);
+    }
+
+    cors
+}
+
+fn rate_limit_settings() -> (u32, i64) {
+    let max_requests = env::var("RATE_LIMIT_MAX_REQUESTS")
+        .ok()
+        .and_then(|value| value.parse::<u32>().ok())
+        .unwrap_or(60);
+    let window_seconds = env::var("RATE_LIMIT_WINDOW_SECONDS")
+        .ok()
+        .and_then(|value| value.parse::<i64>().ok())
+        .unwrap_or(60);
+
+    (max_requests, window_seconds.saturating_mul(1000))
+}
+
+fn threat_intel_max_bytes() -> u64 {
+    env::var("THREAT_INTEL_MAX_BYTES")
+        .ok()
+        .and_then(|value| value.parse::<u64>().ok())
+        .unwrap_or(5 * 1024 * 1024)
+}
+
+fn rotate_threat_intel_log(log_path: &std::path::Path, max_bytes: u64) -> std::io::Result<()> {
+    let metadata = match std::fs::metadata(log_path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error),
+    };
+
+    if metadata.len() <= max_bytes {
+        return Ok(());
+    }
+
+    let rotated_path = log_path.with_extension("log.1");
+    let _ = std::fs::remove_file(&rotated_path);
+    std::fs::rename(log_path, rotated_path)
+}
+
+fn check_rate_limit(
+    client_ip: &str,
+    state: &web::Data<AppState>,
+    current_time_ms: i64,
+) -> Result<(), HttpResponse> {
+    let mut request_counts = state.request_counts.lock().unwrap();
+    let entry = request_counts
+        .entry(client_ip.to_string())
+        .or_insert((0, current_time_ms));
+
+    if current_time_ms - entry.1 >= state.rate_limit_window_ms {
+        *entry = (0, current_time_ms);
+    }
+
+    if entry.0 >= state.rate_limit_max_requests {
+        return Err(HttpResponse::TooManyRequests().json(VerifyResponse {
+            score: 0.0,
+            passed: false,
+            message: "Rate limit exceeded. Please retry later.".into(),
+        }));
+    }
+
+    entry.0 += 1;
+
+    if request_counts.len() > 10_000 {
+        let stale_cutoff = current_time_ms.saturating_sub(state.rate_limit_window_ms * 2);
+        request_counts.retain(|_, (_, last_seen)| *last_seen >= stale_cutoff);
+    }
+
+    Ok(())
+}
+
+fn increment_metric(state: &web::Data<AppState>, metric_name: &'static str) {
+    let mut metrics = state.metrics.lock().unwrap();
+    *metrics.entry(metric_name).or_insert(0) += 1;
+}
+
+fn metrics_text(state: &web::Data<AppState>) -> String {
+    let metrics = state.metrics.lock().unwrap();
+
+    let total_requests = metrics.get("requests_total").copied().unwrap_or(0);
+    let verify_requests = metrics.get("verify_requests_total").copied().unwrap_or(0);
+    let federation_ingests = metrics
+        .get("federation_ingests_total")
+        .copied()
+        .unwrap_or(0);
+    let rate_limited = metrics.get("rate_limited_total").copied().unwrap_or(0);
+    let health_checks = metrics.get("health_checks_total").copied().unwrap_or(0);
+    let readiness_checks = metrics.get("readiness_checks_total").copied().unwrap_or(0);
+
+    format!(
+        concat!(
+            "# TYPE opensentinel_requests_total counter\n",
+            "opensentinel_requests_total {}\n",
+            "# TYPE opensentinel_verify_requests_total counter\n",
+            "opensentinel_verify_requests_total {}\n",
+            "# TYPE opensentinel_federation_ingests_total counter\n",
+            "opensentinel_federation_ingests_total {}\n",
+            "# TYPE opensentinel_rate_limited_total counter\n",
+            "opensentinel_rate_limited_total {}\n",
+            "# TYPE opensentinel_health_checks_total counter\n",
+            "opensentinel_health_checks_total {}\n",
+            "# TYPE opensentinel_readiness_checks_total counter\n",
+            "opensentinel_readiness_checks_total {}\n"
+        ),
+        total_requests,
+        verify_requests,
+        federation_ingests,
+        rate_limited,
+        health_checks,
+        readiness_checks
+    )
+}
+
+fn append_threat_intel_record(
+    state: &web::Data<AppState>,
+    timestamp: i64,
+    source_node: &str,
+    anonymized_signature: &str,
+    score: f64,
+) -> std::io::Result<()> {
+    let log_path = std::path::Path::new(&state.threat_intel_log_path);
+    rotate_threat_intel_log(log_path, state.threat_intel_max_bytes)?;
+
+    std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path)
+        .and_then(|mut file| {
+            use std::io::Write;
+            writeln!(
+                file,
+                "{},{},{},{}",
+                timestamp, source_node, anonymized_signature, score
+            )
+        })
+}
+
+fn parse_threat_intel_record(line: &str, log_source: &str) -> Option<RecentThreatIntelRecord> {
+    let mut parts = line.trim().splitn(4, ',');
+    let timestamp = parts.next()?.parse::<i64>().ok()?;
+    let source_node = parts.next()?.to_string();
+    let anonymized_signature = parts.next()?.to_string();
+    let score = parts.next()?.parse::<f64>().ok()?;
+
+    Some(RecentThreatIntelRecord {
+        timestamp,
+        source_node,
+        anonymized_signature,
+        score,
+        log_source: log_source.to_string(),
+    })
+}
+
+fn read_recent_threat_intel_records(
+    state: &web::Data<AppState>,
+    limit: usize,
+) -> std::io::Result<Vec<RecentThreatIntelRecord>> {
+    let log_path = std::path::Path::new(&state.threat_intel_log_path);
+    let rotated_path = log_path.with_extension("log.1");
+
+    let mut records = Vec::new();
+
+    for path in [rotated_path.as_path(), log_path] {
+        let log_source = path.to_string_lossy().to_string();
+        let file = match std::fs::File::open(path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(error) => return Err(error),
+        };
+
+        for line in BufReader::new(file).lines() {
+            if let Ok(line) = line {
+                if let Some(record) = parse_threat_intel_record(&line, &log_source) {
+                    records.push(record);
+                }
+            }
+        }
+    }
+
+    records.sort_by(|left, right| right.timestamp.cmp(&left.timestamp));
+    if records.len() > limit {
+        records.truncate(limit);
+    }
+
+    Ok(records)
+}
+
+fn parse_payload_secret_key_value(key_value: &str) -> std::io::Result<[u8; 32]> {
+    let bytes = hex::decode(key_value).map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "PAYLOAD_SECRET_KEY must be valid hex",
+        )
+    })?;
+
+    if bytes.len() != 32 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "PAYLOAD_SECRET_KEY must decode to exactly 32 bytes",
+        ));
+    }
+
+    let mut key = [0u8; 32];
+    key.copy_from_slice(&bytes);
+    Ok(key)
+}
+
+async fn healthz(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    increment_metric(&state, "health_checks_total");
+    HttpResponse::Ok().json(HealthResponse {
+        status: "ok",
+        version: env!("CARGO_PKG_VERSION"),
+        federation_enabled: state.federation_enabled,
+    })
+}
+
+async fn readyz(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    increment_metric(&state, "readiness_checks_total");
+    match ml::get_session() {
+        Ok(_) => HttpResponse::Ok().json(ReadyResponse {
+            status: "ready",
+            model_path: ml::model_path(),
+        }),
+        Err(error) => HttpResponse::ServiceUnavailable().json(serde_json::json!({
+            "status": "not_ready",
+            "error": error,
+            "model_path": ml::model_path()
+        })),
+    }
+}
+
 async fn verify(
     req: HttpRequest,
     encoded_data: web::Json<EncodedVerifyRequest>,
     state: web::Data<AppState>,
 ) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    increment_metric(&state, "verify_requests_total");
     let client_ip = req
         .peer_addr()
         .map(|a| a.ip().to_string())
@@ -163,6 +461,11 @@ async fn verify(
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_millis() as i64;
+
+    if let Err(response) = check_rate_limit(&client_ip, &state, current_time) {
+        increment_metric(&state, "rate_limited_total");
+        return response;
+    }
 
     if (current_time - data.timestamp).abs() > 300_000 {
         // 5 minutes window
@@ -280,7 +583,9 @@ async fn verify(
 
 // Serve sensor.js and dynamically inject the symmetric key
 async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
-    let mut file = match std::fs::File::open("../client/src/sensor.js") {
+    increment_metric(&state, "requests_total");
+    let sensor_path = std::path::Path::new(&client_dir()).join("src/sensor.js");
+    let mut file = match std::fs::File::open(sensor_path) {
         Ok(f) => f,
         Err(_) => return HttpResponse::InternalServerError().body("Sensor script not found"),
     };
@@ -305,12 +610,24 @@ async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
         .body(injected_contents)
 }
 
+fn parse_payload_secret_key() -> std::io::Result<[u8; 32]> {
+    let key_value = env::var("PAYLOAD_SECRET_KEY").map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "PAYLOAD_SECRET_KEY must be set to a 64-character hex string",
+        )
+    })?;
+
+    parse_payload_secret_key_value(&key_value)
+}
+
 // Endpoint to receive threat intelligence from federated peers
 async fn receive_threat_intel(
     intel: web::Json<ThreatIntelPayload>,
     _req: HttpRequest,
     state: web::Data<AppState>,
 ) -> impl Responder {
+    increment_metric(&state, "requests_total");
     if !state.federation_enabled {
         return HttpResponse::Forbidden().body("Federation is disabled on this node");
     }
@@ -403,6 +720,7 @@ async fn receive_threat_intel(
         intel.anonymized_signature,
         intel.score
     );
+    increment_metric(&state, "federation_ingests_total");
 
     // Gossip Protocol: Prevent infinite loops by tracking seen signatures
     {
@@ -418,19 +736,13 @@ async fn receive_threat_intel(
     }
 
     // Write to a local threat intelligence database for model retraining
-    if let Err(e) = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open("threat_intel.log")
-        .and_then(|mut f| {
-            use std::io::Write;
-            writeln!(
-                f,
-                "{},{},{},{}",
-                intel.timestamp, intel.source_node, intel.anonymized_signature, intel.score
-            )
-        })
-    {
+    if let Err(e) = append_threat_intel_record(
+        &state,
+        intel.timestamp,
+        &intel.source_node,
+        &intel.anonymized_signature,
+        intel.score,
+    ) {
         log::error!("Failed to write threat intel to disk: {}", e);
     }
 
@@ -464,6 +776,35 @@ async fn receive_threat_intel(
         passed: true,
         message: "Threat intelligence ingested successfully.".into(),
     })
+}
+
+async fn metrics(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    HttpResponse::Ok()
+        .content_type("text/plain; version=0.0.4")
+        .body(metrics_text(&state))
+}
+
+async fn recent_threat_intel(
+    query: web::Query<HashMap<String, String>>,
+    state: web::Data<AppState>,
+) -> impl Responder {
+    increment_metric(&state, "requests_total");
+
+    let limit = query
+        .get("limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(25)
+        .clamp(1, 100);
+
+    match read_recent_threat_intel_records(&state, limit) {
+        Ok(records) => HttpResponse::Ok().json(records),
+        Err(error) => HttpResponse::InternalServerError().json(VerifyResponse {
+            score: 0.0,
+            passed: false,
+            message: format!("Failed to read threat intel records: {}", error),
+        }),
+    }
 }
 
 fn calculate_score(data: &RawVerifyRequest) -> f64 {
@@ -582,6 +923,17 @@ async fn main() -> std::io::Result<()> {
 
     let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
     let address = format!("0.0.0.0:{}", port);
+    let client_dir = client_dir();
+    let allowed_origins = allowed_origins();
+    let data_dir = data_dir();
+    let threat_intel_log_path = std::path::Path::new(&data_dir)
+        .join("threat_intel.log")
+        .to_string_lossy()
+        .to_string();
+    let threat_intel_max_bytes = threat_intel_max_bytes();
+    let (rate_limit_max_requests, rate_limit_window_ms) = rate_limit_settings();
+
+    std::fs::create_dir_all(&data_dir)?;
 
     let federation_enabled =
         env::var("FEDERATION_ENABLED").unwrap_or_else(|_| "false".to_string()) == "true";
@@ -628,32 +980,12 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
-    let payload_secret_key = match env::var("PAYLOAD_SECRET_KEY") {
-        Ok(val) => {
-            let mut key = [0u8; 32];
-            let bytes = hex::decode(&val).unwrap_or_else(|_| Vec::new());
-            if bytes.len() == 32 {
-                key.copy_from_slice(&bytes);
-                key
-            } else {
-                log::warn!("PAYLOAD_SECRET_KEY must be a 64-character hex string (32 bytes). Falling back to default insecure key.");
-                [
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                    23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                ]
-            }
-        }
-        Err(_) => {
-            log::warn!("PAYLOAD_SECRET_KEY environment variable not set. Falling back to default insecure key. DO NOT USE IN PRODUCTION.");
-            [
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-                24, 25, 26, 27, 28, 29, 30, 31, 32,
-            ]
-        }
-    };
+    let payload_secret_key = parse_payload_secret_key()?;
 
     let app_state = web::Data::new(AppState {
         seen_nonces: Mutex::new(HashSet::new()),
+        request_counts: Mutex::new(HashMap::new()),
+        metrics: Mutex::new(HashMap::new()),
         trusted_peers,
         federation_enabled,
         http_client: Client::builder()
@@ -662,6 +994,10 @@ async fn main() -> std::io::Result<()> {
             .unwrap(),
         node_signing_key,
         payload_secret_key,
+        threat_intel_log_path,
+        threat_intel_max_bytes,
+        rate_limit_max_requests,
+        rate_limit_window_ms,
     });
 
     log::info!("Starting OpenSentinel server at http://{}", address);
@@ -680,25 +1016,210 @@ async fn main() -> std::io::Result<()> {
     }
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-            .allow_any_origin() // In production, replace with specific domains
-            .allow_any_method()
-            .allow_any_header()
-            .max_age(3600);
+        let cors = build_cors(&allowed_origins);
 
         App::new()
             .app_data(app_state.clone())
             .wrap(cors)
             .wrap(middleware::Logger::default())
+            .service(web::resource("/healthz").route(web::get().to(healthz)))
+            .service(web::resource("/readyz").route(web::get().to(readyz)))
+            .service(web::resource("/metrics").route(web::get().to(metrics)))
+            .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)))
             .service(web::resource("/verify").route(web::post().to(verify)))
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
             )
             .service(web::resource("/src/sensor.js").route(web::get().to(serve_sensor_js)))
             // Serve static files from the client directory
-            .service(fs::Files::new("/", "../client").index_file("index.html"))
+            .service(fs::Files::new("/", client_dir.clone()).index_file("index.html"))
     })
     .bind(address)?
     .run()
     .await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{body::to_bytes, test, App};
+
+    fn test_state(federation_enabled: bool) -> web::Data<AppState> {
+        web::Data::new(AppState {
+            seen_nonces: Mutex::new(HashSet::new()),
+            request_counts: Mutex::new(HashMap::new()),
+            metrics: Mutex::new(HashMap::new()),
+            trusted_peers: HashMap::new(),
+            federation_enabled,
+            http_client: Client::builder().build().expect("test client should build"),
+            node_signing_key: None,
+            payload_secret_key: [7u8; 32],
+            threat_intel_log_path: "threat_intel.log".to_string(),
+            rate_limit_max_requests: 60,
+            rate_limit_window_ms: 60_000,
+        })
+    }
+
+    #[test]
+    fn parses_valid_payload_key() {
+        let key = parse_payload_secret_key_value(
+            "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+        )
+        .expect("valid payload key should parse");
+
+        assert_eq!(key[0], 1);
+        assert_eq!(key[31], 32);
+    }
+
+    #[test]
+    fn rejects_invalid_payload_key_length() {
+        let error = parse_payload_secret_key_value("0102").unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    }
+
+    #[test]
+    fn verifies_pow_hash_and_prefix() {
+        let prefix = "opensentinel".to_string();
+        let mut nonce = 0u64;
+
+        let pow = loop {
+            let candidate = format!("{}{}", prefix, nonce);
+            let hash = hex::encode(Sha256::digest(candidate.as_bytes()));
+
+            if hash.starts_with("000") {
+                break PoWData {
+                    prefix: prefix.clone(),
+                    nonce,
+                    hash,
+                };
+            }
+
+            nonce += 1;
+        };
+
+        assert!(verify_pow(&pow));
+    }
+
+    #[test]
+    fn rate_limit_blocks_after_threshold() {
+        let state = test_state(true);
+
+        for _ in 0..60 {
+            check_rate_limit("127.0.0.1", &state, 1_000).expect("first requests should pass");
+        }
+
+        let response = check_rate_limit("127.0.0.1", &state, 1_000).expect_err("limit should trigger");
+        assert_eq!(response.status(), actix_web::http::StatusCode::TOO_MANY_REQUESTS);
+    }
+
+    #[test]
+    fn threat_intel_log_rotates_when_too_large() {
+        let temp_dir = std::env::temp_dir().join("opensentinel-rotate-test");
+        let _ = std::fs::create_dir_all(&temp_dir);
+
+        let log_path = temp_dir.join("threat_intel.log");
+        std::fs::write(&log_path, "x".repeat(128)).expect("should create oversized log");
+
+        rotate_threat_intel_log(&log_path, 16).expect("rotation should succeed");
+
+        assert!(!log_path.exists());
+        assert!(log_path.with_extension("log.1").exists());
+
+        let _ = std::fs::remove_file(log_path.with_extension("log.1"));
+        let _ = std::fs::remove_dir_all(temp_dir);
+    }
+
+    #[actix_web::test]
+    async fn recent_threat_intel_reports_records() {
+        let temp_dir = std::env::temp_dir().join("opensentinel-recent-test");
+        let _ = std::fs::create_dir_all(&temp_dir);
+
+        let log_path = temp_dir.join("threat_intel.log");
+        std::fs::write(
+            &log_path,
+            "1700000000,node-a,abc123,0.3\n1700000001,node-b,def456,0.2\n",
+        )
+        .expect("should write log file");
+
+        let state = web::Data::new(AppState {
+            seen_nonces: Mutex::new(HashSet::new()),
+            request_counts: Mutex::new(HashMap::new()),
+            metrics: Mutex::new(HashMap::new()),
+            trusted_peers: HashMap::new(),
+            federation_enabled: true,
+            http_client: Client::builder().build().expect("test client should build"),
+            node_signing_key: None,
+            payload_secret_key: [7u8; 32],
+            threat_intel_log_path: log_path.to_string_lossy().to_string(),
+            threat_intel_max_bytes: 1024,
+            rate_limit_max_requests: 60,
+            rate_limit_window_ms: 60_000,
+        });
+
+        let app = test::init_service(
+            App::new()
+                .app_data(state)
+                .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel))),
+        )
+        .await;
+
+        let request = test::TestRequest::get()
+            .uri("/api/federation/recent?limit=1")
+            .to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+
+        let body = to_bytes(response.into_body()).await.expect("body should read");
+        let text = String::from_utf8(body.to_vec()).expect("valid utf8 body");
+        assert!(text.contains("node-b"));
+
+        let _ = std::fs::remove_file(log_path);
+        let _ = std::fs::remove_dir_all(temp_dir);
+    }
+
+    #[actix_web::test]
+    async fn healthz_reports_ok() {
+        let app = test::init_service(
+            App::new()
+                .app_data(test_state(true))
+                .service(web::resource("/healthz").route(web::get().to(healthz))),
+        )
+        .await;
+
+        let request = test::TestRequest::get().uri("/healthz").to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+
+        let bytes = to_bytes(response.into_body()).await.expect("body should read");
+        let body = String::from_utf8(bytes.to_vec()).expect("valid utf8 body");
+        assert!(body.contains("\"status\":\"ok\""));
+    }
+
+    #[actix_web::test]
+    async fn readyz_reports_ready_with_model() {
+        let app = test::init_service(
+            App::new()
+                .app_data(test_state(true))
+                .service(web::resource("/readyz").route(web::get().to(readyz))),
+        )
+        .await;
+
+        let request = test::TestRequest::get().uri("/readyz").to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+    }
+
+    #[actix_web::test]
+    async fn metrics_reports_counters() {
+        let app = test::init_service(
+            App::new()
+                .app_data(test_state(true))
+                .service(web::resource("/metrics").route(web::get().to(metrics))),
+        )
+        .await;
+
+        let request = test::TestRequest::get().uri("/metrics").to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+    }
 }

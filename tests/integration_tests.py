@@ -5,10 +5,15 @@ import urllib.error
 import random
 import math
 import sys
+import os
 from playwright.sync_api import sync_playwright
 
 SERVER_URL = "http://localhost:8080"
 SERVER_CMD = ["cargo", "run"]
+DEFAULT_ENV = {
+    "PAYLOAD_SECRET_KEY": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+    "OPEN_SENTINEL_MODEL_PATH": "model.onnx",
+}
 
 def start_server():
     print("Starting server...")
@@ -16,6 +21,7 @@ def start_server():
     process = subprocess.Popen(
         SERVER_CMD,
         cwd="./server",
+        env={**os.environ, **DEFAULT_ENV},
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
@@ -77,6 +83,13 @@ def test_bot_behavior(page):
     if "Verification failed" not in result_text:
         raise Exception(f"Expected verification failure, got: {result_text}")
     print("Bot test PASSED (Verification correctly failed)")
+
+def test_health_endpoints():
+    print("\nChecking health endpoints...")
+    with urllib.request.urlopen(f"{SERVER_URL}/healthz") as response:
+        assert response.status == 200
+    with urllib.request.urlopen(f"{SERVER_URL}/readyz") as response:
+        assert response.status == 200
 
 def test_human_behavior(page):
     print("\nRunning Human Behavior Test...")
@@ -141,6 +154,7 @@ def main():
             page = browser.new_page()
 
             try:
+                test_health_endpoints()
                 test_bot_behavior(page)
                 test_human_behavior(page)
                 print("\nAll integration tests PASSED!")

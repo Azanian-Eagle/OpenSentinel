@@ -61,7 +61,7 @@
         </div>
         <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
             <div class="copyright" style="border-top: none; padding-top: 0;">
-                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT License.
+                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT Licence.
             </div>
             <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap;">
                 <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
@@ -95,7 +95,7 @@
         // Initialize OpenSentinel
         OpenSentinel.init({ endpoint: '/verify' });
 
-        // Ported from server/src/main.rs (Behavior Analysis Logic)
+        // Ported from server/src/main.rs (Behaviour Analysis Logic)
         function verifyData(mouseEvents, keyEvents) {
             let score = 0.0;
 
@@ -106,8 +106,8 @@
 
             // 2. Mouse Movement Analysis
             if (mouseEvents.length > 10) {
-                const linearityScore = analyzeMouseLinearity(mouseEvents);
-                const speedScore = analyzeMouseSpeed(mouseEvents);
+                const linearityScore = analyseMouseLinearity(mouseEvents);
+                const speedScore = analyseMouseSpeed(mouseEvents);
 
                 score += linearityScore * 0.4;
                 score += speedScore * 0.2;
@@ -117,7 +117,7 @@
 
             // 3. Keystroke Dynamics
             if (keyEvents.length > 0) {
-                const keystrokeScore = analyzeKeystrokes(keyEvents);
+                const keystrokeScore = analyseKeystrokes(keyEvents);
                 score += keystrokeScore * 0.4;
             } else {
                 if (score > 0.5) {
@@ -136,7 +136,7 @@
             return { passed, score, message };
         }
 
-        function analyzeMouseLinearity(events) {
+        function analyseMouseLinearity(events) {
             if (events.length < 3) return 1.0;
 
             const start = events[0];
@@ -162,7 +162,7 @@
             return 1.0;
         }
 
-        function analyzeMouseSpeed(events) {
+        function analyseMouseSpeed(events) {
             let variances = [];
             let totalSpeed = 0.0;
             let count = 0;
@@ -195,7 +195,7 @@
             return 1.0;
         }
 
-        function analyzeKeystrokes(events) {
+        function analyseKeystrokes(events) {
             if (events.length < 2) return 0.5;
 
             let intervals = [];
@@ -220,7 +220,7 @@
         OpenSentinel.verify = async function() {
              await new Promise(r => setTimeout(r, 1500)); // Network delay simulation
 
-             // Analyze the actual captured data
+             // Analyse the actual captured data
              // mouseEvents: [[x, y, ts], ...]
              // keyEvents: [[code, ts], ...]
              const result = verifyData(this.mouseEvents, this.keyEvents);

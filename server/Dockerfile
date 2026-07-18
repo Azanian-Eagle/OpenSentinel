@@ -5,7 +5,7 @@ WORKDIR /usr/src/opensentinel-server
 COPY server/ .
 RUN cargo install --path .
 
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 WORKDIR /app/server
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends ca-certificates curl \

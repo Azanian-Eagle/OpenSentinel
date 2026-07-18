@@ -19,7 +19,7 @@ pub fn get_session() -> Result<&'static Mutex<Session>, String> {
         .get_or_init(|| {
             let model_path = model_path();
 
-        let session = Session::builder()
+        Session::builder()
             .unwrap()
             .with_optimization_level(GraphOptimizationLevel::Level3)
             .unwrap()

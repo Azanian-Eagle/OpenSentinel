@@ -319,7 +319,7 @@ fn read_recent_threat_intel_records(
         }
     }
 
-    records.sort_by(|left, right| right.timestamp.cmp(&left.timestamp));
+    records.sort_by_key(|right| std::cmp::Reverse(right.timestamp));
     if records.len() > limit {
         records.truncate(limit);
     }

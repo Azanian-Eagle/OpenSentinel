@@ -1023,7 +1023,9 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/healthz").route(web::get().to(healthz)))
             .service(web::resource("/readyz").route(web::get().to(readyz)))
             .service(web::resource("/metrics").route(web::get().to(metrics)))
-            .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)))
+            .service(
+                web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
+            )
             .service(web::resource("/verify").route(web::post().to(verify)))
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
@@ -1107,8 +1109,12 @@ mod tests {
             check_rate_limit("127.0.0.1", &state, 1_000).expect("first requests should pass");
         }
 
-        let response = check_rate_limit("127.0.0.1", &state, 1_000).expect_err("limit should trigger");
-        assert_eq!(response.status(), actix_web::http::StatusCode::TOO_MANY_REQUESTS);
+        let response =
+            check_rate_limit("127.0.0.1", &state, 1_000).expect_err("limit should trigger");
+        assert_eq!(
+            response.status(),
+            actix_web::http::StatusCode::TOO_MANY_REQUESTS
+        );
     }
 
     #[actix_web::test]
@@ -1155,11 +1161,9 @@ mod tests {
             rate_limit_window_ms: 60_000,
         });
 
-        let app = test::init_service(
-            App::new()
-                .app_data(state)
-                .service(web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel))),
-        )
+        let app = test::init_service(App::new().app_data(state).service(
+            web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
+        ))
         .await;
 
         let request = test::TestRequest::get()
@@ -1168,7 +1172,9 @@ mod tests {
         let response = test::call_service(&app, request).await;
         assert!(response.status().is_success());
 
-        let body = to_bytes(response.into_body()).await.expect("body should read");
+        let body = to_bytes(response.into_body())
+            .await
+            .expect("body should read");
         let text = String::from_utf8(body.to_vec()).expect("valid utf8 body");
         assert!(text.contains("node-b"));
 
@@ -1189,7 +1195,9 @@ mod tests {
         let response = test::call_service(&app, request).await;
         assert!(response.status().is_success());
 
-        let bytes = to_bytes(response.into_body()).await.expect("body should read");
+        let bytes = to_bytes(response.into_body())
+            .await
+            .expect("body should read");
         let body = String::from_utf8(bytes.to_vec()).expect("valid utf8 body");
         assert!(body.contains("\"status\":\"ok\""));
     }

@@ -1,5 +1,5 @@
 # Build from project root: docker build -f server/Dockerfile .
-FROM rust:1.75 as builder
+FROM rust:1 as builder
 WORKDIR /usr/src/opensentinel-server
 # Copy server code
 COPY server/ .

@@ -80,6 +80,8 @@ def start_server():
     env["TRUSTED_PEERS_PUBKEYS"] = PEER_PUBLIC_KEY_HEX
     env["NODE_PRIVATE_KEY"] = NODE_PRIVATE_KEY_HEX
     env["NODE_ID"] = "test_node_main"
+    env["DATA_DIR"] = "."
+    env["PAYLOAD_SECRET_KEY"] = "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
 
     process = subprocess.Popen(
         SERVER_CMD,
@@ -119,6 +121,8 @@ def test_receive_valid_intel():
     print("\nTesting: Receive valid threat intel...")
     if os.path.exists("server/threat_intel.log"):
         os.remove("server/threat_intel.log")
+    if os.path.exists("server/data/threat_intel.log"):
+        os.remove("server/data/threat_intel.log")
 
     timestamp = int(time.time() * 1000)
     anonymized_signature = "some_signature_hash_123"
@@ -144,14 +148,23 @@ def test_receive_valid_intel():
 
     print("Valid intel accepted.")
 
-    time.sleep(1)
-    if not os.path.exists("server/threat_intel.log"):
+    log_path = None
+    for _ in range(50):
+        if os.path.exists("server/data/threat_intel.log"):
+            log_path = "server/data/threat_intel.log"
+            break
+        elif os.path.exists("server/threat_intel.log"):
+            log_path = "server/threat_intel.log"
+            break
+        time.sleep(0.1)
+
+    if not log_path:
         raise Exception("threat_intel.log was not created")
 
-    with open("server/threat_intel.log", "r") as f:
+    with open(log_path, "r") as f:
         content = f.read()
         if anonymized_signature not in content:
-            raise Exception("Log does not contain the signature")
+            raise Exception(f"Log does not contain the signature. Content:\n{content}")
 
     print("Log verification passed.")
 

@@ -17,6 +17,11 @@
 
     <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-family: sans-serif; z-index: 100;">&larr; Back to Home</a>
 
+    <!-- Network Status Toast (Hidden by default) -->
+    <div id="network-toast" style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(255,189,46,0.9); color: #000; padding: 10px 20px; border-radius: 5px; z-index: 1000; font-family: sans-serif; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        Network connection unstable. Retrying...
+    </div>
+
     <div class="card-container" id="card">
         <div class="glass-card">
             <img src="assets/images/logo.png" alt="Azanian Eagle" class="logo-eagle">
@@ -107,6 +112,18 @@
 
         // Initialize OpenSentinel
         OpenSentinel.init({ endpoint: '/verify' });
+
+        // Listen for network unstable events from the sensor
+        window.addEventListener('opensentinel-network-unstable', function(e) {
+            const toast = document.getElementById('network-toast');
+            toast.textContent = `Network connection unstable. Retrying in ${e.detail.backoffTime}ms...`;
+            toast.style.display = 'block';
+
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        });
 
         // Ported from server/src/main.rs (Behaviour Analysis Logic)
         function verifyData(mouseEvents, keyEvents) {
@@ -231,6 +248,8 @@
 
         // Mock verification for GitHub Pages Demo (Client-side Analysis)
         OpenSentinel.verify = async function() {
+             window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount: 1, backoffTime: 1000 } }));
+
              await new Promise(r => setTimeout(r, 1500)); // Network delay simulation
 
              // Analyse the actual captured data

@@ -7,3 +7,4 @@ dist/
 verification_screenshot.png
 .venv/
 threat_intel.log
+server.log

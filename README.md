@@ -1,4 +1,4 @@
-# OpenSentinel (Beta 1)
+# OpenSentinel (1.0.0 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
@@ -62,9 +62,9 @@ OpenSentinel is systematically designed from the ground up to guarantee absolute
 - **Strict Data Minimisation:** We only measure abstract mathematical variance (e.g., speed, linearity), completely avoiding personal profiling.
 - **No Cross-Site Tracking:** We fundamentally reject tracking cookies and shared identifiers.
 
-## Implementation Manual (Alpha/Beta Testing)
+## Implementation Manual (Production Deployment)
 
-We are actively seeking Alpha and Beta testers to help refine the OpenSentinel ecosystem.
+OpenSentinel is ready for production. Follow these steps to implement the stable release.
 
 ### Prerequisites
 
@@ -75,10 +75,17 @@ We are actively seeking Alpha and Beta testers to help refine the OpenSentinel e
 
 Create a `.env` file from the provided template and set the required secret key.
 
-Run the service with Docker Compose:
+Run the service with Docker Compose for local environments or lightweight deployments:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
+```
+
+For enterprise and high-availability production environments, we officially support Kubernetes out-of-the-box. Apply the provided manifests for zero-downtime rolling updates:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 ```
 
 Optional federation settings belong in the same `.env` file:

@@ -131,6 +131,80 @@
             };
         },
 
+        // Offline Queueing and Retry logic
+        offlineQueue: [],
+        isTransmitting: false,
+
+        queuePayload: function(payloadData) {
+            this.offlineQueue.push(payloadData);
+            this.processQueue();
+        },
+
+        processQueue: async function() {
+            if (this.isTransmitting || this.offlineQueue.length === 0) return;
+            this.isTransmitting = true;
+
+            while (this.offlineQueue.length > 0) {
+                const payloadData = this.offlineQueue[0];
+                let success = false;
+                let lastError = null;
+
+                const maxRetries = 3;
+                let retryCount = 0;
+                let backoffTime = 1000;
+
+                while (retryCount < maxRetries && !success) {
+                    for (const ep of this.endpoints) {
+                        try {
+                            const response = await fetch(ep, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payloadData)
+                            });
+
+                            if (response.ok) {
+                                const result = await response.json();
+                                if (result.passed && this.onSuccess) {
+                                    this.onSuccess(result.token || "verified");
+                                } else if (!result.passed && this.onFailure) {
+                                    this.onFailure(result.error || "bot_detected");
+                                }
+                                success = true;
+                                break;
+                            }
+                        } catch (err) {
+                            console.warn(`OpenSentinel: Failed to connect to ${ep}, retrying...`, err);
+                            lastError = err;
+                        }
+                    }
+
+                    if (!success) {
+                        retryCount++;
+                        if (retryCount < maxRetries) {
+                            console.log(`OpenSentinel: Network unstable. Retrying in ${backoffTime}ms...`);
+                            // Dispatch a custom event to update UI
+                            window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount, backoffTime } }));
+                            await new Promise(resolve => setTimeout(resolve, backoffTime));
+                            backoffTime *= 2; // Exponential backoff
+                        }
+                    }
+                }
+
+                if (success) {
+                    this.offlineQueue.shift(); // Remove from queue on success
+                } else {
+                    console.error("OpenSentinel Verification Error: All endpoints failed after retries.", lastError);
+                    const errResult = { passed: false, error: "Network failure. All endpoints unreachable." };
+                    if (this.onFailure) this.onFailure(errResult.error);
+                    break; // Stop processing queue, try again later
+                }
+            }
+
+            this.isTransmitting = false;
+        },
+
         verify: async function() {
             let pow = null;
             if (this.enablePoW) {
@@ -153,38 +227,7 @@
                 iv: encryptedData.iv
             };
 
-            let lastError = null;
-
-            // Iterate through endpoints for High Availability/Decentralised failover
-            for (const ep of this.endpoints) {
-                try {
-                    const response = await fetch(ep, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (result.passed && this.onSuccess) {
-                            this.onSuccess(result.token || "verified");
-                        } else if (!result.passed && this.onFailure) {
-                            this.onFailure(result.error || "bot_detected");
-                        }
-                        return result;
-                    }
-                } catch (err) {
-                    console.warn(`OpenSentinel: Failed to connect to ${ep}, trying next...`, err);
-                    lastError = err;
-                }
-            }
-
-            console.error("OpenSentinel Verification Error: All endpoints failed.", lastError);
-            const errResult = { passed: false, error: "Network failure. All endpoints unreachable." };
-            if (this.onFailure) this.onFailure(errResult.error);
-            return errResult;
+            this.queuePayload(payload);
         }
     };
 

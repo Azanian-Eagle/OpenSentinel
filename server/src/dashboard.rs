@@ -1,15 +1,17 @@
-use actix_web::{web, HttpRequest, HttpResponse, Responder};
 use actix_web::http::header;
+use actix_web::{web, HttpRequest, HttpResponse, Responder};
 
-use crate::AppState;
 use crate::read_recent_threat_intel_records;
+use crate::AppState;
 use base64::Engine;
 
 pub async fn dashboard(req: HttpRequest, state: web::Data<AppState>) -> impl Responder {
     let auth_header = req.headers().get(header::AUTHORIZATION);
     let admin_token = match &state.admin_token {
         Some(t) => t,
-        None => return HttpResponse::Forbidden().body("Dashboard is disabled. Configure ADMIN_TOKEN."),
+        None => {
+            return HttpResponse::Forbidden().body("Dashboard is disabled. Configure ADMIN_TOKEN.")
+        }
     };
 
     let is_authorized = if let Some(auth_value) = auth_header {
@@ -19,11 +21,21 @@ pub async fn dashboard(req: HttpRequest, state: web::Data<AppState>) -> impl Res
                     if let Ok(decoded_str) = String::from_utf8(decoded) {
                         let parts: Vec<&str> = decoded_str.splitn(2, ':').collect();
                         parts.len() == 2 && parts[0] == "admin" && parts[1] == admin_token
-                    } else { false }
-                } else { false }
-            } else { false }
-        } else { false }
-    } else { false };
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    } else {
+        false
+    };
 
     if !is_authorized {
         return HttpResponse::Unauthorized()
@@ -211,5 +223,7 @@ pub async fn dashboard(req: HttpRequest, state: web::Data<AppState>) -> impl Res
         records_json = records_json
     );
 
-    HttpResponse::Ok().content_type("text/html; charset=utf-8").body(html)
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(html)
 }

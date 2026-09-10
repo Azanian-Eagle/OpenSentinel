@@ -196,11 +196,13 @@ fn check_rate_limit(
     }
 
     if entry.0 >= state.rate_limit_max_requests {
-        return Err(Box::new(HttpResponse::TooManyRequests().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Rate limit exceeded. Please retry later.".into(),
-        })));
+        return Err(Box::new(HttpResponse::TooManyRequests().json(
+            VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Rate limit exceeded. Please retry later.".into(),
+            },
+        )));
     }
 
     entry.0 += 1;

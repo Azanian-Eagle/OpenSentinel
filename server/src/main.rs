@@ -185,7 +185,7 @@ fn check_rate_limit(
     client_ip: &str,
     state: &web::Data<AppState>,
     current_time_ms: i64,
-) -> Result<(), HttpResponse> {
+) -> Result<(), Box<HttpResponse>> {
     let mut request_counts = state.request_counts.lock().unwrap();
     let entry = request_counts
         .entry(client_ip.to_string())
@@ -196,11 +196,13 @@ fn check_rate_limit(
     }
 
     if entry.0 >= state.rate_limit_max_requests {
-        return Err(HttpResponse::TooManyRequests().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Rate limit exceeded. Please retry later.".into(),
-        }));
+        return Err(Box::new(HttpResponse::TooManyRequests().json(
+            VerifyResponse {
+                score: 0.0,
+                passed: false,
+                message: "Rate limit exceeded. Please retry later.".into(),
+            },
+        )));
     }
 
     entry.0 += 1;
@@ -462,7 +464,7 @@ async fn verify(
 
     if let Err(response) = check_rate_limit(&client_ip, &state, current_time) {
         increment_metric(&state, "rate_limited_total");
-        return response;
+        return *response;
     }
 
     if (current_time - data.timestamp).abs() > 300_000 {

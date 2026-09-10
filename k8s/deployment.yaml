@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensentinel-deployment
+  labels:
+    app: opensentinel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: opensentinel
+  template:
+    metadata:
+      labels:
+        app: opensentinel
+    spec:
+      containers:
+      - name: opensentinel
+        image: ghcr.io/azanian-eagle/opensentinel:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: opensentinel-secrets
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/server/data
+      volumes:
+      - name: data-volume
+        emptyDir: {}

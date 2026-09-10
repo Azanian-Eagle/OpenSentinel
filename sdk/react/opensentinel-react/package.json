@@ -1,0 +1,20 @@
+{
+  "name": "opensentinel-react",
+  "version": "1.0.0",
+  "description": "React hook for OpenSentinel verification",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Azanian Eagle",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

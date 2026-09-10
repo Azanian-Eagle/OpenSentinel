@@ -8,3 +8,5 @@ verification_screenshot.png
 .venv/
 threat_intel.log
 server.log
+server_output2.log
+server_output.log

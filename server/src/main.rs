@@ -1,3 +1,4 @@
+mod dashboard;
 mod ml;
 
 use actix_cors::Cors;
@@ -33,6 +34,8 @@ struct AppState {
     threat_intel_max_bytes: u64,
     rate_limit_max_requests: u32,
     rate_limit_window_ms: i64,
+    admin_token: Option<String>,
+    start_time: std::time::Instant,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -569,8 +572,10 @@ async fn verify(
     }
 
     let message = if passed {
+        increment_metric(&state, "verify_success_total");
         "Verification successful. Human behaviour pattern confirmed."
     } else {
+        increment_metric(&state, "verify_failed_total");
         "Verification failed. Automated behaviour pattern detected."
     };
 
@@ -981,6 +986,7 @@ async fn main() -> std::io::Result<()> {
     });
 
     let payload_secret_key = parse_payload_secret_key()?;
+    let admin_token = env::var("ADMIN_TOKEN").ok();
 
     let app_state = web::Data::new(AppState {
         seen_nonces: Mutex::new(HashSet::new()),
@@ -998,6 +1004,8 @@ async fn main() -> std::io::Result<()> {
         threat_intel_max_bytes,
         rate_limit_max_requests,
         rate_limit_window_ms,
+        admin_token,
+        start_time: std::time::Instant::now(),
     });
 
     log::info!("Starting OpenSentinel server at http://{}", address);
@@ -1032,6 +1040,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/api/federation/intel").route(web::post().to(receive_threat_intel)),
             )
+            .service(web::resource("/api/dashboard").route(web::get().to(dashboard::dashboard)))
             .service(web::resource("/src/sensor.js").route(web::get().to(serve_sensor_js)))
             // Serve static files from the client directory
             .service(fs::Files::new("/", client_dir.clone()).index_file("index.html"))
@@ -1060,6 +1069,8 @@ mod tests {
             threat_intel_max_bytes: 1024,
             rate_limit_max_requests: 60,
             rate_limit_window_ms: 60_000,
+            admin_token: Some("test_admin_token".to_string()),
+            start_time: std::time::Instant::now(),
         })
     }
 
@@ -1161,6 +1172,8 @@ mod tests {
             threat_intel_max_bytes: 1024,
             rate_limit_max_requests: 60,
             rate_limit_window_ms: 60_000,
+            admin_token: Some("test_admin_token".to_string()),
+            start_time: std::time::Instant::now(),
         });
 
         let app = test::init_service(App::new().app_data(state).service(

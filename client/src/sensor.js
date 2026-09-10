@@ -1,4 +1,17 @@
-(function(global) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.OpenSentinel = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
     const OpenSentinel = {
         endpoints: [
             '/verify'
@@ -30,12 +43,14 @@
         },
 
         startListening: function() {
-            document.addEventListener('mousemove', (e) => {
-                this.recordMouse(e);
-            });
-            document.addEventListener('keydown', (e) => {
-                this.recordKey(e);
-            });
+            if (typeof document !== 'undefined') {
+                document.addEventListener('mousemove', (e) => {
+                    this.recordMouse(e);
+                });
+                document.addEventListener('keydown', (e) => {
+                    this.recordKey(e);
+                });
+            }
         },
 
         recordMouse: function(e) {
@@ -185,7 +200,9 @@
                         if (retryCount < maxRetries) {
                             console.log(`OpenSentinel: Network unstable. Retrying in ${backoffTime}ms...`);
                             // Dispatch a custom event to update UI
-                            window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount, backoffTime } }));
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount, backoffTime } }));
+                            }
                             await new Promise(resolve => setTimeout(resolve, backoffTime));
                             backoffTime *= 2; // Exponential backoff
                         }
@@ -214,7 +231,7 @@
             const rawPayload = {
                 mouse_events: this.mouseEvents,
                 key_events: this.keyEvents,
-                user_agent: navigator.userAgent,
+                user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node.js/SSR',
                 timestamp: Date.now(),
                 pow: pow
             };
@@ -231,5 +248,5 @@
         }
     };
 
-    global.OpenSentinel = OpenSentinel;
-})(window);
+    return OpenSentinel;
+}));

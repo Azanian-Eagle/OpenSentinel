@@ -785,6 +785,11 @@ async fn metrics(state: web::Data<AppState>) -> impl Responder {
         .body(metrics_text(&state))
 }
 
+async fn dashboard(_req: HttpRequest) -> impl Responder {
+    let html = include_str!("dashboard.html");
+    HttpResponse::Ok().content_type("text/html").body(html)
+}
+
 async fn recent_threat_intel(
     query: web::Query<HashMap<String, String>>,
     state: web::Data<AppState>,
@@ -1025,6 +1030,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/healthz").route(web::get().to(healthz)))
             .service(web::resource("/readyz").route(web::get().to(readyz)))
             .service(web::resource("/metrics").route(web::get().to(metrics)))
+            .service(web::resource("/api/dashboard").route(web::get().to(dashboard)))
             .service(
                 web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
             )

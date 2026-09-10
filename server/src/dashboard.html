@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenSentinel Dashboard</title>
+    <style>
+        body { font-family: sans-serif; background: #050505; color: #fff; padding: 2rem; }
+        .card { background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 8px; margin-bottom: 2rem; }
+        h1 { color: #00f3ff; }
+        .metric { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .label { color: #aaa; font-size: 0.9rem; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { color: #bd00ff; }
+    </style>
+</head>
+<body>
+    <h1>OpenSentinel Analytics</h1>
+    <div class="card grid" id="metrics-grid">
+        <div><div class="metric" id="req-total">-</div><div class="label">Total Requests</div></div>
+        <div><div class="metric" id="ver-total">-</div><div class="label">Verifications</div></div>
+        <div><div class="metric" id="fed-total">-</div><div class="label">Federated Ingests</div></div>
+        <div><div class="metric" id="rate-total">-</div><div class="label">Rate Limited</div></div>
+    </div>
+
+    <div class="card">
+        <h2>Recent Threat Intelligence (Phase 3)</h2>
+        <table>
+            <thead><tr><th>Time</th><th>Source Node</th><th>Anonymized Signature</th><th>Score</th></tr></thead>
+            <tbody id="intel-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchMetrics() {
+            try {
+                const res = await fetch('/metrics');
+                const text = await res.text();
+                const lines = text.split('\n');
+
+                const metrics = {
+                    req: lines.find(l => l.startsWith('opensentinel_requests_total'))?.split(' ')[1] || '0',
+                    ver: lines.find(l => l.startsWith('opensentinel_verify_requests_total'))?.split(' ')[1] || '0',
+                    fed: lines.find(l => l.startsWith('opensentinel_federation_ingests_total'))?.split(' ')[1] || '0',
+                    rate: lines.find(l => l.startsWith('opensentinel_rate_limited_total'))?.split(' ')[1] || '0'
+                };
+
+                document.getElementById('req-total').innerText = metrics.req;
+                document.getElementById('ver-total').innerText = metrics.ver;
+                document.getElementById('fed-total').innerText = metrics.fed;
+                document.getElementById('rate-total').innerText = metrics.rate;
+            } catch (e) { console.error(e); }
+        }
+
+        async function fetchIntel() {
+            try {
+                const res = await fetch('/api/federation/recent');
+                const data = await res.json();
+                const tbody = document.getElementById('intel-body');
+                tbody.innerHTML = '';
+
+                if (Array.isArray(data)) {
+                    data.forEach(intel => {
+                        const tr = document.createElement('tr');
+                        const date = new Date(intel.timestamp).toLocaleString();
+                        tr.innerHTML = `<td>${date}</td><td>${intel.source_node}</td><td style="font-family: monospace;">${intel.anonymized_signature.substring(0, 16)}...</td><td>${intel.score.toFixed(2)}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        fetchMetrics();
+        fetchIntel();
+        setInterval(fetchMetrics, 5000);
+        setInterval(fetchIntel, 10000);
+    </script>
+</body>
+</html>

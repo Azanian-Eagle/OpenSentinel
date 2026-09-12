@@ -370,3 +370,33 @@ footer {
         padding: 3rem 1.5rem 2rem;
     }
 }
+
+/* Refactored Demo Content Styles */
+.demo-explanation {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: left;
+    font-size: 1rem;
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    line-height: 1.6;
+}
+
+.demo-cta {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 480px) {
+    .demo-explanation {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    .demo-cta {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+    }
+}

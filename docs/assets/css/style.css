@@ -676,3 +676,24 @@ footer {
         font-size: 0.8rem !important;
     }
 }
+
+/* Refactored Layout Styles */
+.content-section {
+    margin-top: 6rem;
+}
+
+.about-content {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .content-section {
+        margin-top: 4rem;
+    }
+    .about-content {
+        padding: 1.5rem;
+    }
+}

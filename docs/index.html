@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenSentinel | Privacy-First Bot Protection by Azanian Eagle</title>
     <meta name="description" content="OpenSentinel by Azanian Eagle: The free, open-source, non-invasive alternative to CAPTCHA. Protect your site with behavioural analysis, not puzzles. Privacy-first, POPIA compliant, and forged in Mzansi. No third-party AI training. Now in 1.0 Production Release.">
-    <meta name="keywords" content="behavioural analysis, behavioural biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cybersecurity, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic, 1.0, production release, stable">
+    <meta name="keywords" content="behavioural analysis, behavioural biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cybersecurity, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic, 1.0, production release, stable, reCAPTCHA alternative, CAPTCHA replacement, Cloudflare Turnstile alternative, hCaptcha alternative">
     <meta name="author" content="Azanian Eagle">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/">
@@ -123,36 +123,36 @@
             </div>
         </section>
 
-        <section id="deployment" class="container-limit" style="margin-top: 6rem;">
+        <section id="deployment" class="container-limit content-section">
             <h2 class="section-title">Deploy the Service</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+            <div class="about-content" style="text-align: left;">
                 <p style="margin-bottom: 1rem; font-size: 1.05rem; color: #ddd;">OpenSentinel now ships a self-hosted backend path for operators who want a free, fully open-source service they can run without funding or cloud lock-in.</p>
                 <ul style="list-style: none; color: #aaa; padding-left: 0;">
-                    <li style="margin-bottom: 1rem;">✅ Use Docker Compose for the lowest-friction deployment, or standard Kubernetes manifests for enterprise scalability.</li>
-                    <li style="margin-bottom: 1rem;">✅ The backend exposes <strong>/healthz</strong> and <strong>/readyz</strong> for robust runtime checks and load balancer configurations.</li>
-                    <li style="margin-bottom: 1rem;">✅ Tagged releases publish a runnable backend image and release bundle.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; Use Docker Compose for the lowest-friction deployment, or standard Kubernetes manifests for enterprise scalability.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; The backend exposes <strong>/healthz</strong> and <strong>/readyz</strong> for robust runtime checks and load balancer configurations.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; Tagged releases publish a runnable backend image and release bundle.</li>
                 </ul>
             </div>
         </section>
 
         <!-- New Section: Compliance -->
-        <section id="compliance" class="container-limit" style="margin-top: 6rem;">
+        <section id="compliance" class="container-limit content-section">
             <h2 class="section-title">Regulatory Compliance & Data Protection</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+            <div class="about-content" style="text-align: left;">
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
                     <strong>Built for the Modern Regulatory Landscape:</strong> OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with the most stringent global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
                 </p>
                 <ul style="list-style: none; color: #aaa;">
-                    <li style="margin-bottom: 1rem;">✅ <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could potentially identify an individual user.</li>
-                    <li style="margin-bottom: 1rem;">✅ <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and fundamentally impossible to reverse-engineer into personal profiles.</li>
-                    <li style="margin-bottom: 1rem;">✅ <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never crosses international borders or leaves your sovereign control.</li>
-                    <li style="margin-bottom: 1rem;">✅ <strong>No Cross-Site Tracking:</strong> We fundamentally reject the use of tracking cookies, local storage beacons, or any mechanism designed to follow users across different websites. Your interactions on site A are entirely independent of your interactions on site B.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could potentially identify an individual user.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and fundamentally impossible to reverse-engineer into personal profiles.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never crosses international borders or leaves your sovereign control.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>No Cross-Site Tracking:</strong> We fundamentally reject the use of tracking cookies, local storage beacons, or any mechanism designed to follow users across different websites. Your interactions on site A are entirely independent of your interactions on site B.</li>
                 </ul>
             </div>
         </section>
 
         <!-- New Section: The Problem -->
-        <section id="why-it-matters" class="container-limit" style="margin-top: 6rem;">
+        <section id="why-it-matters" class="container-limit content-section">
             <h2 class="section-title">The Problem: You Are The Product</h2>
             <div class="grid">
                 <div class="card tilt-element" data-tilt>
@@ -171,7 +171,7 @@
         </section>
 
         <!-- New Section: The Solution -->
-        <section id="solution" class="how-it-works container-limit" style="margin-top: 6rem;">
+        <section id="solution" class="how-it-works container-limit content-section">
             <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
                 OpenSentinel completely shifts the security paradigm from the archaic "Challenge-Response" model to an intelligent, seamless "Passive Observation" methodology. We verify humanity by meticulously analysing <em>how</em> you interact with a page, rather than demanding <em>what</em> objects you can identify in a grainy photograph.
@@ -193,48 +193,48 @@
         </section>
 
         <!-- New Section: Target Audience -->
-        <section id="for-who" class="container-limit" style="margin-top: 6rem;">
+        <section id="for-who" class="container-limit content-section">
             <h2 class="section-title">Who Is This For?</h2>
 
             <div class="audience-grid" style="display: grid; gap: 2rem;">
                 <!-- For Developers -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-primary);">
-                    <h3>👨‍💻 For Developers & Software Engineers</h3>
+                    <h3>For Developers & Software Engineers</h3>
                     <p>It is time to stop wrestling with bloated, invasive third-party scripts that negatively impact your application's performance. OpenSentinel provides you with the modern tools necessary to build secure applications without compromise:</p>
                     <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Drop-in Integration:</strong> Implement sophisticated bot protection with merely two lines of code.</li>
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Transparent & Open Source:</strong> Fully audit the code yourself to ensure it meets your security standards. Provided under the permissive MIT licence.</li>
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Ultra-Lightweight Profile:</strong> Say goodbye to heavy WebAssembly (WASM) payloads that severely delay your application's Time to Interactive (TTI).</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Drop-in Integration:</strong> Implement sophisticated bot protection with merely two lines of code.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Transparent & Open Source:</strong> Fully audit the code yourself to ensure it meets your security standards. Provided under the permissive MIT licence.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Ultra-Lightweight Profile:</strong> Say goodbye to heavy WebAssembly (WASM) payloads that severely delay your application's Time to Interactive (TTI).</li>
                     </ul>
                 </div>
 
                 <!-- For Funders -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid #ffbd2e;">
-                    <h3>💼 For Funders, Financiers & Investors</h3>
+                    <h3>For Funders, Financiers & Investors</h3>
                     <p>Invest directly in the future of the private web. The global market is absolutely desperate for an ethical, high-performance alternative to current monopolistic offerings.</p>
                     <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">🚀 <strong>Massive Market Gap:</strong> Stringent privacy legislation (such as GDPR and POPIA) is rapidly creating a massive vacuum for fully compliant, non-invasive security tools.</li>
-                        <li style="margin-bottom: 0.5rem;">🌍 <strong>Digital Sovereignty:</strong> We are building a resilient, "Made with &#9829; in South Africa" solution designed specifically to disrupt the global cybersecurity market.</li>
-                        <li style="margin-bottom: 0.5rem;">📈 <strong>Unmatched Scalability:</strong> Engineered from the ground up in Rust to provide massive concurrent throughput at exceptionally low operational costs.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Massive Market Gap:</strong> Stringent privacy legislation (such as GDPR and POPIA) is rapidly creating a massive vacuum for fully compliant, non-invasive security tools.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Digital Sovereignty:</strong> We are building a resilient, "Made with &#9829; in South Africa" solution designed specifically to disrupt the global cybersecurity market.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Unmatched Scalability:</strong> Engineered from the ground up in Rust to provide massive concurrent throughput at exceptionally low operational costs.</li>
                     </ul>
                 </div>
 
                 <!-- For The Public -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-secondary);">
-                    <h3>✊ For The General Public</h3>
+                    <h3>For The General Public</h3>
                     <p>It is time to reclaim your digital experience and assert your right to browse the internet without constant interrogation.</p>
                     <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">🔒 <strong>Absolute Privacy:</strong> We categorically refuse to track your movements across the web or build invasive profiles.</li>
-                        <li style="margin-bottom: 0.5rem;">⚡ <strong>Frictionless Speed:</strong> No more clicking on fire hydrants, crosswalks, or bicycles. Just browse the web naturally, as it was originally intended.</li>
-                        <li style="margin-bottom: 0.5rem;">🇿🇦 <strong>Local Innovation:</strong> By supporting OpenSentinel, you are actively championing indigenous South African technological development.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Absolute Privacy:</strong> We categorically refuse to track your movements across the web or build invasive profiles.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Frictionless Speed:</strong> No more clicking on fire hydrants, crosswalks, or bicycles. Just browse the web naturally, as it was originally intended.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Local Innovation:</strong> By supporting OpenSentinel, you are actively championing indigenous South African technological development.</li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        <section class="container-limit" style="margin-top: 6rem; text-align: center;">
+        <section class="container-limit content-section" style="text-align: center;">
             <h2 class="section-title">Introducing Phase 2: AI Integration</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+            <div class="about-content" style="text-align: left;">
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
                     <strong>Next-Generation Bot Detection:</strong> OpenSentinel is proud to announce the successful integration of our Phase 2 ONNX machine-learning model. We have evolved beyond simple linear heuristics to true behavioural variance analysis.
                 </p>
@@ -248,7 +248,7 @@
         </section>
 
         <!-- New Section: Comparison Table -->
-        <section id="comparison" class="container-limit" style="margin-top: 6rem;">
+        <section id="comparison" class="container-limit content-section">
             <h2 class="section-title">The Competitive Edge</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
                 Examine exactly how OpenSentinel compares directly against entrenched industry monopolies like Cloudflare Turnstile and Google reCAPTCHA. We provide true digital sovereignty and uncompromising privacy without ever sacrificing usability or advanced protective capabilities.
@@ -266,39 +266,39 @@
                     <tbody>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">User Experience</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction (Passive)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Mostly Invisible</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Interruptive Puzzles</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Zero Friction (Passive)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Mostly Invisible</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Interruptive Puzzles</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (POPIA/GDPR)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design (No Tracking)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Privacy-Preserving (Opaque)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Extensive Tracking</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Compliant by Design (No Tracking)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Privacy-Preserving (Opaque)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Extensive Tracking</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Third-Party AI Training</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero (Your Data Stays Yours)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Unknown / Opaque</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Unpaid Labour Engine</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Zero (Your Data Stays Yours)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Unknown / Opaque</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Unpaid Labour Engine</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Decentralised Threat Sharing</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Yes (Federated Network)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Centralised Enclosure</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Centralised Enclosure</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Yes (Federated Network)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Centralised Enclosure</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Centralised Enclosure</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Code Transparency</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source (MIT)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Proprietary</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Proprietary</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Open Source (MIT)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Proprietary</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Proprietary</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">High Availability Fallback</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Decentralised Nodes</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Corporate CDN</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Corporate CDN</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Decentralised Nodes</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Corporate CDN</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Corporate CDN</td>
                         </tr>
                     </tbody>
                 </table>
@@ -306,7 +306,7 @@
         </section>
 
         <!-- New Section: Vision -->
-        <section id="vision" class="container-limit" style="margin-top: 6rem;">
+        <section id="vision" class="container-limit content-section">
             <h2 class="section-title">Project Vision</h2>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
@@ -325,9 +325,9 @@
         </section>
 
         <!-- New Section: Decentralised Network Deep Dive -->
-        <section id="network" class="container-limit" style="margin-top: 6rem;">
+        <section id="network" class="container-limit content-section">
             <h2 class="section-title">Phase 3: The Decentralised Sentinel Network</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+            <div class="about-content" style="text-align: left;">
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
                     <strong>Strength in Numbers, Privacy in Architecture:</strong> The greatest advantage of centralised, proprietary systems like Cloudflare Turnstile or Google reCAPTCHA is their vast, monopolised network intelligence. OpenSentinel aggressively levels the playing field by achieving this exact same collective immunity through a novel, open <em>Federated P2P Threat Intelligence Network</em>. We believe that intelligence should be shared, not hoarded.
                 </p>
@@ -349,7 +349,7 @@
         </section>
 
         <!-- New Section: Technical Architecture -->
-        <section id="architecture" class="container-limit" style="margin-top: 6rem;">
+        <section id="architecture" class="container-limit content-section">
             <h2 class="section-title">Technical Architecture & How It Works</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
                 OpenSentinel is a sophisticated fusion of highly optimised client-side sensors, blazing-fast Rust web services, and localised machine-learning inference. Here is a deep dive into the core mechanics.
@@ -371,7 +371,7 @@
         </section>
 
         <!-- Updated Implementation Manual Section -->
-        <section id="install" class="install container-limit" style="margin-top: 6rem;">
+        <section id="install" class="install container-limit content-section">
             <h2 class="section-title">Implementation Manual & Production Deployment</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
                 OpenSentinel is now ready for production use across all environments. Implementation is purposefully designed to be incredibly simple, yet devastatingly powerful. Follow this comprehensive manual to integrate our highly optimised, fault-tolerant system.
@@ -443,27 +443,27 @@ TRUSTED_PEERS=https://node1.example.com,https://node2.partner.com</code></pre>
         </section>
 
         <!-- New Section: Open Source Community & Governance -->
-        <section id="open-source" class="container-limit" style="margin-top: 6rem;">
+        <section id="open-source" class="container-limit content-section">
             <h2 class="section-title">Open-Source Community & Governance</h2>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-primary);">
-                    <h3>🤝 Contributing to the Vision</h3>
+                    <h3>Contributing to the Vision</h3>
                     <p>Much like the foundational pillars of the open internet (such as Linux or Mozilla), OpenSentinel thrives on radical transparency and community collaboration. We actively encourage developers, security researchers, and data scientists to thoroughly audit our codebase, submit intricate pull requests, and help us continuously refine our machine-learning models. Please review our <code>CONTRIBUTING.md</code> guidelines on GitHub to get started.</p>
                 </div>
                 <div class="card tilt-element" data-tilt style="border-top: 4px solid #ffbd2e;">
-                    <h3>🛡️ Security & Vulnerability Policy</h3>
+                    <h3>Security & Vulnerability Policy</h3>
                     <p>Security is our absolute highest priority. We maintain a strict, comprehensive security disclosure policy. If you discover a potential vulnerability within the core Rust backend or the obfuscated client sensor, we urge you to report it privately via our designated security channels outlined in <code>SECURITY.md</code> before public disclosure. We are committed to patching critical issues immediately.</p>
                 </div>
                 <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-secondary);">
-                    <h3>⚖️ Transparent Governance</h3>
+                    <h3>Transparent Governance</h3>
                     <p>The OpenSentinel project is governed by a strict Code of Conduct and a transparent technical steering model. All major architectural decisions (such as the integration of the ONNX models or the development of the Federated Protocol) are openly documented and heavily debated within public GitHub issues and structured Request for Comments (RFCs) to ensure the project remains truly community-driven.</p>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="about container-limit" style="margin-top: 6rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <section id="about" class="about container-limit content-section" style="text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
             <h2 class="section-title">About OpenSentinel</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="about-content" >
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
                     <strong>OpenSentinel is a fiercely independent South African open-source initiative</strong> entirely dedicated to reclaiming our collective digital independence. We fundamentally believe that critical cybersecurity tools should be freely accessible, radically transparent, and deeply respectful of fundamental human rights regarding privacy.
                 </p>

@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "opensentinel.fullname" . }}
+  labels:
+    {{- include "opensentinel.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: opensentinel.rules
+      rules:
+        - alert: HighBotTraffic
+          expr: rate(opensentinel_verify_failed_total[5m]) > 10
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: High Bot Traffic Detected
+            description: "More than 10 bot verification failures per second detected over the last 5 minutes."
+
+        - alert: HealthCheckFailures
+          expr: rate(opensentinel_health_checks_total[5m]) > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: Health Checks Failing
+            description: "Health checks are failing."
+
+        - alert: ReadinessCheckFailures
+          expr: rate(opensentinel_readiness_checks_total[5m]) > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: Readiness Checks Failing
+            description: "Readiness checks are failing."

@@ -16,6 +16,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
       labels:
         app: {{ include "opensentinel.name" . }}
         app.kubernetes.io/name: {{ include "opensentinel.name" . }}
@@ -30,7 +34,11 @@ spec:
           name: http
         envFrom:
         - secretRef:
+            {{- if .Values.externalSecrets.enabled }}
+            name: {{ .Values.externalSecrets.targetSecretName }}
+            {{- else }}
             name: {{ .Values.secretName }}
+            {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz

@@ -19,7 +19,7 @@ jobs:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-audit
-        run: cargo install cargo-audit
+        run: cargo install cargo-audit --locked
       - name: Run Security Audit
         run: cargo audit
         working-directory: server
@@ -48,3 +48,25 @@ jobs:
       - name: Run Clippy
         run: cargo clippy -- -D warnings
         working-directory: server
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: pip install playwright
+      - name: Install Playwright browsers
+        run: playwright install --with-deps
+      - name: Run E2E Tests
+        run: python3 tests/integration_tests.py

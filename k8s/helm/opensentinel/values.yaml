@@ -9,12 +9,33 @@ service:
   type: ClusterIP
   port: 8080
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 secretName: opensentinel-secrets
+
+externalSecrets:
+  enabled: false
+  secretStoreRef:
+    name: "aws-secretsmanager"
+    kind: "ClusterSecretStore"
+  targetSecretName: "opensentinel-external-secrets"
+  data:
+    - secretKey: NODE_PRIVATE_KEY
+      remoteRef:
+        key: "opensentinel/node-private-key"
+    - secretKey: PAYLOAD_SECRET_KEY
+      remoteRef:
+        key: "opensentinel/payload-secret-key"

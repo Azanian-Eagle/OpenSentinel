@@ -182,9 +182,9 @@
                             if (response.ok) {
                                 const result = await response.json();
                                 if (result.passed && this.onSuccess) {
-                                    this.onSuccess(result.token || "verified");
+                                    this.onSuccess(result.message || result.token || "verified");
                                 } else if (!result.passed && this.onFailure) {
-                                    this.onFailure(result.error || "bot_detected");
+                                    this.onFailure(result.message || result.error || "bot_detected");
                                 }
                                 success = true;
                                 break;

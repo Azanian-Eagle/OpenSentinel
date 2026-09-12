@@ -71,3 +71,48 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+  publish-cargo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish to crates.io
+        run: |
+          cd server
+          cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  publish-helm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package Helm chart
+        run: |
+          helm package k8s/helm/opensentinel
+
+      - name: Push Helm chart to GHCR
+        run: |
+          PKG_NAME=$(ls opensentinel-*.tgz)
+          OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}
+          helm push $PKG_NAME oci://ghcr.io/${OWNER_LC}/helm

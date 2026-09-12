@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "opensentinel.fullname" . }}-deployment
+  labels:
+    app: {{ include "opensentinel.name" . }}
+    helm.sh/chart: {{ include "opensentinel.chart" . }}
+    app.kubernetes.io/name: {{ include "opensentinel.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "opensentinel.name" . }}
+      app.kubernetes.io/name: {{ include "opensentinel.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "opensentinel.name" . }}
+        app.kubernetes.io/name: {{ include "opensentinel.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8080
+          name: http
+        envFrom:
+        - secretRef:
+            name: {{ .Values.secretName }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/server/data
+      volumes:
+      - name: data-volume
+        emptyDir: {}

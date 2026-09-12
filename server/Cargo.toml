@@ -2,6 +2,9 @@
 name = "opensentinel-server"
 version = "1.0.0"
 edition = "2021"
+description = "OpenSentinel backend server for bot-detection and security verification"
+license = "MIT"
+repository = "https://github.com/Azanian-Eagle/OpenSentinel"
 keywords = ["captcha", "security", "web", "privacy", "bot-detection"]
 
 [dependencies]

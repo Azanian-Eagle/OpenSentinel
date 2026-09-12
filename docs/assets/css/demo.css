@@ -72,7 +72,7 @@ body {
 /* 3D Card */
 .card-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 800px;
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out;
     margin: 4rem 0; /* Add margin to separate from top and footer */

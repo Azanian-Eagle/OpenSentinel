@@ -9,10 +9,6 @@
     --font-code: 'Fira Code', monospace;
 }
 
-html {
-    scroll-padding-top: 100px;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -444,7 +440,7 @@ body.no-scroll {
     border: 1px solid #333;
     border-radius: 8px;
     width: 100%;
-    max-width: 100%;
+    max-width: 700px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -478,8 +474,6 @@ body.no-scroll {
 pre {
     padding: 20px;
     overflow-x: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
 }
 
 code {
@@ -680,26 +674,5 @@ footer {
     .comparison-table th, .comparison-table td {
         padding: 0.75rem !important;
         font-size: 0.8rem !important;
-    }
-}
-
-/* Refactored Layout Styles */
-.content-section {
-    margin-top: 6rem;
-}
-
-.about-content {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 3rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 768px) {
-    .content-section {
-        margin-top: 4rem;
-    }
-    .about-content {
-        padding: 1.5rem;
     }
 }

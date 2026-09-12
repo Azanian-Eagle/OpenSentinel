@@ -560,7 +560,13 @@ async fn verify(
             signature,
         };
 
-        let peers = state.trusted_peers.lock().unwrap().keys().cloned().collect::<Vec<String>>();
+        let peers = state
+            .trusted_peers
+            .lock()
+            .unwrap()
+            .keys()
+            .cloned()
+            .collect::<Vec<String>>();
         let client = state.http_client.clone();
 
         // Broadcast asynchronously without blocking the client response
@@ -766,7 +772,13 @@ async fn receive_threat_intel(
     }
 
     // Gossip Protocol: Forward to other trusted peers
-    let peers: Vec<String> = state.trusted_peers.lock().unwrap().keys().cloned().collect();
+    let peers: Vec<String> = state
+        .trusted_peers
+        .lock()
+        .unwrap()
+        .keys()
+        .cloned()
+        .collect();
     let client = state.http_client.clone();
     let source_node = intel.source_node.clone();
     // We must clone the payload to forward it exactly as received (including the original signature)
@@ -806,7 +818,13 @@ async fn metrics(state: web::Data<AppState>) -> impl Responder {
 
 async fn discover_peers(state: web::Data<AppState>) -> impl Responder {
     increment_metric(&state, "requests_total");
-    let peers = state.trusted_peers.lock().unwrap().keys().cloned().collect::<Vec<String>>();
+    let peers = state
+        .trusted_peers
+        .lock()
+        .unwrap()
+        .keys()
+        .cloned()
+        .collect::<Vec<String>>();
     HttpResponse::Ok().json(peers)
 }
 
@@ -1031,10 +1049,7 @@ async fn main() -> std::io::Result<()> {
     log::info!("Starting OpenSentinel server at http://{}", address);
     if federation_enabled {
         let peers_count = app_state.trusted_peers.lock().unwrap().len();
-        log::info!(
-            "Federation ENABLED. Trusted peers: {}",
-            peers_count
-        );
+        log::info!("Federation ENABLED. Trusted peers: {}", peers_count);
         if app_state.node_signing_key.is_some() {
             log::info!("Node cryptographic signing is ENABLED.");
         } else {

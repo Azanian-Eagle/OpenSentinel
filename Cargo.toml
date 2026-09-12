@@ -1,5 +1,10 @@
 [workspace]
 members = ["server"]
+resolver = "2"
+
+[profile.dist]
+inherits = "release"
+lto = "thin"
 
 [workspace.metadata.dist]
 cargo-dist-version = "0.32.0"

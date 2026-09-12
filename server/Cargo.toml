@@ -7,10 +7,6 @@ license = "MIT"
 repository = "https://github.com/Azanian-Eagle/OpenSentinel"
 keywords = ["captcha", "security", "web", "privacy", "bot-detection"]
 
-[profile.dist]
-inherits = "release"
-lto = "thin"
-
 [dependencies]
 actix-web = "4"
 actix-files = "0.6"

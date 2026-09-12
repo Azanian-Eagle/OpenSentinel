@@ -25,7 +25,7 @@ struct AppState {
     seen_nonces: Mutex<HashSet<String>>,
     request_counts: Mutex<HashMap<String, (u32, i64)>>,
     metrics: Mutex<HashMap<&'static str, u64>>,
-    trusted_peers: HashMap<String, Option<VerifyingKey>>, // Peer domain -> Optional Public Key
+    trusted_peers: Mutex<HashMap<String, Option<VerifyingKey>>>, // Peer domain -> Optional Public Key
     federation_enabled: bool,
     http_client: Client,
     node_signing_key: Option<SigningKey>,
@@ -235,6 +235,8 @@ fn metrics_text(state: &web::Data<AppState>) -> String {
     let rate_limited = metrics.get("rate_limited_total").copied().unwrap_or(0);
     let health_checks = metrics.get("health_checks_total").copied().unwrap_or(0);
     let readiness_checks = metrics.get("readiness_checks_total").copied().unwrap_or(0);
+    let verify_failed = metrics.get("verify_failed_total").copied().unwrap_or(0);
+    let verify_success = metrics.get("verify_success_total").copied().unwrap_or(0);
 
     format!(
         concat!(
@@ -249,14 +251,20 @@ fn metrics_text(state: &web::Data<AppState>) -> String {
             "# TYPE opensentinel_health_checks_total counter\n",
             "opensentinel_health_checks_total {}\n",
             "# TYPE opensentinel_readiness_checks_total counter\n",
-            "opensentinel_readiness_checks_total {}\n"
+            "opensentinel_readiness_checks_total {}\n",
+            "# TYPE opensentinel_verify_failed_total counter\n",
+            "opensentinel_verify_failed_total {}\n",
+            "# TYPE opensentinel_verify_success_total counter\n",
+            "opensentinel_verify_success_total {}\n"
         ),
         total_requests,
         verify_requests,
         federation_ingests,
         rate_limited,
         health_checks,
-        readiness_checks
+        readiness_checks,
+        verify_failed,
+        verify_success
     )
 }
 
@@ -552,7 +560,7 @@ async fn verify(
             signature,
         };
 
-        let peers = state.trusted_peers.keys().cloned().collect::<Vec<String>>();
+        let peers = state.trusted_peers.lock().unwrap().keys().cloned().collect::<Vec<String>>();
         let client = state.http_client.clone();
 
         // Broadcast asynchronously without blocking the client response
@@ -638,9 +646,15 @@ async fn receive_threat_intel(
     }
 
     // 1. Peer and Cryptographic Signature Validation
-    let peer_pubkey_opt = state.trusted_peers.get(&intel.source_node);
+    let peer_pubkey_opt;
+    let is_trusted_peers_empty;
+    {
+        let trusted_peers = state.trusted_peers.lock().unwrap();
+        peer_pubkey_opt = trusted_peers.get(&intel.source_node).cloned();
+        is_trusted_peers_empty = trusted_peers.is_empty();
+    }
 
-    if peer_pubkey_opt.is_none() && !state.trusted_peers.is_empty() {
+    if peer_pubkey_opt.is_none() && !is_trusted_peers_empty {
         log::warn!(
             "Rejected threat intel from untrusted source: {}",
             intel.source_node
@@ -653,7 +667,7 @@ async fn receive_threat_intel(
     }
 
     // Verify cryptographic signature if a public key is configured for this peer
-    if let Some(Some(pubkey)) = peer_pubkey_opt {
+    if let Some(Some(pubkey)) = &peer_pubkey_opt {
         let sig_hex = match &intel.signature {
             Some(s) => s,
             None => {
@@ -752,7 +766,7 @@ async fn receive_threat_intel(
     }
 
     // Gossip Protocol: Forward to other trusted peers
-    let peers: Vec<String> = state.trusted_peers.keys().cloned().collect();
+    let peers: Vec<String> = state.trusted_peers.lock().unwrap().keys().cloned().collect();
     let client = state.http_client.clone();
     let source_node = intel.source_node.clone();
     // We must clone the payload to forward it exactly as received (including the original signature)
@@ -788,6 +802,12 @@ async fn metrics(state: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/plain; version=0.0.4")
         .body(metrics_text(&state))
+}
+
+async fn discover_peers(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    let peers = state.trusted_peers.lock().unwrap().keys().cloned().collect::<Vec<String>>();
+    HttpResponse::Ok().json(peers)
 }
 
 async fn recent_threat_intel(
@@ -992,7 +1012,7 @@ async fn main() -> std::io::Result<()> {
         seen_nonces: Mutex::new(HashSet::new()),
         request_counts: Mutex::new(HashMap::new()),
         metrics: Mutex::new(HashMap::new()),
-        trusted_peers,
+        trusted_peers: Mutex::new(trusted_peers),
         federation_enabled,
         http_client: Client::builder()
             .timeout(Duration::from_secs(3))
@@ -1010,9 +1030,10 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Starting OpenSentinel server at http://{}", address);
     if federation_enabled {
+        let peers_count = app_state.trusted_peers.lock().unwrap().len();
         log::info!(
             "Federation ENABLED. Trusted peers: {}",
-            app_state.trusted_peers.len()
+            peers_count
         );
         if app_state.node_signing_key.is_some() {
             log::info!("Node cryptographic signing is ENABLED.");
@@ -1020,6 +1041,28 @@ async fn main() -> std::io::Result<()> {
             log::warn!(
                 "Node cryptographic signing is DISABLED (NODE_PRIVATE_KEY not set or invalid)."
             );
+        }
+
+        if let Ok(discovery_url) = env::var("FEDERATION_DISCOVERY_URL") {
+            log::info!("Federation discovery ENABLED: {}", discovery_url);
+            let state_clone = app_state.clone();
+            actix_web::rt::spawn(async move {
+                let mut interval = actix_web::rt::time::interval(Duration::from_secs(60));
+                loop {
+                    interval.tick().await;
+                    match state_clone.http_client.get(&discovery_url).send().await {
+                        Ok(resp) if resp.status().is_success() => {
+                            if let Ok(peers) = resp.json::<Vec<String>>().await {
+                                let mut trusted = state_clone.trusted_peers.lock().unwrap();
+                                for peer in peers {
+                                    trusted.entry(peer).or_insert(None);
+                                }
+                            }
+                        }
+                        _ => log::warn!("Failed to fetch peers from discovery service"),
+                    }
+                }
+            });
         }
     }
 
@@ -1035,6 +1078,9 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/metrics").route(web::get().to(metrics)))
             .service(
                 web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
+            )
+            .service(
+                web::resource("/api/federation/discovery").route(web::get().to(discover_peers)),
             )
             .service(web::resource("/verify").route(web::post().to(verify)))
             .service(
@@ -1060,7 +1106,7 @@ mod tests {
             seen_nonces: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
-            trusted_peers: HashMap::new(),
+            trusted_peers: Mutex::new(HashMap::new()),
             federation_enabled,
             http_client: Client::builder().build().expect("test client should build"),
             node_signing_key: None,
@@ -1163,7 +1209,7 @@ mod tests {
             seen_nonces: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
-            trusted_peers: HashMap::new(),
+            trusted_peers: Mutex::new(HashMap::new()),
             federation_enabled: true,
             http_client: Client::builder().build().expect("test client should build"),
             node_signing_key: None,

@@ -235,8 +235,6 @@ fn metrics_text(state: &web::Data<AppState>) -> String {
     let rate_limited = metrics.get("rate_limited_total").copied().unwrap_or(0);
     let health_checks = metrics.get("health_checks_total").copied().unwrap_or(0);
     let readiness_checks = metrics.get("readiness_checks_total").copied().unwrap_or(0);
-    let verify_success = metrics.get("verify_success_total").copied().unwrap_or(0);
-    let verify_failed = metrics.get("verify_failed_total").copied().unwrap_or(0);
 
     format!(
         concat!(
@@ -251,20 +249,14 @@ fn metrics_text(state: &web::Data<AppState>) -> String {
             "# TYPE opensentinel_health_checks_total counter\n",
             "opensentinel_health_checks_total {}\n",
             "# TYPE opensentinel_readiness_checks_total counter\n",
-            "opensentinel_readiness_checks_total {}\n",
-            "# TYPE opensentinel_verify_success_total counter\n",
-            "opensentinel_verify_success_total {}\n",
-            "# TYPE opensentinel_verify_failed_total counter\n",
-            "opensentinel_verify_failed_total {}\n"
+            "opensentinel_readiness_checks_total {}\n"
         ),
         total_requests,
         verify_requests,
         federation_ingests,
         rate_limited,
         health_checks,
-        readiness_checks,
-        verify_success,
-        verify_failed
+        readiness_checks
     )
 }
 

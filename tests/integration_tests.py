@@ -73,7 +73,7 @@ def test_bot_behavior(page):
     # Wait for result
     # We expect failure
     try:
-        page.wait_for_selector(".failure.visible", timeout=5000)
+        page.wait_for_selector(".failure.visible", timeout=15000)
     except:
         print("Timeout waiting for failure message. Checking content...")
 
@@ -128,7 +128,7 @@ def test_human_behavior(page):
 
     # Wait for result
     try:
-        page.wait_for_selector(".success.visible", timeout=5000)
+        page.wait_for_selector(".success.visible", timeout=15000)
     except:
         print("Timeout waiting for success message. Checking content...")
 

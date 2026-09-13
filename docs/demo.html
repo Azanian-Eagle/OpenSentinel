@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSentinel Live Demo | Azanian Eagle</title>
+    <meta name="description" content="Experience OpenSentinel's non-invasive bot protection live. Client-side behavioural analysis demo. No puzzles, just privacy-first security. Test the ultimate CAPTCHA alternative.">
+    <meta name="keywords" content="CAPTCHA alternative demo, reCAPTCHA alternative live, Cloudflare Turnstile replacement, hCaptcha alternative, behavioural analysis demo, bot protection demo, OpenSentinel demo">
+    <meta name="author" content="Azanian Eagle">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/demo.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OpenSentinel">
+    <meta property="og:locale" content="en_ZA">
+    <meta property="og:url" content="https://azanian-eagle.github.io/OpenSentinel/demo.html">
+    <meta property="og:title" content="OpenSentinel Live Demo | The Ultimate CAPTCHA Alternative">
+    <meta property="og:description" content="Test our privacy-first, zero-click CAPTCHA replacement. Experience live client-side behavioural analysis for bot protection.">
+    <meta property="og:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@AzanianEagle">
+    <meta property="twitter:creator" content="@AzanianEagle">
+    <meta property="twitter:url" content="https://azanian-eagle.github.io/OpenSentinel/demo.html">
+    <meta property="twitter:title" content="OpenSentinel Live Demo | CAPTCHA Replacement">
+    <meta property="twitter:description" content="Test the privacy-first, zero-click CAPTCHA replacement powered by behavioural analysis.">
+    <meta property="twitter:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/og-image.png">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "OpenSentinel Live Demo",
+      "operatingSystem": "Any",
+      "applicationCategory": "SecurityApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Azanian Eagle",
+        "url": "https://azanian-eagle.github.io/"
+      },
+      "description": "Live demonstration of OpenSentinel, a free, open-source, non-invasive AI CAPTCHA replacement that protects privacy and verifies humanity using behavioural analysis."
+    }
+    </script>
+
+    <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="icon" href="assets/images/logo.png">
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-family: sans-serif; z-index: 100;">&larr; Back to Home</a>
+
+    <!-- Network Status Toast (Hidden by default) -->
+    <div id="network-toast" style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(255,189,46,0.9); color: #000; padding: 10px 20px; border-radius: 5px; z-index: 1000; font-family: sans-serif; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        Network connection unstable. Retrying...
+    </div>
+
+    <div class="card-container" id="card">
+        <div class="glass-card">
+            <img src="assets/images/logo.png" alt="Azanian Eagle" class="logo-eagle">
+            <div class="badge">Azanian Eagle Project</div>
+            <h1>OpenSentinel</h1>
+            <p class="subtitle">Non-invasive, privacy-first behavioural verification.</p>
+
+            <div class="demo-explanation" >
+                <strong style="color: var(--accent-primary); display: block; margin-bottom: 1rem; font-size: 1.2rem;">Demo Only</strong>
+                <p style="margin-bottom: 1rem;">This interactive demonstration serves as a live, client-side simulation of our sophisticated Rust backend logic. From the moment you load this page, our ultra-lightweight sensor meticulously and silently observes your organic interaction patterns.</p>
+
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li style="margin-bottom: 0.5rem;"><strong>Mouse Movement Linearity:</strong> We mathematically analyse the trajectory of your cursor. Bots move in perfect, computationally generated straight lines. Humans inherently possess slight tremors and micro-curves.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Cursor Speed Variance:</strong> We continually calculate the acceleration and deceleration of your movements. Automated scripts typically operate at a constant velocity or utilise highly predictable, robotic easing functions. Humans accelerate and decelerate with natural irregularity.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Keystroke Flight Dynamics:</strong> We precisely measure the specific intervals between individual key presses. The natural rhythm of human typing is fundamentally unique and completely impossible for standard automated bots to replicate accurately.</li>
+                </ul>
+
+                <p style="margin-bottom: 1rem;">Crucially, <strong>we absolutely do not track your identity, fingerprint your device, or store any personally identifiable information.</strong> We are purely calculating the statistical variance of your abstract behaviour in real-time. This ensures absolute compliance with stringent data protection regulations whilst completely eliminating the need for frustrating puzzles.</p>
+
+                <p><strong>Try it yourself:</strong> Move your mouse naturally across the screen and type a short, organic phrase into the input box below. Then, click the verification button to observe the real-time behavioural analysis score.</p>
+                <p style="margin-top: 1rem; color: #ffbd2e;">For production use, deploy the backend service and point your application at the live <code>/verify</code> endpoint.</p>
+            </div>
+
+            <div class="input-group">
+                <input type="text" placeholder="Type a natural phrase to prove your humanity..." id="testInput">
+            </div>
+
+            <button id="verifyBtn">Analyse Behaviour</button>
+
+            <div id="result"></div>
+
+            <div class="demo-cta" >
+                <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.1rem;">Join the OpenSentinel Ecosystem</h3>
+                <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 1.5rem;">If you believe in a private, seamless web free from corporate AI training puzzles, your participation is vital. Whether you are a developer looking to integrate, an investor seeking to fund digital sovereignty, or an open-source contributor ready to write Rust code, we need your expertise.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="index.html#install" class="btn primary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Integrate Now</a>
+                    <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="btn secondary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Contribute Code</a>
+                    <a href="https://buymeacoffee.com/azanianeagle" target="_blank" rel="noopener noreferrer" class="btn secondary-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; border-color: #ffbd2e; color: #ffbd2e;">Support the Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content container-limit">
+            <div class="footer-brand">
+                <img src="assets/images/logo.png" alt="Azanian Eagle">
+                <a href="https://azanian-eagle.github.io/" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle Website">
+                <p>Forged by Azanian Eagle</p>
+                </a>
+                <a href="https://github.com/Azanian-Eagle" target="_blank" rel="noopener noreferrer" class="github-footer-link" aria-label="Azanian Eagle GitHub">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer-links">
+                <h4>Projects</h4>
+                <a href="https://azanian-eagle.github.io/Eagle-s-Choice/" target="_blank" rel="noopener noreferrer">Eagle's Choice</a>
+                <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer">OpenSentinel</a>
+            </div>
+            <div class="footer-support">
+                <h4>Support Us</h4>
+                <a href="https://buymeacoffee.com/azanianeagle" class="bmc-button" target="_blank" rel="noopener noreferrer">
+                    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+            <div class="copyright" style="border-top: none; padding-top: 0;">
+                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT Licence.
+            </div>
+            <a href="https://azanian-eagle.github.io" target="_blank" rel="noopener noreferrer" class="group" style="text-decoration: none; display: inline-block;">
+                    <div class="made-with-love-in-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap; overflow: visible;"> 
+                        <span class="transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,184,28,0.8)]" style="font-weight: 600; line-height: 1.4; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">Made with &#9829; in South Africa</span> 
+                    </div>
+            </a>
+        </div>
+    </footer>
+
+    <script src="assets/js/sensor.js"></script>
+    <script>
+        // Update year
+        const yearSpan = document.getElementById('current-year');
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // Initialize OpenSentinel
+        OpenSentinel.init({ endpoint: '/verify' });
+
+        // Listen for network unstable events from the sensor
+        window.addEventListener('opensentinel-network-unstable', function(e) {
+            const toast = document.getElementById('network-toast');
+            toast.textContent = `Network connection unstable. Retrying in ${e.detail.backoffTime}ms...`;
+            toast.style.display = 'block';
+
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        });
+
+        // Ported from server/src/main.rs (Behaviour Analysis Logic)
+        function verifyData(mouseEvents, keyEvents) {
+            let score = 0.0;
+
+            // 1. Minimum Data Requirements
+            if (mouseEvents.length < 5 && keyEvents.length === 0) {
+                return { passed: false, score: 0.0, message: "Insufficient data" };
+            }
+
+            // 2. Mouse Movement Analysis
+            if (mouseEvents.length > 10) {
+                const linearityScore = analyseMouseLinearity(mouseEvents);
+                const speedScore = analyseMouseSpeed(mouseEvents);
+
+                score += linearityScore * 0.4;
+                score += speedScore * 0.2;
+            } else if (mouseEvents.length > 0) {
+                 score += 0.1;
+            }
+
+            // 3. Keystroke Dynamics
+            if (keyEvents.length > 0) {
+                const keystrokeScore = analyseKeystrokes(keyEvents);
+                score += keystrokeScore * 0.4;
+            } else {
+                if (score > 0.5) {
+                    score += 0.2; // Bonus for good mouse behaviour without keys
+                }
+            }
+
+            if (score > 1.0) score = 1.0;
+
+            // Threshold matches Rust backend
+            const passed = score > 0.7;
+            const message = passed
+                ? "Verification successful. Human behaviour pattern confirmed."
+                : "Verification failed. Automated behaviour pattern detected.";
+
+            return { passed, score, message };
+        }
+
+        function analyseMouseLinearity(events) {
+            if (events.length < 3) return 1.0;
+
+            const start = events[0];
+            const end = events[events.length - 1];
+
+            // ax + by + c = 0
+            const a = start[1] - end[1];
+            const b = end[0] - start[0];
+            const c = start[0] * end[1] - end[0] * start[1];
+            const denominator = Math.sqrt(a * a + b * b);
+
+            if (denominator === 0) return 0.0;
+
+            let totalDeviation = 0.0;
+            for (const point of events) {
+                const distance = Math.abs(a * point[0] + b * point[1] + c) / denominator;
+                totalDeviation += distance;
+            }
+
+            const avgDeviation = totalDeviation / events.length;
+            if (avgDeviation < 0.5) return 0.0; // Bot (too straight)
+
+            return 1.0;
+        }
+
+        function analyseMouseSpeed(events) {
+            let variances = [];
+            let totalSpeed = 0.0;
+            let count = 0;
+
+            for (let i = 0; i < events.length - 1; i++) {
+                const p1 = events[i];
+                const p2 = events[i+1];
+
+                const dx = p2[0] - p1[0];
+                const dy = p2[1] - p1[1];
+                const dt = p2[2] - p1[2]; // timestamp is 3rd element
+
+                if (dt > 0) {
+                    const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+                    variances.push(speed);
+                    totalSpeed += speed;
+                    count++;
+                }
+            }
+
+            if (count === 0) return 0.0;
+
+            const avgSpeed = totalSpeed / count;
+
+            const variance = variances.reduce((acc, s) => acc + Math.pow(s - avgSpeed, 2), 0) / count;
+
+            if (variance < 0.0001) return 0.0; // Constant speed => Bot
+            if (avgSpeed > 5.0) return 0.0; // Superhuman speed => Bot
+
+            return 1.0;
+        }
+
+        function analyseKeystrokes(events) {
+            if (events.length < 2) return 0.5;
+
+            let intervals = [];
+            for (let i = 0; i < events.length - 1; i++) {
+                const t1 = events[i][1]; // timestamp is 2nd element
+                const t2 = events[i+1][1];
+                intervals.push(t2 - t1);
+            }
+
+            const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+
+            if (avgInterval < 50.0) return 0.0; // Superhuman typing
+
+            const variance = intervals.reduce((acc, i) => acc + Math.pow(i - avgInterval, 2), 0) / intervals.length;
+
+            if (variance < 10.0) return 0.0; // Robotic typing
+
+            return 1.0;
+        }
+
+        // Mock verification for GitHub Pages Demo (Client-side Analysis)
+        OpenSentinel.verify = async function() {
+             window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount: 1, backoffTime: 1000 } }));
+
+             await new Promise(r => setTimeout(r, 1500)); // Network delay simulation
+
+             // Analyse the actual captured data
+             // mouseEvents: [[x, y, ts], ...]
+             // keyEvents: [[code, ts], ...]
+             const result = verifyData(this.mouseEvents, this.keyEvents);
+
+             console.log("Analysis Result:", result);
+             return result;
+        };
+
+        const btn = document.getElementById('verifyBtn');
+        const resultDiv = document.getElementById('result');
+        const input = document.getElementById('testInput');
+
+        btn.addEventListener('click', async () => {
+            if (!input.value) {
+                input.focus();
+                return;
+            }
+
+            // Button Loading State
+            const originalText = btn.textContent;
+            btn.textContent = "Analysing Behaviour...";
+            btn.style.opacity = "0.8";
+            btn.disabled = true;
+            resultDiv.className = "";
+            resultDiv.classList.remove('visible');
+
+            const result = await OpenSentinel.verify();
+
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.disabled = false;
+
+            resultDiv.textContent = `Score: ${result.score.toFixed(2)} - ${result.message}`;
+            resultDiv.classList.add('visible');
+
+            if (result.passed) {
+                resultDiv.className = "success visible";
+            } else {
+                resultDiv.className = "failure visible";
+            }
+        });
+    </script>
+</body>
+</html>

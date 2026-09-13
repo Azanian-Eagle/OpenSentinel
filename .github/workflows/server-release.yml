@@ -54,7 +54,7 @@ jobs:
       - name: Package release bundle
         run: |
           mkdir -p release-bundle
-          cp server/target/release/opensentinel-server release-bundle/
+          cp target/release/opensentinel-server release-bundle/
           cp server/model.onnx release-bundle/
           cp -R client release-bundle/client
           cp .env.example release-bundle/

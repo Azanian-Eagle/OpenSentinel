@@ -65,7 +65,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install Python dependencies
-        run: pip install playwright
+        run: pip install playwright cryptography
       - name: Install Playwright browsers
         run: playwright install --with-deps
       - name: Run E2E Tests

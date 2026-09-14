@@ -1,8 +1,5 @@
 [target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "target-feature=+crt-static"]
+rustflags = ["-C", "target-feature=-crt-static", "-l", "dylib=ucrt", "-l", "dylib=msvcprt"]
 
 [target.aarch64-unknown-linux-gnu]
 rustflags = ["-l", "stdc++"]
-
-[target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "target-feature=-crt-static", "-l", "dylib=ucrt", "-l", "dylib=msvcprt"]

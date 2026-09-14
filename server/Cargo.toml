@@ -26,5 +26,5 @@ ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
 rand = "0.10.1"
 rand_core = "0.10.1"
 aes-gcm = "0.10.3"
-link-cplusplus = "1.0.12"
 ort = { version = "2.0.0-rc.12", features = ["download-binaries"] }
+link-cplusplus = "1.0.12"

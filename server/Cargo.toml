@@ -26,6 +26,8 @@ ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
 rand = "0.10.1"
 rand_core = "0.10.1"
 aes-gcm = "0.10.3"
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
 link-cplusplus = "1.0.12"
 
 [target.'cfg(not(all(target_os = "macos", target_arch = "x86_64")))'.dependencies]

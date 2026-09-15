@@ -98,7 +98,8 @@
                     <a href="#sdks">SDKs</a>
                     <a href="#observability">Dashboard</a>
                     <a href="#comparison">Compare</a>
-                    <a href="#deployment">Deploy</a>
+                    <a href="#network">Federation</a>
+                    <a href="#install">Deploy</a>
                     <a href="demo.html">Live Demo</a>
                     <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
                 </div>
@@ -126,6 +127,47 @@
                             <div class="pulse-ring"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: The Problem -->
+        <section id="why-it-matters" class="container-limit content-section">
+            <h2 class="section-title">The Problem: You Are The Product</h2>
+            <div class="grid">
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Unpaid Labour</h3>
+                    <p>Every time you are forced to identify a traffic light, crosswalk, or bicycle, you are actively performing unpaid labour to train commercial artificial intelligence models. Your time and attention are monetised without consent, turning the act of browsing into a transactional product.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Privacy Invasion</h3>
+                    <p>Traditional CAPTCHA systems rely on invasive tracking cookies, browser fingerprinting, and device profiling. To determine humanity, they track digital footprints across the web, constructing detailed profiles that breach user privacy and digital sovereignty.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: #ff5f56;">Accessibility Barriers</h3>
+                    <p>Visual puzzles and distorted text tests present severe barriers for visually impaired individuals. These interruptive challenges continually frustrate users, inherently degrading user experience and lowering conversion rates for online services.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: The Solution -->
+        <section id="solution" class="how-it-works container-limit content-section">
+            <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                OpenSentinel shifts security from the archaic "Challenge-Response" model to a seamless "Passive Observation" methodology. We verify humanity by analysing <em>how</em> you interact with a page, rather than demanding <em>what</em> objects you can identify in a photograph.
+            </p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3>1. Passive Telemetry</h3>
+                    <p>Our ultra-lightweight JavaScript sensor (under 20kb) silently observes interaction metrics such as mouse trajectory linearity, velocity variance, and keystroke flight dynamics. Because human interaction exhibits natural physical variance whilst bots operate with rigid precision, we accurately distinguish between the two.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>2. Local Analysis</h3>
+                    <p>We believe privacy is a fundamental human right. OpenSentinel processes behavioural telemetry locally, extracting abstract features rather than personal identifiers. We calculate the statistical shape of interactions, guaranteeing strict compliance with global privacy standards like POPIA and GDPR.</p>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3>3. Rust Performance</h3>
+                    <p>The OpenSentinel backend is engineered using Rust and Actix-web, delivering high concurrent throughput, minimal memory usage, and microsecond verification speeds capable of handling enterprise traffic loads gracefully.</p>
                 </div>
             </div>
         </section>
@@ -173,76 +215,6 @@
                     <li style="margin-bottom: 1rem;">&#10003; <strong>Prometheus Metrics Endpoint:</strong> Native Prometheus exporter at <code>/metrics</code> exposing request counters, verification outcomes (<code>verify_success_total</code>, <code>verify_failed_total</code>), rate-limiting events, and threat federation statistics.</li>
                     <li style="margin-bottom: 1rem;">&#10003; <strong>Container Probes:</strong> Standardized <code>/healthz</code> and <code>/readyz</code> health checks for seamless Kubernetes liveness and readiness probe integration.</li>
                 </ul>
-            </div>
-        </section>
-
-        <section id="deployment" class="container-limit content-section">
-            <h2 class="section-title">Deploy the Service</h2>
-            <div class="about-content" style="text-align: left;">
-                <p style="margin-bottom: 1rem; font-size: 1.05rem; color: #ddd;">OpenSentinel provides low-friction self-hosted deployment options via prebuilt OS packages, Docker, raw Kubernetes manifests, and a production Helm chart.</p>
-                <ul style="list-style: none; color: #aaa; padding-left: 0;">
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Prebuilt Binary Installers:</strong> Shell script and Homebrew installers for instant installation on Linux, macOS, and Windows.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Docker Compose:</strong> Lightweight server hosting with persistent volume logging and model files.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Kubernetes & Helm:</strong> Official Helm Chart (<code>k8s/helm/opensentinel</code>) equipped with Horizontal Pod Autoscaler (HPA), Prometheus ServiceMonitor, and ExternalSecret integration.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Container Registry:</strong> Tagged 1.0 release images published to GitHub Container Registry (<code>ghcr.io/azanian-eagle/opensentinel:v1.0.0</code>).</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Compliance Section -->
-        <section id="compliance" class="container-limit content-section">
-            <h2 class="section-title">Regulatory Compliance & Data Protection</h2>
-            <div class="about-content" style="text-align: left;">
-                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
-                    <strong>Built for the Modern Regulatory Landscape:</strong> OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
-                </p>
-                <ul style="list-style: none; color: #aaa; padding-left: 0;">
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could identify an individual user.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse trajectory linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and impossible to reverse-engineer into personal profiles.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never leaves your sovereign control.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; <strong>No Cross-Site Tracking:</strong> We fundamentally reject tracking cookies, local storage beacons, or persistent identifiers. Interactions across different sites remain entirely independent.</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Section: The Problem -->
-        <section id="why-it-matters" class="container-limit content-section">
-            <h2 class="section-title">The Problem: You Are The Product</h2>
-            <div class="grid">
-                <div class="card tilt-element" data-tilt>
-                    <h3 style="color: #ff5f56;">Unpaid Labour</h3>
-                    <p>Every time you are forced to identify a traffic light, crosswalk, or bicycle, you are actively performing unpaid labour to train commercial artificial intelligence models. Your time and attention are monetised without consent, turning the act of browsing into a transactional product.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <h3 style="color: #ff5f56;">Privacy Invasion</h3>
-                    <p>Traditional CAPTCHA systems rely on invasive tracking cookies, browser fingerprinting, and device profiling. To determine humanity, they track digital footprints across the web, constructing detailed profiles that breach user privacy and digital sovereignty.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <h3 style="color: #ff5f56;">Accessibility Barriers</h3>
-                    <p>Visual puzzles and distorted text tests present severe barriers for visually impaired individuals. These interruptive challenges continually frustrate users, inherently degrading user experience and lowering conversion rates for online services.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section: The Solution -->
-        <section id="solution" class="how-it-works container-limit content-section">
-            <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
-            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
-                OpenSentinel shifts security from the archaic "Challenge-Response" model to a seamless "Passive Observation" methodology. We verify humanity by analysing <em>how</em> you interact with a page, rather than demanding <em>what</em> objects you can identify in a photograph.
-            </p>
-            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-                <div class="card tilt-element" data-tilt>
-                    <h3>1. Passive Telemetry</h3>
-                    <p>Our ultra-lightweight JavaScript sensor (under 20kb) silently observes interaction metrics such as mouse trajectory linearity, velocity variance, and keystroke flight dynamics. Because human interaction exhibits natural physical variance whilst bots operate with rigid precision, we accurately distinguish between the two.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <h3>2. Local Analysis</h3>
-                    <p>We believe privacy is a fundamental human right. OpenSentinel processes behavioural telemetry locally, extracting abstract features rather than personal identifiers. We calculate the statistical shape of interactions, guaranteeing strict compliance with global privacy standards like POPIA and GDPR.</p>
-                </div>
-                <div class="card tilt-element" data-tilt>
-                    <h3>3. Rust Performance</h3>
-                    <p>The OpenSentinel backend is engineered using Rust and Actix-web, delivering high concurrent throughput, minimal memory usage, and microsecond verification speeds capable of handling enterprise traffic loads gracefully.</p>
-                </div>
             </div>
         </section>
 
@@ -463,6 +435,22 @@ TRUSTED_PEERS=https://node1.example.com</code></pre>
   });
 &lt;/script&gt;</code></pre>
                 </div>
+            </div>
+        </section>
+
+        <!-- Compliance Section -->
+        <section id="compliance" class="container-limit content-section">
+            <h2 class="section-title">Regulatory Compliance & Data Protection</h2>
+            <div class="about-content" style="text-align: left;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>Built for the Modern Regulatory Landscape:</strong> OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
+                </p>
+                <ul style="list-style: none; color: #aaa; padding-left: 0;">
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could identify an individual user.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse trajectory linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and impossible to reverse-engineer into personal profiles.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never leaves your sovereign control.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>No Cross-Site Tracking:</strong> We fundamentally reject tracking cookies, local storage beacons, or persistent identifiers. Interactions across different sites remain entirely independent.</li>
+                </ul>
             </div>
         </section>
 

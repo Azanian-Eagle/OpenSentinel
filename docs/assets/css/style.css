@@ -15,7 +15,7 @@ html, body {
 }
 
 html {
-    scroll-padding-top: 100px;
+    scroll-padding-top: 120px;
 }
 
 * {
@@ -90,6 +90,8 @@ body.no-scroll {
     align-items: center;
     gap: 1rem;
     z-index: 1001; /* Above hamburger on very small screens if they overlap, but mostly for structure */
+    margin-right: 2rem;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -751,7 +753,7 @@ footer {
 
 /* Refactored Layout Styles */
 .content-section {
-    margin-top: 6rem;
+    margin-top: 8rem;
 }
 
 .about-content {
@@ -763,7 +765,7 @@ footer {
 
 @media (max-width: 768px) {
     .content-section {
-        margin-top: 4rem;
+        margin-top: 5.5rem;
     }
     .about-content {
         padding: 1.5rem;

@@ -574,7 +574,7 @@ footer {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .container-limit {
         padding: 0 1.25rem;
     }

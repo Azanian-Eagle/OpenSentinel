@@ -179,11 +179,12 @@
         <section id="deployment" class="container-limit content-section">
             <h2 class="section-title">Deploy the Service</h2>
             <div class="about-content" style="text-align: left;">
-                <p style="margin-bottom: 1rem; font-size: 1.05rem; color: #ddd;">OpenSentinel provides low-friction self-hosted deployment options via Docker, raw Kubernetes manifests, and a production Helm chart.</p>
+                <p style="margin-bottom: 1rem; font-size: 1.05rem; color: #ddd;">OpenSentinel provides low-friction self-hosted deployment options via prebuilt OS packages, Docker, raw Kubernetes manifests, and a production Helm chart.</p>
                 <ul style="list-style: none; color: #aaa; padding-left: 0;">
-                    <li style="margin-bottom: 1rem;">&#10003; Use Docker Compose for rapid, lightweight server hosting with persistent volume logging.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; Deploy using our official Helm Chart (<code>k8s/helm/opensentinel</code>) equipped with Horizontal Pod Autoscaler (HPA), Prometheus ServiceMonitor, and ExternalSecret integration.</li>
-                    <li style="margin-bottom: 1rem;">&#10003; Tagged releases publish a runnable backend image to GitHub Container Registry (<code>ghcr.io/azanian-eagle/opensentinel:latest</code>).</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Prebuilt Binary Installers:</strong> Shell script and Homebrew installers for instant installation on Linux, macOS, and Windows.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Docker Compose:</strong> Lightweight server hosting with persistent volume logging and model files.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Kubernetes & Helm:</strong> Official Helm Chart (<code>k8s/helm/opensentinel</code>) equipped with Horizontal Pod Autoscaler (HPA), Prometheus ServiceMonitor, and ExternalSecret integration.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Container Registry:</strong> Tagged 1.0 release images published to GitHub Container Registry (<code>ghcr.io/azanian-eagle/opensentinel:v1.0.0</code>).</li>
                 </ul>
             </div>
         </section>
@@ -395,15 +396,30 @@
 
             <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 2rem; text-align: left;">
                 <h3 style="color: #fff; margin-bottom: 1rem;">Step 1: Deploy the Sovereign Backend Node</h3>
-                <p style="color: #aaa; margin-bottom: 1rem;">Deploy using Docker Compose or Kubernetes:</p>
+                <p style="color: #aaa; margin-bottom: 1rem;">Install prebuilt binaries via Shell script or Homebrew:</p>
                 <div class="code-wrapper" style="margin-bottom: 1rem;">
                     <div class="code-header">
                         <span class="dot red"></span>
                         <span class="dot yellow"></span>
                         <span class="dot green"></span>
-                        <span class="filename">terminal</span>
+                        <span class="filename">shell / brew</span>
                     </div>
-                    <pre><code>docker pull ghcr.io/azanian-eagle/opensentinel:latest
+                    <pre><code># Install prebuilt binaries via shell script
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.0/opensentinel-server-installer.sh | sh
+
+# Or install via Homebrew
+brew install opensentinel-server</code></pre>
+                </div>
+
+                <p style="color: #aaa; margin-bottom: 1rem;">Or pull the official tagged release image with Docker:</p>
+                <div class="code-wrapper" style="margin-bottom: 1rem;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">docker</span>
+                    </div>
+                    <pre><code>docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.0
 cp .env.example .env
 docker compose up -d</code></pre>
                 </div>

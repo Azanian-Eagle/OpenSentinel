@@ -19,6 +19,11 @@
     padding: 0;
 }
 
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
 html {
     height: 100%;
 }
@@ -31,7 +36,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
     overflow-y: auto;
     perspective: 1000px;
     margin: 0; /* Ensure no default margin */
@@ -329,6 +333,10 @@ footer {
 }
 
 @media (max-width: 768px) {
+    .container-limit {
+        padding: 0 1.25rem;
+    }
+
     .footer-content {
         flex-direction: column;
         align-items: center;
@@ -336,38 +344,51 @@ footer {
     }
 
     .card-container {
-        margin: 6rem 1rem 2rem 1rem;
+        margin: 5rem 0 2rem 0;
+        padding: 0 1.25rem;
         max-width: 100%;
     }
 }
 
 @media (max-width: 480px) {
+    .container-limit {
+        padding: 0 1rem;
+    }
+
+    .card-container {
+        margin: 4.5rem 0 1.5rem 0;
+        padding: 0 0.75rem;
+    }
+
     .glass-card {
-        padding: 2rem 1.5rem;
+        padding: 1.75rem 1.15rem;
+        border-radius: 16px;
     }
 
     h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
     }
 
     .subtitle {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
+        margin-bottom: 20px;
     }
 
     .logo-eagle {
-        width: 50px;
-        top: 15px;
-        right: 15px;
+        width: 42px;
+        top: 12px;
+        right: 12px;
     }
 
     a[href="index.html"] {
-        top: 15px !important;
-        left: 15px !important;
-        font-size: 0.9rem;
+        top: 12px !important;
+        left: 12px !important;
+        font-size: 0.85rem;
     }
 
     footer {
-        padding: 3rem 1.5rem 2rem;
+        padding: 2.5rem 1rem 1.5rem;
     }
 }
 

@@ -30,8 +30,11 @@ aes-gcm = "0.10.3"
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 link-cplusplus = "1.0.12"
 
-[target.'cfg(not(all(target_os = "macos", target_arch = "x86_64")))'.dependencies]
+[target.'cfg(all(target_os = "windows", target_env = "msvc"))'.dependencies]
 ort = { version = "2.0.0-rc.12", features = ["download-binaries"] }
 
 [target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
 ort = { version = "2.0.0-rc.12", default-features = false, features = ["std", "ndarray", "tracing", "tls-native", "copy-dylibs", "api-27", "load-dynamic"] }
+
+[target.'cfg(all(not(target_os = "windows"), not(all(target_os = "macos", target_arch = "x86_64"))))'.dependencies]
+ort = { version = "2.0.0-rc.12", features = ["download-binaries"] }

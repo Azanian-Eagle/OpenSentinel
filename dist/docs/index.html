@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenSentinel | Privacy-First Bot Protection by Azanian Eagle</title>
-    <meta name="description" content="OpenSentinel by Azanian Eagle: The free, open-source, non-invasive alternative to CAPTCHA. Protect your site with behavioural analysis, not puzzles. Privacy-first, POPIA compliant, and forged in Mzansi. No third-party AI training.">
-    <meta name="keywords" content="behavioural analysis, behavioural biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cybersecurity, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic">
+    <meta name="description" content="OpenSentinel by Azanian Eagle: The free, open-source, non-invasive alternative to CAPTCHA. Protect your site with behavioural analysis, not puzzles. Privacy-first, POPIA compliant, and forged in Mzansi. No third-party AI training. 1.0 Stable Production Release.">
+    <meta name="keywords" content="behavioural analysis, behavioural biometrics, bot protection, privacy-first, GDPR, POPIA compliance, Rust, Actix-web, OpenSentinel, Azanian Eagle, South Africa, open source, cybersecurity, investor ready, anti-bot, fraud prevention, React, Vue, Angular, framework agnostic, 1.0, production release, stable, reCAPTCHA alternative, CAPTCHA replacement, Cloudflare Turnstile alternative, hCaptcha alternative">
     <meta name="author" content="Azanian Eagle">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://azanian-eagle.github.io/OpenSentinel/">
@@ -17,7 +17,7 @@
     <meta property="og:url" content="https://azanian-eagle.github.io/OpenSentinel/">
     <meta property="og:title" content="OpenSentinel | Privacy-First Bot Protection from South Africa">
     <meta property="og:description" content="A free, open-source, privacy-first AI CAPTCHA replacement by Azanian Eagle. Powered by Rust and behavioural analysis. Forged in Mzansi. No third-party AI training.">
-    <meta property="og:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+    <meta property="og:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/og-image.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -26,7 +26,7 @@
     <meta property="twitter:url" content="https://azanian-eagle.github.io/OpenSentinel/">
     <meta property="twitter:title" content="OpenSentinel | Privacy-First Bot Protection">
     <meta property="twitter:description" content="Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi.">
-    <meta property="twitter:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/logo.png">
+    <meta property="twitter:image" content="https://azanian-eagle.github.io/OpenSentinel/assets/images/og-image.png">
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -68,6 +68,12 @@
             align-items: center;
             width: 100%;
         }
+        .nav-links {
+            gap: 1.25rem;
+        }
+        .nav-links a {
+            font-size: 0.82rem;
+        }
     </style>
 </head>
 <body>
@@ -89,8 +95,12 @@
                 <div class="nav-links">
                     <a href="#why-it-matters">Why It Matters</a>
                     <a href="#solution">Solution</a>
-                    <a href="#for-who">For You</a>
+                    <a href="#sdks">SDKs</a>
+                    <a href="#observability">Dashboard</a>
                     <a href="#comparison">Compare</a>
+                    <a href="#network">Federation</a>
+                    <a href="#install">Deploy</a>
+                    <a href="demo.html">Live Demo</a>
                     <a href="https://github.com/azanian-eagle/OpenSentinel" target="_blank" rel="noopener noreferrer" class="github-link">GitHub</a>
                 </div>
             </div>
@@ -102,8 +112,8 @@
             <div class="container-limit" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
                 <div class="hero-content">
                     <h1 class="glitch" data-text="OpenSentinel">OpenSentinel</h1>
-                    <p class="subtitle">The Future of Non-Invasive Bot Protection</p>
-                    <p class="description">Privacy-first. Zero-click. Powered by Rust & Behavioural Analysis. Forged in Mzansi to protect the Open Web.</p>
+                    <p class="subtitle">The Future of Non-Invasive Bot Protection (1.0 Production Release)</p>
+                    <p class="description">Privacy-first. Zero-click. Powered by Rust, local ONNX ML & Behavioural Analysis. Forged in Mzansi to protect the Open Web.</p>
                     <div class="cta-group">
                         <a href="#install" class="btn primary-btn">Get Started</a>
                         <a href="demo.html" class="btn secondary-btn">Live Demo</a>
@@ -121,193 +131,359 @@
             </div>
         </section>
 
-        <!-- New Section: The Problem -->
-        <section id="why-it-matters" class="container-limit" style="margin-top: 6rem;">
+        <!-- Section: The Problem -->
+        <section id="why-it-matters" class="container-limit content-section">
             <h2 class="section-title">The Problem: You Are The Product</h2>
             <div class="grid">
                 <div class="card tilt-element" data-tilt>
                     <h3 style="color: #ff5f56;">Unpaid Labour</h3>
-                    <p>Every time you click a traffic light, you are training a corporation's AI model for free. Your time is being monetised without your consent.</p>
+                    <p>Every time you are forced to identify a traffic light, crosswalk, or bicycle, you are actively performing unpaid labour to train commercial artificial intelligence models. Your time and attention are monetised without consent, turning the act of browsing into a transactional product.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
                     <h3 style="color: #ff5f56;">Privacy Invasion</h3>
-                    <p>Traditional CAPTCHAs often rely on tracking cookies and browser fingerprinting to identify you, following your movements across the entire web.</p>
+                    <p>Traditional CAPTCHA systems rely on invasive tracking cookies, browser fingerprinting, and device profiling. To determine humanity, they track digital footprints across the web, constructing detailed profiles that breach user privacy and digital sovereignty.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
                     <h3 style="color: #ff5f56;">Accessibility Barriers</h3>
-                    <p>Visual puzzles are a nightmare for visually impaired users and often frustrate legitimate users, leading to lower conversion rates.</p>
+                    <p>Visual puzzles and distorted text tests present severe barriers for visually impaired individuals. These interruptive challenges continually frustrate users, inherently degrading user experience and lowering conversion rates for online services.</p>
                 </div>
             </div>
         </section>
 
-        <!-- New Section: The Solution -->
-        <section id="solution" class="how-it-works container-limit" style="margin-top: 6rem;">
+        <!-- Section: The Solution -->
+        <section id="solution" class="how-it-works container-limit content-section">
             <h2 class="section-title">The Solution: Behavioural Sovereignty</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
-                OpenSentinel shifts the paradigm from "Challenge-Response" to "Passive Observation". We verify humanity by analysing <em>how</em> you interact, not <em>what</em> you identify.
+                OpenSentinel shifts security from the archaic "Challenge-Response" model to a seamless "Passive Observation" methodology. We verify humanity by analysing <em>how</em> you interact with a page, rather than demanding <em>what</em> objects you can identify in a photograph.
             </p>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
                     <h3>1. Passive Telemetry</h3>
-                    <p>Our ultra-lightweight sensor (<20kb) observes mouse linearity, speed variance, and keystroke dynamics. Humans are imperfect; bots are precise.</p>
+                    <p>Our ultra-lightweight JavaScript sensor (under 20kb) silently observes interaction metrics such as mouse trajectory linearity, velocity variance, and keystroke flight dynamics. Because human interaction exhibits natural physical variance whilst bots operate with rigid precision, we accurately distinguish between the two.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
                     <h3>2. Local Analysis</h3>
-                    <p>We process data locally where possible. We do not need your identity, only the "shape" of your interaction. This ensures POPIA and GDPR compliance.</p>
+                    <p>We believe privacy is a fundamental human right. OpenSentinel processes behavioural telemetry locally, extracting abstract features rather than personal identifiers. We calculate the statistical shape of interactions, guaranteeing strict compliance with global privacy standards like POPIA and GDPR.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
                     <h3>3. Rust Performance</h3>
-                    <p>The backend is built in Rust (Actix-web), offering blazing fast verification speeds and memory safety that legacy systems cannot match.</p>
+                    <p>The OpenSentinel backend is engineered using Rust and Actix-web, delivering high concurrent throughput, minimal memory usage, and microsecond verification speeds capable of handling enterprise traffic loads gracefully.</p>
                 </div>
             </div>
         </section>
 
-        <!-- New Section: Target Audience -->
-        <section id="for-who" class="container-limit" style="margin-top: 6rem;">
+        <!-- SDK Overview Section -->
+        <section id="sdks" class="container-limit content-section">
+            <h2 class="section-title">First-Party SDK Ecosystem</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                OpenSentinel offers native integration packages tailored for modern Web and backend development stacks.
+            </p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">React SDK</h3>
+                    <p><code>@opensentinel/react</code> provides full TypeScript support, SSR safety checks, and the customizable <code>useOpenSentinel()</code> React hook with automated cleanup.</p>
+                    <div class="code-wrapper" style="margin-top: 1rem;">
+                        <pre><code>npm install @opensentinel/react</code></pre>
+                    </div>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">Python SDK</h3>
+                    <p><code>opensentinel</code> offers a lightweight client wrapper for server-side verification using Python standard libraries (no heavy external HTTP runtime dependencies).</p>
+                    <div class="code-wrapper" style="margin-top: 1rem;">
+                        <pre><code>pip install opensentinel</code></pre>
+                    </div>
+                </div>
+                <div class="card tilt-element" data-tilt>
+                    <h3 style="color: var(--accent-primary);">Vanilla JS / UMD</h3>
+                    <p><code>@opensentinel/client</code> delivers a sub-20kb browser sensor featuring client-side Proof-of-Work nonces, AES-256-GCM encryption, and exponential backoff retry mechanisms.</p>
+                    <div class="code-wrapper" style="margin-top: 1rem;">
+                        <pre><code>&lt;script src="/src/sensor.js"&gt;&lt;/script&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Observability Section -->
+        <section id="observability" class="container-limit content-section">
+            <h2 class="section-title">Live Observability & Dashboard</h2>
+            <div class="about-content" style="text-align: left;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>Enterprise-Grade Telemetry & Health Monitoring:</strong> OpenSentinel ships built-in observability tools to give site operators total visibility into verification traffic, bot rates, and network performance.
+                </p>
+                <ul style="list-style: none; color: #aaa; padding-left: 0;">
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Authenticated Analytics Dashboard:</strong> Real-time visual metrics served directly from the Rust backend at <code>/api/dashboard</code> (secured via HTTP Basic Authentication using the <code>ADMIN_TOKEN</code> environment variable).</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Prometheus Metrics Endpoint:</strong> Native Prometheus exporter at <code>/metrics</code> exposing request counters, verification outcomes (<code>verify_success_total</code>, <code>verify_failed_total</code>), rate-limiting events, and threat federation statistics.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Container Probes:</strong> Standardized <code>/healthz</code> and <code>/readyz</code> health checks for seamless Kubernetes liveness and readiness probe integration.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Target Audience Section -->
+        <section id="for-who" class="container-limit content-section">
             <h2 class="section-title">Who Is This For?</h2>
 
             <div class="audience-grid" style="display: grid; gap: 2rem;">
-                <!-- For Developers -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-primary);">
-                    <h3>👨‍💻 For Developers</h3>
-                    <p>Stop wrestling with bloated, invasive scripts. OpenSentinel gives you:</p>
-                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Drop-in Integration:</strong> 2 lines of code.</li>
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Open Source:</strong> Audit the code yourself. MIT licence.</li>
-                        <li style="margin-bottom: 0.5rem;">✅ <strong>Lightweight:</strong> No heavy WASM payloads slowing down your TTI.</li>
+                    <h3>For Developers & Software Engineers</h3>
+                    <p>Eliminate bloated third-party scripts that compromise application performance and user privacy. OpenSentinel provides modern, developer-first tools:</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa; padding-left: 0;">
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Drop-in Integration:</strong> Add bot protection using our SDKs or two lines of client script.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Transparent & Open Source:</strong> Fully audit code licensed under the permissive MIT Licence.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Ultra-Lightweight Footprint:</strong> Avoid heavy WebAssembly payloads that delay Time to Interactive (TTI).</li>
                     </ul>
                 </div>
 
-                <!-- For Funders -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid #ffbd2e;">
-                    <h3>💼 For Funders & Financiers</h3>
-                    <p>Invest in the future of the private web. The market is desperate for an ethical alternative.</p>
-                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">🚀 <strong>Market Gap:</strong> Privacy legislation (GDPR, POPIA) is creating a vacuum for compliant tools.</li>
-                        <li style="margin-bottom: 0.5rem;">🌍 <strong>Digital Sovereignty:</strong> A "Proudly South African" solution for the global market.</li>
-                        <li style="margin-bottom: 0.5rem;">📈 <strong>Scalability:</strong> Built on Rust for massive concurrent throughput at low cost.</li>
+                    <h3>For Funders, Financiers & Investors</h3>
+                    <p>Support an ethical, high-performance cybersecurity framework designed to challenge monopolistic data-harvesting paradigms.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa; padding-left: 0;">
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Privacy Market Opportunity:</strong> Evolving privacy regulations (GDPR, POPIA, CCPA) create growing demand for non-invasive security solutions.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Digital Sovereignty:</strong> A "Made with &#9829; in South Africa" technology disrupting traditional cybersecurity markets.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>High Scalability:</strong> Engineered in Rust to deliver enterprise throughput at exceptionally low operational overhead.</li>
                     </ul>
                 </div>
 
-                <!-- For The Public -->
                 <div class="card tilt-element" data-tilt style="border-left: 4px solid var(--accent-secondary);">
-                    <h3>✊ For The Public</h3>
-                    <p>Reclaim your digital experience.</p>
-                    <ul style="list-style: none; margin-top: 1rem; color: #aaa;">
-                        <li style="margin-bottom: 0.5rem;">🔒 <strong>Privacy:</strong> We don't track you across the web.</li>
-                        <li style="margin-bottom: 0.5rem;">⚡ <strong>Speed:</strong> No more clicking hydrants or bicycles. Just browse.</li>
-                        <li style="margin-bottom: 0.5rem;">🇿🇦 <strong>Local Innovation:</strong> Supporting South African tech development.</li>
+                    <h3>For The General Public</h3>
+                    <p>Reclaim your browsing experience and assert your right to privacy without constant interrogation.</p>
+                    <ul style="list-style: none; margin-top: 1rem; color: #aaa; padding-left: 0;">
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Absolute Privacy:</strong> Zero cross-site tracking, zero user profiling, and zero cookie beacons.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Frictionless Experience:</strong> No fire hydrants, crosswalks, or distorted characters. Browse naturally.</li>
+                        <li style="margin-bottom: 0.5rem;">&#10003; <strong>Local Innovation:</strong> Champion South African open-source software engineering excellence.</li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        <section class="container-limit" style="margin-top: 6rem; text-align: center;">
-            <h2 class="section-title">Introducing Phase 2: AI Integration</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
-                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
-                    <strong>Next-Generation Bot Detection:</strong> OpenSentinel is proud to announce the successful integration of our Phase 2 ONNX machine-learning model. We have evolved beyond simple linear heuristics to true behavioural variance analysis.
-                </p>
-                <p style="margin-bottom: 1.5rem;">
-                    By training a Random Forest classifier on vast datasets of synthetic human and procedural bot telemetry, our Rust-powered backend (utilising the highly-performant `ort` and `ndarray` crates) can now accurately predict bot probabilities in real-time. This lightweight model analyses cursor deviation, speed variance, and keystroke dynamics with remarkable precision.
-                </p>
-                <p>
-                    <strong>True Privacy-Preserving AI:</strong> Most importantly, our model is bundled locally with the server. Your users' interactions are analysed instantaneously on your own infrastructure. No telemetry is sent to third-party cloud providers, and we never train our models on your users' unconsented labour.
-                </p>
-            </div>
-        </section>
-
-        <!-- New Section: Comparison Table -->
-        <section id="comparison" class="container-limit" style="margin-top: 6rem;">
+        <!-- Comparison Table -->
+        <section id="comparison" class="container-limit content-section">
             <h2 class="section-title">The Competitive Edge</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                See how OpenSentinel compares directly against established industry solutions like Cloudflare Turnstile and Google reCAPTCHA.
+            </p>
             <div class="comparison-table-wrapper" style="overflow-x: auto;">
                 <table class="comparison-table" style="width: 100%; border-collapse: collapse; color: #e0e0e0;">
                     <thead>
                         <tr>
                             <th style="text-align: left; padding: 1rem; border-bottom: 1px solid #333;">Feature</th>
                             <th style="padding: 1rem; border-bottom: 1px solid #333; color: var(--accent-primary);">OpenSentinel</th>
-                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Big Tech CAPTCHA</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">Cloudflare Turnstile</th>
+                            <th style="padding: 1rem; border-bottom: 1px solid #333; color: #888;">hCaptcha / reCAPTCHA</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">User Experience</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Zero Friction</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Annoying Puzzles</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Zero Friction (Passive)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Mostly Invisible</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Interruptive Puzzles</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (GDPR/POPIA)</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Compliant by Design</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Grey Area / Tracking</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Privacy (POPIA/GDPR)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Compliant by Design (No Tracking)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Opaque Telemetry</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Extensive Profiling</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">AI Training</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ No Training on Users</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Uses Your Data</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Third-Party AI Training</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Zero (Local ONNX Inference)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Opaque Model Usage</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Unpaid AI Training</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Decentralised Threat Sharing</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Yes (Ed25519 Signed P2P)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Centralised Vendor Lock-in</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Centralised Vendor Lock-in</td>
                         </tr>
                         <tr>
                             <td style="padding: 1rem; border-bottom: 1px solid #222;">Code Transparency</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Open Source</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">❌ Black Box</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Open Source (MIT)</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Proprietary</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10007; Proprietary</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Performance</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">✅ Native Rust</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">⚠️ Heavy JS/WASM</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222;">Observability & Metrics</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#10003; Dashboard & Prometheus Exporter</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Restricted Cloud Metrics</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #222; text-align: center;">&#9888; Restricted Cloud Metrics</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- New Section: Vision -->
-        <section id="vision" class="container-limit" style="margin-top: 6rem;">
-            <h2 class="section-title">Project Vision</h2>
+        <!-- Phase 3 Threat Network -->
+        <section id="network" class="container-limit content-section">
+            <h2 class="section-title">Phase 3: Federated P2P Threat Intelligence</h2>
+            <div class="about-content" style="text-align: left;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>Collective Protection Without Data Harvesting:</strong> OpenSentinel achieves network-wide intelligence through an open, peer-to-peer Federated Threat Intelligence Network without aggregating personal user profiles.
+                </p>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 2rem;">
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Cryptographically Signed Signatures</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">Participating nodes exchange anonymised mathematical threat signatures signed using Ed25519 keypairs. This ensures signature origin validation and prevents threat pollution.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Dynamic Peer Discovery</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">Nodes dynamically query discovery endpoints specified via <code>FEDERATION_DISCOVERY_URL</code> to automatically discover new peer instances across the global network.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Resilient Client Fallback</h4>
+                        <p style="font-size: 0.9rem; color: #aaa;">The client sensor supports multiple fallback endpoint arrays. If a primary node experiences network instability, the sensor seamlessly retries secondary trusted nodes with exponential backoff.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Architecture -->
+        <section id="architecture" class="container-limit content-section">
+            <h2 class="section-title">Technical Architecture & How It Works</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                OpenSentinel fuses lightweight client instrumentation, blazing-fast Rust execution, and local ONNX machine-learning inference.
+            </p>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
-                    <h3>Phase 1: Heuristics</h3>
-                    <p>Completed. Statistical analysis of mouse linearity, speed, and keystroke flight times to filter 90% of basic bots.</p>
+                    <h3 style="color: var(--accent-primary);">1. Sensor Telemetry & Encryption</h3>
+                    <p>The client sensor records interaction coordinate arrays and timing metrics. Telemetry is encrypted using client-side AES-256-GCM encryption paired with a dynamic 32-byte key before transmission.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3>Phase 2: AI Integration</h3>
-                    <p>Current Stage. Integration of lightweight ONNX models to detect advanced procedural bot patterns without sending sensitive data to the cloud.</p>
+                    <h3 style="color: var(--accent-primary);">2. Cryptographic Proof-of-Work</h3>
+                    <p>To deter automated script attacks and high-volume request spam, the client computes SHA-256 Proof-of-Work nonces before dispatch, raising computational costs for automated bots.</p>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3>Phase 3: Federation</h3>
-                    <p>A decentralised network of OpenSentinel instances sharing threat intelligence without sharing user identities.</p>
+                    <h3 style="color: var(--accent-primary);">3. Rust Backend & ONNX ML</h3>
+                    <p>The Actix-web server decrypts incoming payloads, validates timestamp windows and nonces against replay attacks, and passes feature vectors to the local Random Forest ONNX model (`ort` crate) for real-time score generation.</p>
                 </div>
             </div>
         </section>
 
-        <section id="install" class="install container-limit" style="margin-top: 6rem;">
-            <h2 class="section-title">Ready to Integrate?</h2>
-            <div class="code-wrapper">
-                <div class="code-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                    <span class="filename">integration.html</span>
+        <!-- Implementation Guide -->
+        <section id="install" class="install container-limit content-section">
+            <h2 class="section-title">Implementation Manual & Production Deployment</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #aaa;">
+                Deploy the sovereign backend service and integrate our official client packages in minutes.
+            </p>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 2rem; text-align: left;">
+                <h3 style="color: #fff; margin-bottom: 1rem;">Step 1: Deploy the Sovereign Backend Node</h3>
+                <p style="color: #aaa; margin-bottom: 1rem;">Install prebuilt binaries via Shell script or Homebrew:</p>
+                <div class="code-wrapper" style="margin-bottom: 1rem;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">shell / brew</span>
+                    </div>
+                    <pre><code># Install prebuilt binaries via shell script
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.0/opensentinel-server-installer.sh | sh
+
+# Or install via Homebrew
+brew install opensentinel-server</code></pre>
                 </div>
-                <pre><code>&lt;script src="sensor.js"&gt;&lt;/script&gt;
+
+                <p style="color: #aaa; margin-bottom: 1rem;">Or pull the official tagged release image with Docker:</p>
+                <div class="code-wrapper" style="margin-bottom: 1rem;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">docker</span>
+                    </div>
+                    <pre><code>docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.0
+cp .env.example .env
+docker compose up -d</code></pre>
+                </div>
+                <p style="color: #aaa; margin-bottom: 1rem;">Configure essential environment variables in <code>.env</code>:</p>
+                <div class="code-wrapper" style="max-width: 650px;">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">.env</span>
+                    </div>
+                    <pre><code>PORT=8080
+PAYLOAD_SECRET_KEY=0102030405060708090a0b4c0d0e0f101112131415161718191a1b1c1d1e1f20
+ADMIN_TOKEN=your_secure_admin_token
+FEDERATION_ENABLED=true
+TRUSTED_PEERS=https://node1.example.com</code></pre>
+                </div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left;">
+                <h3 style="color: #fff; margin-bottom: 1rem;">Step 2: Integrate Frontend Client</h3>
+                <p style="color: #aaa; margin-bottom: 1rem;">Integrate using vanilla JavaScript, React, or Python:</p>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="filename">integration.html</span>
+                    </div>
+                    <pre><code>&lt;script src="/src/sensor.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  // Initialize OpenSentinel
-  // The endpoint is your Rust backend
-  OpenSentinel.init({ endpoint: '/verify' });
+  OpenSentinel.init({
+    endpoints: ['https://api.yourdomain.com/verify'],
+    enablePoW: true,
+    onSuccess: function(token) {
+        console.log('Human verified successfully.');
+    },
+    onFailure: function() {
+        console.warn('Bot behaviour detected.');
+    }
+  });
 &lt;/script&gt;</code></pre>
+                </div>
             </div>
         </section>
 
-        <section id="about" class="about container-limit" style="margin-top: 6rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
-            <h2 class="section-title">About OpenSentinel</h2>
-            <div class="about-content" style="background: rgba(255, 255, 255, 0.05); padding: 3rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+        <!-- Compliance Section -->
+        <section id="compliance" class="container-limit content-section">
+            <h2 class="section-title">Regulatory Compliance & Data Protection</h2>
+            <div class="about-content" style="text-align: left;">
                 <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
-                    <strong>OpenSentinel is a South African open-source initiative</strong> dedicated to reclaiming digital independence. We believe that security tools should be accessible, transparent, and respectful of human rights.
+                    <strong>Built for the Modern Regulatory Landscape:</strong> OpenSentinel is systematically designed from the ground up to guarantee absolute compliance with global data protection laws, including South Africa's Protection of Personal Information Act (POPIA), Europe's General Data Protection Regulation (GDPR), and the California Consumer Privacy Act (CCPA).
+                </p>
+                <ul style="list-style: none; color: #aaa; padding-left: 0;">
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Zero Personally Identifiable Information (PII):</strong> We categorically never collect IP addresses, browser fingerprints, email addresses, or any other data that could identify an individual user.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Strict Data Minimisation:</strong> The sensor only measures the mathematical variance of user interactions (mouse trajectory linearity, speed, keystroke intervals). This abstract telemetry is completely anonymous and impossible to reverse-engineer into personal profiles.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>Localised Processing:</strong> Our state-of-the-art ONNX machine-learning model runs entirely on your own server infrastructure. We do not utilise external cloud APIs, ensuring your users' behavioural data never leaves your sovereign control.</li>
+                    <li style="margin-bottom: 1rem;">&#10003; <strong>No Cross-Site Tracking:</strong> We fundamentally reject tracking cookies, local storage beacons, or persistent identifiers. Interactions across different sites remain entirely independent.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Governance Section -->
+        <section id="open-source" class="container-limit content-section">
+            <h2 class="section-title">Open-Source Community & Governance</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-primary);">
+                    <h3>Contributing to the Vision</h3>
+                    <p>OpenSentinel thrives on radical transparency and community collaboration. We actively encourage security researchers, software engineers, and data scientists to audit our codebase, refine model definitions, and submit pull requests. See <code>CONTRIBUTING.md</code> on GitHub.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid #ffbd2e;">
+                    <h3>Security Policy</h3>
+                    <p>Security is paramount. We maintain a clear vulnerability disclosure policy. Potential security findings in our core Rust backend or sensor components should be reported privately according to our <code>SECURITY.md</code> guidelines.</p>
+                </div>
+                <div class="card tilt-element" data-tilt style="border-top: 4px solid var(--accent-secondary);">
+                    <h3>Transparent Governance</h3>
+                    <p>OpenSentinel is governed under a permissive MIT Licence, a transparent technical governance model, and a standard Code of Conduct to ensure welcoming community collaboration worldwide.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about container-limit content-section" style="text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <h2 class="section-title">About OpenSentinel</h2>
+            <div class="about-content">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                    <strong>OpenSentinel is an independent South African open-source initiative</strong> dedicated to reclaiming digital privacy and web sovereignty. We believe cybersecurity tools must remain transparent, universally accessible, and deeply respectful of fundamental human rights.
                 </p>
                 <p style="margin-bottom: 1.5rem;">
-                    In an era where personal data is the new oil, we are building the infrastructure for a privacy-first internet. Our software is forged in Mzansi, but built for the world. We adhere to the highest standards of code quality and ethical engineering.
+                    Forged in Mzansi to serve the global web, OpenSentinel adheres strictly to rigorous memory safety, high-performance systems engineering, and privacy-first architectural principles.
                 </p>
                 <p>
-                    <strong>Our Mission:</strong> To provide developers with robust, free, and secure alternatives to Big Tech monopolies, fostering a global ecosystem of digital sovereignty.
+                    <strong>Our Mission:</strong> To equip developers worldwide with transparent, high-performance, and entirely free open-source alternatives to Big Tech security monopolies.
                 </p>
             </div>
         </section>
@@ -340,11 +516,13 @@
         </div>
         <div class="footer-bottom container-limit" style="text-align: center; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
             <div class="copyright" style="border-top: none; padding-top: 0;">
-                &copy; <span id="current-year">2024</span> Azanian Eagle. Open Source MIT Licence.
+                &copy; <span id="current-year">2025</span> Azanian Eagle. Open Source MIT Licence.
             </div>
-            <div class="proudly-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap;">
-                <span style="font-weight: 600; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Proudly South African</span>
-            </div>
+            <a href="https://azanian-eagle.github.io" target="_blank" rel="noopener noreferrer" class="group" style="text-decoration: none; display: inline-block;">
+                    <div class="made-with-love-in-za" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; white-space: nowrap; overflow: visible;">
+                        <span class="transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,184,28,0.8)]" style="font-weight: 600; line-height: 1.4; background: linear-gradient(90deg, #ffb81c, #007749, #e03c31); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">Made with &#9829; in South Africa</span>
+                    </div>
+            </a>
         </div>
     </footer>
 

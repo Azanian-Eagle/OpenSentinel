@@ -1,5 +1,5 @@
 {
-  "name": "opensentinel-react",
+  "name": "@opensentinel/react",
   "version": "1.0.0",
   "description": "React hook for OpenSentinel verification",
   "main": "index.js",

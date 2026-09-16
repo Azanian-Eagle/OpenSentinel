@@ -6,6 +6,9 @@
   "exports": {
     ".": "./client/src/sensor.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "directories": {
     "doc": "docs",
     "test": "tests"

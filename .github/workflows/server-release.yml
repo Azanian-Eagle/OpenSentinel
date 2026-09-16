@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+      - "[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
 
 permissions:
@@ -30,11 +31,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase Repository Owner
+        id: owner
+        run: |
+          echo "owner_lc=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
       - name: Extract backend metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/opensentinel
+          images: ghcr.io/${{ steps.owner.outputs.owner_lc }}/opensentinel
           tags: |
             type=ref,event=tag
             type=raw,value=latest

@@ -1,6 +1,6 @@
 [package]
 name = "opensentinel-server"
-version = "1.0.1"
+version = "1.0.4"
 edition = "2021"
 authors = ["Azanian Eagle <info@azanianeagle.co.za>"]
 description = "OpenSentinel high-performance backend server and local ONNX machine learning engine for non-invasive bot detection, engineered by Azanian Eagle."

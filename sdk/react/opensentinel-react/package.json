@@ -4,9 +4,6 @@
   "description": "React hook for OpenSentinel verification",
   "main": "index.js",
   "types": "index.d.ts",
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "build": "tsc"
   },

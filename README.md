@@ -177,10 +177,15 @@ kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 ```
 
-Or deploy via Helm:
+Or deploy via Helm (from local chart repository or OCI registry):
 
 ```bash
+# Deploy from local chart repository
 helm install opensentinel k8s/helm/opensentinel \
+  --set env.payloadSecretKey="0102030405060708090a0b4c0d0e0f101112131415161718191a1b1c1d1e1f20"
+
+# Or deploy directly from GitHub Container Registry (OCI)
+helm install opensentinel oci://ghcr.io/azanian-eagle/helm/opensentinel \
   --set env.payloadSecretKey="0102030405060708090a0b4c0d0e0f101112131415161718191a1b1c1d1e1f20"
 ```
 

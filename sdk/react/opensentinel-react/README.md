@@ -1,18 +1,18 @@
-# @azanian-eagle/react
+# @azanian-eagle/opensentinel-react
 
 Official React SDK for OpenSentinel non-invasive CAPTCHA alternative.
 
 ## Installation
 
 ```bash
-npm install @azanian-eagle/react
+npm install @azanian-eagle/opensentinel-react
 ```
 
 ## Usage
 
 ```tsx
 import React from 'react';
-import { useOpenSentinel } from '@azanian-eagle/react';
+import { useOpenSentinel } from '@azanian-eagle/opensentinel-react';
 
 export const VerificationComponent = () => {
   const { verify } = useOpenSentinel({

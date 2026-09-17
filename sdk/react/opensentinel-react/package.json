@@ -1,5 +1,5 @@
 {
-  "name": "@azanian-eagle/react",
+  "name": "@azanian-eagle/opensentinel-react",
   "version": "1.0.0",
   "description": "React hook for OpenSentinel verification",
   "main": "index.js",

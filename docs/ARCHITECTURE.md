@@ -23,9 +23,9 @@ OpenSentinel is meticulously engineered from the ground up to deliver uncompromi
 - **Implementation Strategy**: By performing all ML inference locally on the sovereign server, sensitive behavioural data never leaves your infrastructure, guaranteeing strict compliance with POPIA, GDPR, and CCPA frameworks.
 
 ### First-Party SDKs & Client Libraries
-- **React SDK (`@azanian-eagle/react`)**: TypeScript wrapper providing the `useOpenSentinel` hook with automated dependency handling and SSR safety checks.
+- **React SDK (`@azanian-eagle/opensentinel-react`)**: TypeScript wrapper providing the `useOpenSentinel` hook with automated dependency handling and SSR safety checks.
 - **Python SDK (`opensentinel`)**: Lightweight client wrapper relying strictly on Python standard libraries (`urllib`).
-- **NPM Vanilla JS (`@azanian-eagle/client`)**: UMD client asset usable across bundlers or direct CDN script inclusions.
+- **NPM Vanilla JS (`@azanian-eagle/opensentinel-client`)**: UMD client asset usable across bundlers or direct CDN script inclusions.
 
 ## Observability, Analytics & Management
 

@@ -48,6 +48,9 @@ jobs:
 
   publish-pypi:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,7 +61,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install build tools
-        run: pip install build twine
+        run: pip install build
 
       - name: Build Python SDK
         run: |
@@ -66,12 +69,11 @@ jobs:
           python -m build
 
       - name: Publish Python SDK
-        run: |
-          cd sdk/python
-          twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        uses: pypa/gh-action-pypa-publish@release/v1
+        with:
+          packages-dir: sdk/python/dist/
+          password: ${{ secrets.PYPI_TOKEN }}
+          skip-existing: true
 
   publish-cargo:
     runs-on: ubuntu-latest

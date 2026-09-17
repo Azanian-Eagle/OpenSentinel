@@ -2,11 +2,15 @@
 name = "opensentinel-server"
 version = "1.0.0"
 edition = "2021"
-description = "OpenSentinel backend server for bot-detection and security verification"
+authors = ["Azanian Eagle <info@azanianeagle.co.za>"]
+description = "OpenSentinel high-performance backend server and local ONNX machine learning engine for non-invasive bot detection, engineered by Azanian Eagle."
 license = "MIT"
 repository = "https://github.com/Azanian-Eagle/OpenSentinel"
 homepage = "https://github.com/Azanian-Eagle/OpenSentinel"
-keywords = ["captcha", "security", "web", "privacy", "bot-detection"]
+documentation = "https://github.com/Azanian-Eagle/OpenSentinel#readme"
+readme = "README.md"
+keywords = ["captcha", "security", "bot-detection", "privacy", "anti-bot"]
+categories = ["web-programming", "network-programming", "science"]
 
 [dependencies]
 actix-web = "4"

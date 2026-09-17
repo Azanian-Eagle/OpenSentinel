@@ -67,22 +67,22 @@ OpenSentinel fundamentally alters this paradigm: **we categorically do not train
 - **Cryptographic Proof-of-Work (PoW):** Optional client-side PoW computation deters automated script attacks and high-volume DDoS attempts by raising the computational cost for bots.
 - **Federated Threat Intelligence Network:** Peer-to-peer threat signature sharing across instances using Ed25519 cryptographic signatures and dynamic peer discovery (`FEDERATION_DISCOVERY_URL`).
 - **Live Observability & Analytics:** An authenticated real-time dashboard at `/api/dashboard` paired with Prometheus-compatible metrics at `/metrics`, `/healthz`, and `/readyz`.
-- **First-Party SDK Ecosystem:** Ready-to-use SDKs for React (`@opensentinel/react`), Python (`opensentinel`), and UMD Vanilla JS (`@opensentinel/client`).
+- **First-Party SDK Ecosystem:** Ready-to-use SDKs for React (`@azanian-eagle/opensentinel-react`), Python (`opensentinel`), and UMD Vanilla JS (`@azanian-eagle/opensentinel-client`).
 - **Cloud-Native Deployment:** First-class support for Kubernetes via raw manifests (`k8s/`) and a production-grade Helm Chart (`k8s/helm/opensentinel`).
 
 ## First-Party SDKs & Client Libraries
 
 OpenSentinel offers official packages across ecosystems:
 
-### React SDK (`@opensentinel/react`)
+### React SDK (`@azanian-eagle/opensentinel-react`)
 
 ```bash
-npm install @opensentinel/react
+npm install @azanian-eagle/opensentinel-react
 ```
 
 ```tsx
 import React from 'react';
-import { useOpenSentinel } from '@opensentinel/react';
+import { useOpenSentinel } from '@azanian-eagle/opensentinel-react';
 
 export const VerificationComponent = () => {
   const { isVerified, isEvaluating, score, verify } = useOpenSentinel({
@@ -115,7 +115,7 @@ client = OpenSentinelClient(endpoint="https://api.yourdomain.com/verify")
 # Verify client telemetry backend-side or query status
 ```
 
-### Vanilla JS / UMD (`@opensentinel/client`)
+### Vanilla JS / UMD (`@azanian-eagle/opensentinel-client`)
 
 ```html
 <script src="/src/sensor.js"></script>

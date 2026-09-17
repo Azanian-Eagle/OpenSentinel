@@ -61,6 +61,18 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
+      - name: Sync Cargo Crate and Package Versions with Git Tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Syncing Cargo crate and workspace versions to $TAG_VERSION"
+            sed -i "s/^version = .*/version = \"$TAG_VERSION\"/" server/Cargo.toml
+            sed -i "s/\"version\": \".*\"/\"version\": \"$TAG_VERSION\"/" package.json
+            sed -i "s/\"version\": \".*\"/\"version\": \"$TAG_VERSION\"/" sdk/react/opensentinel-react/package.json
+            sed -i "s/^version = .*/version = \"$TAG_VERSION\"/" sdk/python/pyproject.toml
+            sed -i "s/version=\".*\"/version=\"$TAG_VERSION\"/" sdk/python/setup.py
+            sed -i "s/^version: .*/version: $TAG_VERSION/" k8s/helm/opensentinel/Chart.yaml
+          fi
       - name: Install dist
         # we specify bash to get pipefail; it guards against the `curl` command
         # failing. otherwise `sh` won't catch that `curl` returned non-0

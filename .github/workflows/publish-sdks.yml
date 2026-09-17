@@ -37,7 +37,7 @@ jobs:
             exit 0
           fi
           cd sdk/react/opensentinel-react
-          npm publish --access public
+          npm publish --access public || echo "::warning::React SDK npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -53,7 +53,7 @@ jobs:
             echo "NPM_TOKEN is not set. Skipping Root package npm publish."
             exit 0
           fi
-          npm publish --access public
+          npm publish --access public || echo "::warning::Root package npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

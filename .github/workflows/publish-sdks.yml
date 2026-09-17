@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+      - "[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
 
 permissions:
@@ -29,9 +30,14 @@ jobs:
           npm run build
 
       - name: Publish React SDK
+        # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
         run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN is not set. Skipping React SDK npm publish."
+            exit 0
+          fi
           cd sdk/react/opensentinel-react
-          npm publish --access public
+          npm publish --access public || echo "::warning::React SDK npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -41,12 +47,21 @@ jobs:
           npm run build
 
       - name: Publish Root NPM package
-        run: npm publish --access public
+        # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN is not set. Skipping Root package npm publish."
+            exit 0
+          fi
+          npm publish --access public || echo "::warning::Root package npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-pypi:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,20 +72,32 @@ jobs:
           python-version: '3.12'
 
       - name: Install build tools
-        run: pip install build twine
+        run: pip install build
 
       - name: Build Python SDK
         run: |
           cd sdk/python
           python -m build
 
-      - name: Publish Python SDK
+      - name: Check PyPI Token
+        id: check_token
         run: |
-          cd sdk/python
-          twine upload dist/*
+          if [ -n "$PYPI_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "PYPI_TOKEN is not set. Skipping PyPI publish."
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Publish Python SDK
+        if: steps.check_token.outputs.has_token == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: sdk/python/dist/
+          password: ${{ secrets.PYPI_TOKEN }}
+          skip-existing: true
 
   publish-cargo:
     runs-on: ubuntu-latest
@@ -83,6 +110,10 @@ jobs:
 
       - name: Publish to crates.io
         run: |
+          if [ -z "$CARGO_REGISTRY_TOKEN" ]; then
+            echo "CARGO_REGISTRY_TOKEN is not set. Skipping cargo publish."
+            exit 0
+          fi
           cd server
           cargo publish
         env:

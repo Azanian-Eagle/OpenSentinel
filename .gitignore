@@ -6,7 +6,11 @@ node_modules/
 dist/
 verification_screenshot.png
 .venv/
+*.egg-info/
+build/
 threat_intel.log
 server.log
 server_output2.log
 server_output.log
+__pycache__/
+*.pyc

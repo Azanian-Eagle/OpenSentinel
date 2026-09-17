@@ -30,7 +30,7 @@ For production deployments, install prebuilt binaries or pull the official relea
 
 #### Install Prebuilt Binaries via Shell Script
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.3/opensentinel-server-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.4/opensentinel-server-installer.sh | sh
 ```
 
 #### Install Prebuilt Binaries via Homebrew
@@ -40,7 +40,7 @@ brew install opensentinel-server
 
 #### Pull Tagged Docker Image
 ```bash
-docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.3
+docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.4
 ```
 
 #### Official Prebuilt Binary Assets

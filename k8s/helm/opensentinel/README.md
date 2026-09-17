@@ -31,7 +31,7 @@ OpenSentinel replaces intrusive visual challenges with frictionless client telem
 
 ```bash
 helm install opensentinel oci://ghcr.io/azanian-eagle/helm/opensentinel \
-  --version 1.0.1 \
+  --version 1.0.4 \
   --set env.payloadSecretKey="0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
 ```
 

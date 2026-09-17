@@ -6,6 +6,7 @@ COPY server/ .
 RUN cargo install --path .
 
 FROM debian:bookworm-slim
+LABEL org.opencontainers.image.description="OpenSentinel backend server for bot-detection and security verification"
 WORKDIR /app/server
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends ca-certificates curl \

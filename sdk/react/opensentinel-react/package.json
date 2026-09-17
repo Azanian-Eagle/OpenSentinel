@@ -1,11 +1,22 @@
 {
-  "name": "opensentinel-react",
+  "name": "@azanian-eagle/react",
   "version": "1.0.0",
   "description": "React hook for OpenSentinel verification",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azanian-Eagle/OpenSentinel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Azanian-Eagle/OpenSentinel/issues"
+  },
+  "homepage": "https://github.com/Azanian-Eagle/OpenSentinel#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Azanian Eagle",
   "license": "MIT",

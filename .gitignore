@@ -12,3 +12,5 @@ threat_intel.log
 server.log
 server_output2.log
 server_output.log
+__pycache__/
+*.pyc

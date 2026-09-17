@@ -1,7 +1,7 @@
 {
   "name": "@azanian-eagle/opensentinel-react",
   "version": "1.0.0",
-  "description": "React hook for OpenSentinel verification",
+  "description": "Official React SDK and hook library for OpenSentinel, engineered by Azanian Eagle for non-invasive, privacy-preserving CAPTCHA-free bot detection and human verification.",
   "main": "index.js",
   "types": "index.d.ts",
   "publishConfig": {
@@ -14,15 +14,27 @@
     "type": "git",
     "url": "git+https://github.com/Azanian-Eagle/OpenSentinel.git"
   },
+  "keywords": [
+    "react",
+    "opensentinel",
+    "captcha",
+    "bot-detection",
+    "security",
+    "privacy",
+    "proof-of-work",
+    "human-verification",
+    "react-hooks",
+    "azanian-eagle",
+    "anti-bot",
+    "telemetry",
+    "south-africa"
+  ],
+  "author": "Azanian Eagle <info@azanianeagle.co.za> (https://github.com/Azanian-Eagle)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Azanian-Eagle/OpenSentinel/issues"
   },
   "homepage": "https://github.com/Azanian-Eagle/OpenSentinel#readme",
-  "publishConfig": {
-    "access": "public"
-  },
-  "author": "Azanian Eagle",
-  "license": "MIT",
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },

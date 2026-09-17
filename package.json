@@ -1,7 +1,7 @@
 {
   "name": "@azanian-eagle/opensentinel-client",
   "version": "1.0.0",
-  "description": "![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)",
+  "description": "Client-side sensor library for OpenSentinel, engineered by Azanian Eagle to deliver non-invasive CAPTCHA-free bot detection, telemetry analysis, and security verification.",
   "main": "client/src/sensor.js",
   "exports": {
     ".": "./client/src/sensor.js"
@@ -21,8 +21,21 @@
     "type": "git",
     "url": "git+https://github.com/Azanian-Eagle/OpenSentinel.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "opensentinel",
+    "captcha",
+    "bot-detection",
+    "security",
+    "privacy",
+    "proof-of-work",
+    "non-invasive",
+    "azanian-eagle",
+    "human-verification",
+    "anti-bot",
+    "telemetry-analysis",
+    "south-africa"
+  ],
+  "author": "Azanian Eagle <info@azanianeagle.co.za> (https://github.com/Azanian-Eagle)",
   "license": "MIT",
   "type": "commonjs",
   "bugs": {

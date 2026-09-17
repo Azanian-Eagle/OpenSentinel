@@ -30,7 +30,12 @@ jobs:
           npm run build
 
       - name: Publish React SDK
+        # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
         run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN is not set. Skipping React SDK npm publish."
+            exit 0
+          fi
           cd sdk/react/opensentinel-react
           npm publish --access public
         env:
@@ -42,7 +47,13 @@ jobs:
           npm run build
 
       - name: Publish Root NPM package
-        run: npm publish --access public
+        # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN is not set. Skipping Root package npm publish."
+            exit 0
+          fi
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

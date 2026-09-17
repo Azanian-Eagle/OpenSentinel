@@ -1,4 +1,4 @@
-# OpenSentinel (1.0.1 Stable Production Release)
+# OpenSentinel (1.0 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
@@ -24,13 +24,13 @@ docker compose up --build
 
 The server binds to `http://localhost:8080`. Visit that URL to interact with the client interface and confirm service health.
 
-### Production Release (1.0.1)
+### Production Release (1.0)
 
 For production deployments, install prebuilt binaries or pull the official release image from GitHub Container Registry:
 
 #### Install Prebuilt Binaries via Shell Script
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.1/opensentinel-server-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.3/opensentinel-server-installer.sh | sh
 ```
 
 #### Install Prebuilt Binaries via Homebrew
@@ -40,7 +40,7 @@ brew install opensentinel-server
 
 #### Pull Tagged Docker Image
 ```bash
-docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.1
+docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.3
 ```
 
 #### Official Prebuilt Binary Assets

@@ -79,7 +79,20 @@ jobs:
           cd sdk/python
           python -m build
 
+      - name: Check PyPI Token
+        id: check_token
+        run: |
+          if [ -n "$PYPI_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "PYPI_TOKEN is not set. Skipping PyPI publish."
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
       - name: Publish Python SDK
+        if: steps.check_token.outputs.has_token == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: sdk/python/dist/

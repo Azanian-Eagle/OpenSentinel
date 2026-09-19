@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8") if
 setup(
     name="opensentinel",
     version="1.0.4",
-    description="Official Python SDK for OpenSentinel, engineered by Azanian Eagle for non-invasive CAPTCHA-free bot detection and security verification.",
+    description="Official Python SDK for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Azanian Eagle",
@@ -26,7 +26,14 @@ setup(
         "azanian-eagle",
         "anti-bot",
         "telemetry",
-        "south-africa"
+        "south-africa",
+        "recaptcha-alternative",
+        "turnstile-alternative",
+        "hcaptcha-alternative",
+        "captcha-replacement",
+        "zero-click-captcha",
+        "bot-protection-service",
+        "azanian-eagle-creator"
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

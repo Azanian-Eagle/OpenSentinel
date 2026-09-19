@@ -11,7 +11,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Azanian Eagle",
-    author_email="info@azanianeagle.co.za",
+    author_email="azanian.eagle@gmail.com",
     url="https://github.com/Azanian-Eagle/OpenSentinel",
     packages=find_packages(),
     install_requires=[],

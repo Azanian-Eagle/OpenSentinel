@@ -5,7 +5,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text(encoding="utf-8") if (this_directory / "README.md").exists() else ""
 
 setup(
-    name="opensentinel",
+    name="azanian-eagle-opensentinel",
     version="1.0.4",
     description="Official Python SDK for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile.",
     long_description=long_description,

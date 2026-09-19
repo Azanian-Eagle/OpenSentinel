@@ -70,7 +70,7 @@ OpenSentinel fundamentally alters this paradigm: **we categorically do not train
 - **Cryptographic Proof-of-Work (PoW):** Optional client-side PoW computation deters automated script attacks and high-volume DDoS attempts by raising the computational cost for bots.
 - **Federated Threat Intelligence Network:** Peer-to-peer threat signature sharing across instances using Ed25519 cryptographic signatures and dynamic peer discovery (`FEDERATION_DISCOVERY_URL`).
 - **Live Observability & Analytics:** An authenticated real-time dashboard at `/api/dashboard` paired with Prometheus-compatible metrics at `/metrics`, `/healthz`, and `/readyz`.
-- **First-Party SDK Ecosystem:** Ready-to-use SDKs for React (`@azanian-eagle/opensentinel-react`), Python (`opensentinel`), and UMD Vanilla JS (`@azanian-eagle/opensentinel-client`).
+- **First-Party SDK Ecosystem:** Ready-to-use SDKs for React (`@azanian-eagle/opensentinel-react`), Python (`azanian-eagle-opensentinel`), and UMD Vanilla JS (`@azanian-eagle/opensentinel-client`).
 - **Cloud-Native Deployment:** First-class support for Kubernetes via raw manifests (`k8s/`) and a production-grade Helm Chart (`k8s/helm/opensentinel`).
 
 ## First-Party SDKs & Client Libraries
@@ -107,10 +107,10 @@ export const VerificationComponent = () => {
 };
 ```
 
-### Python SDK (`opensentinel`)
+### Python SDK (`azanian-eagle-opensentinel`)
 
 ```bash
-pip install opensentinel
+pip install azanian-eagle-opensentinel
 ```
 
 ```python

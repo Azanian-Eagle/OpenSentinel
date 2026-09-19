@@ -22,15 +22,15 @@ OpenSentinel replaces intrusive visual puzzles with frictionless telemetry analy
 Install the official package from PyPI using `pip`:
 
 ```bash
-pip install opensentinel
+pip install azanian-eagle-opensentinel
 ```
 
 Or using `poetry` or `pipenv`:
 
 ```bash
-poetry add opensentinel
+poetry add azanian-eagle-opensentinel
 # or
-pipenv install opensentinel
+pipenv install azanian-eagle-opensentinel
 ```
 
 ---

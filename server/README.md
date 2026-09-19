@@ -1,5 +1,7 @@
 # OpenSentinel Server (`opensentinel-server`)
 
+[![Crates.io](https://img.shields.io/crates/v/opensentinel-server.svg)](https://crates.io/crates/opensentinel-server)
+
 High-performance Rust backend server and ONNX machine learning inference engine for **OpenSentinel**, engineered by **Azanian Eagle** to power non-invasive, privacy-first CAPTCHA replacement services.
 
 ## About OpenSentinel & Azanian Eagle

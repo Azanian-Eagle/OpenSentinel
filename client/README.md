@@ -1,5 +1,7 @@
 # @azanian-eagle/opensentinel-client
 
+[![npm version](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-client)
+
 Official Vanilla JavaScript / UMD client-side sensor library for **OpenSentinel**, engineered by **Azanian Eagle** to deliver non-invasive, privacy-preserving CAPTCHA-free human verification and bot detection.
 
 ## About OpenSentinel & Azanian Eagle

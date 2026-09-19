@@ -1,6 +1,9 @@
 # OpenSentinel (1.0 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
+[![Crates.io](https://img.shields.io/crates/v/opensentinel-server.svg)](https://crates.io/crates/opensentinel-server)
+[![npm react](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg?label=npm%20react)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-react)
+[![npm client](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg?label=npm%20client)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-client)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Licence: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -76,6 +79,8 @@ OpenSentinel offers official packages across ecosystems:
 
 ### React SDK (`@azanian-eagle/opensentinel-react`)
 
+[![npm version](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-react)
+
 ```bash
 npm install @azanian-eagle/opensentinel-react
 ```
@@ -116,6 +121,8 @@ client = OpenSentinelClient(endpoint="https://api.yourdomain.com/verify")
 ```
 
 ### Vanilla JS / UMD (`@azanian-eagle/opensentinel-client`)
+
+[![npm version](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-client)
 
 ```html
 <script src="/src/sensor.js"></script>

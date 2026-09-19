@@ -491,15 +491,16 @@ pre {
     box-sizing: border-box;
     white-space: pre-wrap;
     word-wrap: break-word;
-    overflow-wrap: anywhere;
-    word-break: break-all;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 code {
     font-family: var(--font-code);
     color: #a9b7c6;
     font-size: 0.9rem;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 /* Footer */

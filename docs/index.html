@@ -196,22 +196,40 @@
             </p>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
                 <div class="card tilt-element" data-tilt>
-                    <h3 style="color: var(--accent-primary);">React SDK</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="color: var(--accent-primary); margin: 0;">React SDK</h3>
+                        <a href="https://www.npmjs.com/package/@azanian-eagle/opensentinel-react" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg" alt="NPM React SDK Package Version">
+                        </a>
+                    </div>
                     <p><code>@azanian-eagle/opensentinel-react</code> provides full TypeScript support, SSR safety checks, and the customizable <code>useOpenSentinel()</code> React hook with automated cleanup.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem;"><a href="https://www.npmjs.com/package/@azanian-eagle/opensentinel-react" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary);">View package on npm &rarr;</a></p>
                     <div class="code-wrapper" style="margin-top: 1rem;">
                         <pre><code>npm install @azanian-eagle/opensentinel-react</code></pre>
                     </div>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3 style="color: var(--accent-primary);">Python SDK</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="color: var(--accent-primary); margin: 0;">Python SDK</h3>
+                        <a href="https://pypi.org/project/opensentinel/" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/pypi/v/opensentinel.svg" alt="PyPI Python SDK Package Version">
+                        </a>
+                    </div>
                     <p><code>opensentinel</code> offers a lightweight client wrapper for server-side verification using Python standard libraries (no heavy external HTTP runtime dependencies).</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem;"><a href="https://pypi.org/project/opensentinel/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary);">View package on PyPI &rarr;</a></p>
                     <div class="code-wrapper" style="margin-top: 1rem;">
                         <pre><code>pip install opensentinel</code></pre>
                     </div>
                 </div>
                 <div class="card tilt-element" data-tilt>
-                    <h3 style="color: var(--accent-primary);">Vanilla JS / UMD</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="color: var(--accent-primary); margin: 0;">Vanilla JS / UMD</h3>
+                        <a href="https://www.npmjs.com/package/@azanian-eagle/opensentinel-client" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg" alt="NPM Client Sensor Package Version">
+                        </a>
+                    </div>
                     <p><code>@azanian-eagle/opensentinel-client</code> delivers a sub-20kb browser sensor featuring client-side Proof-of-Work nonces, AES-256-GCM encryption, and exponential backoff retry mechanisms.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem;"><a href="https://www.npmjs.com/package/@azanian-eagle/opensentinel-client" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary);">View package on npm &rarr;</a></p>
                     <div class="code-wrapper" style="margin-top: 1rem;">
                         <pre><code>&lt;script src="/src/sensor.js"&gt;&lt;/script&gt;</code></pre>
                     </div>
@@ -383,8 +401,13 @@
             </p>
 
             <div style="background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 2rem; text-align: left;">
-                <h3 style="color: #fff; margin-bottom: 1rem;">Step 1: Deploy the Sovereign Backend Node</h3>
-                <p style="color: #aaa; margin-bottom: 1rem;">Install prebuilt binaries via Shell script or Homebrew:</p>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <h3 style="color: #fff; margin: 0;">Step 1: Deploy the Sovereign Backend Node</h3>
+                    <a href="https://crates.io/crates/opensentinel-server/" target="_blank" rel="noopener noreferrer">
+                        <img src="https://img.shields.io/crates/v/opensentinel-server.svg" alt="Crates.io Server Package Version">
+                    </a>
+                </div>
+                <p style="color: #aaa; margin-bottom: 1rem;">Install prebuilt binaries via Shell script or Homebrew, or compile via <a href="https://crates.io/crates/opensentinel-server/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary);">crates.io</a>:</p>
                 <div class="code-wrapper" style="margin-bottom: 1rem;">
                     <div class="code-header">
                         <span class="dot red"></span>

@@ -453,6 +453,7 @@ body.no-scroll {
     border-radius: 8px;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -486,14 +487,19 @@ body.no-scroll {
 pre {
     padding: 20px;
     overflow-x: auto;
+    max-width: 100%;
+    box-sizing: border-box;
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow-wrap: anywhere;
+    word-break: break-all;
 }
 
 code {
     font-family: var(--font-code);
     color: #a9b7c6;
     font-size: 0.9rem;
+    overflow-wrap: anywhere;
 }
 
 /* Footer */
@@ -591,6 +597,10 @@ footer {
         align-items: center;
     }
 
+    .logo-container {
+        margin-right: 0;
+    }
+
     .hamburger {
         display: flex;
         margin-left: auto;
@@ -629,10 +639,24 @@ footer {
     }
 
     .hero {
-        flex-direction: column-reverse;
-        padding: 110px 0 4rem;
+        min-height: auto;
+        padding: 130px 0 2.5rem;
         text-align: center;
         gap: 2.5rem;
+    }
+
+    .hero .container-limit {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-visual {
+        order: -1;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 2.5rem;
     }
 
     .hero h1 {

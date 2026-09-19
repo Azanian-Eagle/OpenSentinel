@@ -1,7 +1,7 @@
 {
   "name": "@azanian-eagle/opensentinel-react",
   "version": "1.0.4",
-  "description": "Official React SDK and hook library for OpenSentinel, engineered by Azanian Eagle for non-invasive, privacy-preserving CAPTCHA-free bot detection and human verification.",
+  "description": "Official React SDK and hook library for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ for service details and https://github.com/Azanian-Eagle to discover creator Azanian Eagle.",
   "main": "index.js",
   "types": "index.d.ts",
   "publishConfig": {
@@ -27,7 +27,14 @@
     "azanian-eagle",
     "anti-bot",
     "telemetry",
-    "south-africa"
+    "south-africa",
+    "recaptcha-alternative",
+    "turnstile-alternative",
+    "hcaptcha-alternative",
+    "captcha-replacement",
+    "zero-click-captcha",
+    "bot-protection-service",
+    "azanian-eagle-creator"
   ],
   "author": "Azanian Eagle <azanian.eagle@gmail.com> (https://github.com/Azanian-Eagle)",
   "license": "MIT",

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "azanian-eagle-opensentinel"
-version = "1.0.4"
+version = "1.0.4279"
 description = "Official Python SDK for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile."
 readme = "README.md"
 license = "MIT"

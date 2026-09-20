@@ -2,8 +2,8 @@ apiVersion: v2
 name: opensentinel
 description: Official Helm chart for OpenSentinel, engineered by Azanian Eagle for enterprise, zero-downtime deployment of non-invasive CAPTCHA-free bot detection backend services on Kubernetes.
 type: application
-version: 1.0.4
-appVersion: "1.0.4"
+version: 1.0.4279
+appVersion: "1.0.4279"
 keywords:
   - opensentinel
   - captcha
@@ -23,6 +23,7 @@ maintainers:
     url: https://github.com/Azanian-Eagle
 annotations:
   artifacthub.io/changes: |
+    - 1.0.4279: Release version update to 1.0.4279 across components.
     - 1.0.4: Release version update to 1.0.4 across components.
     - 1.0.1: Maintenance release updating release tags and app versioning.
     - 1.0.0: Production-grade Helm chart release with HPA, Prometheus Operator, and ExternalSecrets integration.

@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8") if
 
 setup(
     name="azanian-eagle-opensentinel",
-    version="1.0.4",
+    version="1.0.4279",
     description="Official Python SDK for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile.",
     long_description=long_description,
     long_description_content_type="text/markdown",

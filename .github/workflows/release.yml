@@ -62,16 +62,80 @@ jobs:
           persist-credentials: false
           submodules: recursive
       - name: Sync Cargo Crate and Package Versions with Git Tag
+        shell: bash
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           if [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "Syncing Cargo crate and workspace versions to $TAG_VERSION"
-            sed -i "s/^version = .*/version = \"$TAG_VERSION\"/" server/Cargo.toml
-            sed -i "s/\"version\": \".*\"/\"version\": \"$TAG_VERSION\"/" package.json
-            sed -i "s/\"version\": \".*\"/\"version\": \"$TAG_VERSION\"/" sdk/react/opensentinel-react/package.json
-            sed -i "s/^version = .*/version = \"$TAG_VERSION\"/" sdk/python/pyproject.toml
-            sed -i "s/version=\".*\"/version=\"$TAG_VERSION\"/" sdk/python/setup.py
-            sed -i "s/^version: .*/version: $TAG_VERSION/" k8s/helm/opensentinel/Chart.yaml
+            python3 -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+" 2>/dev/null || python -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+"
           fi
       - name: Install dist
         # we specify bash to get pipefail; it guards against the `curl` command
@@ -133,6 +197,82 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
+      - name: Sync Cargo Crate and Package Versions with Git Tag
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Syncing Cargo crate and workspace versions to $TAG_VERSION"
+            python3 -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+" 2>/dev/null || python -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+"
+          fi
       - name: Install Rust non-interactively if not already installed
         if: ${{ matrix.container }}
         run: |
@@ -192,6 +332,82 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
+      - name: Sync Cargo Crate and Package Versions with Git Tag
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Syncing Cargo crate and workspace versions to $TAG_VERSION"
+            python3 -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+" 2>/dev/null || python -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+"
+          fi
       - name: Install cached dist
         uses: actions/download-artifact@v8
         with:
@@ -242,6 +458,82 @@ jobs:
         with:
           persist-credentials: false
           submodules: recursive
+      - name: Sync Cargo Crate and Package Versions with Git Tag
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Syncing Cargo crate and workspace versions to $TAG_VERSION"
+            python3 -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+" 2>/dev/null || python -c "
+import sys, re, os
+tag = '$TAG_VERSION'
+files_toml = ['server/Cargo.toml', 'sdk/python/pyproject.toml']
+for fpath in files_toml:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'^version = \".*\"', f'version = \"{tag}\"', c, flags=re.MULTILINE)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+files_json = ['package.json', 'sdk/react/opensentinel-react/package.json']
+for fpath in files_json:
+    if os.path.exists(fpath):
+        with open(fpath, 'r', encoding='utf-8') as f:
+            c = f.read()
+        c = re.sub(r'\"version\": \".*\"', f'\"version\": \"{tag}\"', c)
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+
+if os.path.exists('sdk/python/setup.py'):
+    with open('sdk/python/setup.py', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'version=\".*\"', f'version=\"{tag}\"', c)
+    with open('sdk/python/setup.py', 'w', encoding='utf-8') as f:
+        f.write(c)
+
+if os.path.exists('k8s/helm/opensentinel/Chart.yaml'):
+    with open('k8s/helm/opensentinel/Chart.yaml', 'r', encoding='utf-8') as f:
+        c = f.read()
+    c = re.sub(r'^version: .*', f'version: {tag}', c, flags=re.MULTILINE)
+    with open('k8s/helm/opensentinel/Chart.yaml', 'w') as f:
+        f.write(c)
+"
+          fi
       - name: Install cached dist
         uses: actions/download-artifact@v8
         with:

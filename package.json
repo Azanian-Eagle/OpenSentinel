@@ -48,7 +48,7 @@
   "bugs": {
     "url": "https://github.com/Azanian-Eagle/OpenSentinel/issues"
   },
-  "homepage": "https://github.com/Azanian-Eagle/OpenSentinel#readme",
+  "homepage": "https://azanian-eagle.github.io/OpenSentinel/",
   "devDependencies": {
     "javascript-obfuscator": "^5.1.0"
   }

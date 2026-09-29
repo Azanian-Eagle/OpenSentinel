@@ -14,6 +14,11 @@ keywords:
   - helm
   - azanian-eagle
   - south-africa
+  - recaptcha-alternative
+  - turnstile-alternative
+  - hcaptcha-alternative
+  - proof-of-work
+  - zero-click-captcha
 home: https://github.com/Azanian-Eagle/OpenSentinel
 sources:
   - https://github.com/Azanian-Eagle/OpenSentinel
@@ -22,6 +27,17 @@ maintainers:
     email: azanian.eagle@gmail.com
     url: https://github.com/Azanian-Eagle
 annotations:
+  artifacthub.io/category: security
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Homepage
+      url: https://azanian-eagle.github.io/OpenSentinel/
+    - name: Documentation
+      url: https://github.com/Azanian-Eagle/OpenSentinel#readme
+    - name: Source
+      url: https://github.com/Azanian-Eagle/OpenSentinel
+    - name: Issues
+      url: https://github.com/Azanian-Eagle/OpenSentinel/issues
   artifacthub.io/changes: |
     - 1.0.4279: Release version update to 1.0.4279 across components.
     - 1.0.4: Release version update to 1.0.4 across components.

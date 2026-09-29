@@ -63,7 +63,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: |
-            org.opencontainers.image.description=OpenSentinel backend server for bot-detection and security verification
+            org.opencontainers.image.title=OpenSentinel Server
+            org.opencontainers.image.description=OpenSentinel high-performance backend server and ONNX machine learning engine for non-invasive CAPTCHA-free bot detection
+            org.opencontainers.image.url=https://azanian-eagle.github.io/OpenSentinel/
+            org.opencontainers.image.source=https://github.com/Azanian-Eagle/OpenSentinel
+            org.opencontainers.image.vendor=Azanian Eagle
+            org.opencontainers.image.licenses=MIT
 
       - name: Build release binary
         run: cargo build --release --manifest-path server/Cargo.toml

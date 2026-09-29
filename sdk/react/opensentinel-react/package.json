@@ -41,7 +41,7 @@
   "bugs": {
     "url": "https://github.com/Azanian-Eagle/OpenSentinel/issues"
   },
-  "homepage": "https://github.com/Azanian-Eagle/OpenSentinel#readme",
+  "homepage": "https://azanian-eagle.github.io/OpenSentinel/",
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },

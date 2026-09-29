@@ -46,7 +46,8 @@ requires-python = ">=3.7"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/Azanian-Eagle/OpenSentinel"
+Homepage = "https://azanian-eagle.github.io/OpenSentinel/"
 Repository = "https://github.com/Azanian-Eagle/OpenSentinel"
 Documentation = "https://github.com/Azanian-Eagle/OpenSentinel#readme"
 "Bug Tracker" = "https://github.com/Azanian-Eagle/OpenSentinel/issues"
+"Live Demo" = "https://azanian-eagle.github.io/OpenSentinel/demo.html"

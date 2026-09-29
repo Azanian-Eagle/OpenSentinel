@@ -12,7 +12,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Azanian Eagle",
     author_email="azanian.eagle@gmail.com",
-    url="https://github.com/Azanian-Eagle/OpenSentinel",
+    url="https://azanian-eagle.github.io/OpenSentinel/",
     packages=find_packages(),
     install_requires=[],
     python_requires=">=3.7",
@@ -50,9 +50,10 @@ setup(
         "Topic :: Internet :: WWW/HTTP",
     ],
     project_urls={
-        "Homepage": "https://github.com/Azanian-Eagle/OpenSentinel",
+        "Homepage": "https://azanian-eagle.github.io/OpenSentinel/",
         "Repository": "https://github.com/Azanian-Eagle/OpenSentinel",
         "Documentation": "https://github.com/Azanian-Eagle/OpenSentinel#readme",
         "Bug Tracker": "https://github.com/Azanian-Eagle/OpenSentinel/issues",
+        "Live Demo": "https://azanian-eagle.github.io/OpenSentinel/demo.html",
     },
 )

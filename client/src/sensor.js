@@ -182,9 +182,9 @@
                             if (response.ok) {
                                 const result = await response.json();
                                 if (result.passed && this.onSuccess) {
-                                    this.onSuccess(result.message || result.token || "verified");
+                                    this.onSuccess(result.token || result.message || "verified", result);
                                 } else if (!result.passed && this.onFailure) {
-                                    this.onFailure(result.message || result.error || "bot_detected");
+                                    this.onFailure(result.message || result.error || "bot_detected", result);
                                 }
                                 success = true;
                                 break;
@@ -248,16 +248,14 @@
                 const oldSuccess = this.onSuccess;
                 const oldFailure = this.onFailure;
 
-                this.onSuccess = (token) => {
-                    if (oldSuccess) oldSuccess(token);
-                    // OpenSentinel server's `/verify` returns an object with `{ score, passed, message }`
-                    // This library intercepts it in processQueue and passes token. Wait, processQueue doesn't pass the raw result!
-                    resolve({ passed: true, score: 1.0, message: token || "Verified" });
+                this.onSuccess = (token, result) => {
+                    if (oldSuccess) oldSuccess(token, result);
+                    resolve(result || { passed: true, score: 1.0, token: token, message: token || "Verified" });
                 };
 
-                this.onFailure = (error) => {
-                    if (oldFailure) oldFailure(error);
-                    resolve({ passed: false, score: 0.0, message: error || "Verification failed" });
+                this.onFailure = (error, result) => {
+                    if (oldFailure) oldFailure(error, result);
+                    resolve(result || { passed: false, score: 0.0, message: error || "Verification failed" });
                 };
 
                 this.queuePayload(payload);

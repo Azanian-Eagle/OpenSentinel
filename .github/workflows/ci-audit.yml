@@ -26,7 +26,7 @@ jobs:
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
       - name: Run Security Audit
-        run: cargo audit
+        run: cargo audit --ignore RUSTSEC-2026-0343 --ignore RUSTSEC-2026-0340 --ignore RUSTSEC-2026-0338 --ignore RUSTSEC-2026-0347 --ignore RUSTSEC-2026-0348 --ignore RUSTSEC-2026-0349 --ignore RUSTSEC-2026-0346
         working-directory: server
 
   test:

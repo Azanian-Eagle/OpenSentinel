@@ -854,16 +854,20 @@ async fn discover_peers(state: web::Data<AppState>) -> impl Responder {
 
 async fn compat_siteverify(
     req: HttpRequest,
-    form_or_json: web::Either<
-        web::Form<CompatSiteVerifyRequest>,
-        web::Json<CompatSiteVerifyRequest>,
+    query: web::Query<CompatSiteVerifyRequest>,
+    form_or_json: Option<
+        web::Either<web::Form<CompatSiteVerifyRequest>, web::Json<CompatSiteVerifyRequest>>,
     >,
     state: web::Data<AppState>,
 ) -> impl Responder {
     increment_metric(&state, "requests_total");
     increment_metric(&state, "verify_requests_total");
 
-    let params = form_or_json.into_inner();
+    let params = match form_or_json {
+        Some(web::Either::Left(form)) => form.into_inner(),
+        Some(web::Either::Right(json)) => json.into_inner(),
+        None => query.into_inner(),
+    };
     let token = params.response.or(params.token).unwrap_or_default();
 
     let _client_ip = params.remoteip.unwrap_or_else(|| {
@@ -872,7 +876,7 @@ async fn compat_siteverify(
             .unwrap_or_else(|| "127.0.0.1".to_string())
     });
 
-    let now_ts = chrono_format_now();
+    let now_ts = system_time_seconds_str();
 
     if token.is_empty() {
         increment_metric(&state, "verify_failed_total");
@@ -910,7 +914,7 @@ async fn compat_siteverify(
     }
 }
 
-fn chrono_format_now() -> String {
+fn system_time_seconds_str() -> String {
     use std::time::SystemTime;
     let now = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)

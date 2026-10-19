@@ -19,8 +19,11 @@ pub async fn dashboard(req: HttpRequest, state: web::Data<AppState>) -> impl Res
             if let Some(credentials) = auth_str.strip_prefix("Basic ") {
                 if let Ok(decoded) = base64::engine::general_purpose::STANDARD.decode(credentials) {
                     if let Ok(decoded_str) = String::from_utf8(decoded) {
+                        use subtle::ConstantTimeEq;
                         let parts: Vec<&str> = decoded_str.splitn(2, ':').collect();
-                        parts.len() == 2 && parts[0] == "admin" && parts[1] == admin_token
+                        parts.len() == 2
+                            && parts[0].as_bytes().ct_eq(b"admin").into()
+                            && parts[1].as_bytes().ct_eq(admin_token.as_bytes()).into()
                     } else {
                         false
                     }

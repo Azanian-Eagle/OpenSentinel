@@ -146,6 +146,21 @@
             };
         },
 
+        getChallenge: async function() {
+            for (const ep of this.endpoints) {
+                try {
+                    const baseUrl = ep.replace(/\/verify$/, '');
+                    const res = await fetch(`${baseUrl}/challenge`);
+                    if (res.ok) {
+                        return await res.json();
+                    }
+                } catch (e) {
+                    console.warn("OpenSentinel: Failed to fetch challenge", e);
+                }
+            }
+            return null;
+        },
+
         // Offline Queueing and Retry logic
         offlineQueue: [],
         isTransmitting: false,
@@ -228,12 +243,18 @@
                 pow = await this.generatePoW();
             }
 
+            let challenge = null;
+            try {
+                challenge = await this.getChallenge();
+            } catch (e) {}
+
             const rawPayload = {
                 mouse_events: this.mouseEvents,
                 key_events: this.keyEvents,
                 user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node.js/SSR',
                 timestamp: Date.now(),
-                pow: pow
+                pow: pow,
+                challenge_id: challenge ? challenge.challenge_id : null
             };
 
             // AES-GCM Encrypt the payload for secure transport

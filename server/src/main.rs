@@ -26,6 +26,7 @@ use std::time::Duration;
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
     seen_nonces: Mutex<HashSet<String>>,
+    active_challenges: Mutex<HashSet<String>>,
     request_counts: Mutex<HashMap<String, (u32, i64)>>,
     metrics: Mutex<HashMap<&'static str, u64>>,
     trusted_peers: Mutex<HashMap<String, Option<VerifyingKey>>>, // Peer domain -> Optional Public Key
@@ -65,6 +66,7 @@ struct RawVerifyRequest {
     user_agent: String,
     timestamp: i64,
     pow: Option<PoWData>,
+    challenge_id: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -448,27 +450,23 @@ fn verify_verification_token(
     }
 
     let signing_input = format!("{}.{}", parts[0], parts[1]);
-    let sig_bytes = base64::Engine::decode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        parts[2],
-    )
-    .map_err(|_| "Invalid base64 signature".to_string())?;
+    let sig_bytes =
+        base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, parts[2])
+            .map_err(|_| "Invalid base64 signature".to_string())?;
 
-    let signature = Signature::from_slice(&sig_bytes)
-        .map_err(|_| "Invalid signature bytes".to_string())?;
+    let signature =
+        Signature::from_slice(&sig_bytes).map_err(|_| "Invalid signature bytes".to_string())?;
 
     verifying_key
         .verify(signing_input.as_bytes(), &signature)
         .map_err(|_| "Signature verification failed".to_string())?;
 
-    let payload_bytes = base64::Engine::decode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        parts[1],
-    )
-    .map_err(|_| "Invalid base64 payload".to_string())?;
+    let payload_bytes =
+        base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, parts[1])
+            .map_err(|_| "Invalid base64 payload".to_string())?;
 
-    let claims: serde_json::Value = serde_json::from_slice(&payload_bytes)
-        .map_err(|_| "Invalid payload JSON".to_string())?;
+    let claims: serde_json::Value =
+        serde_json::from_slice(&payload_bytes).map_err(|_| "Invalid payload JSON".to_string())?;
 
     let now_secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -574,14 +572,16 @@ async fn verify(
     let decrypted_bytes = match cipher.decrypt(nonce, cipher_bytes.as_ref()) {
         Ok(b) => b,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse::err("Failed to decrypt payload."))
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Failed to decrypt payload."))
         }
     };
 
     let data: RawVerifyRequest = match serde_json::from_slice(&decrypted_bytes) {
         Ok(d) => d,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid payload structure."))
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Invalid payload structure."))
         }
     };
 
@@ -590,6 +590,14 @@ async fn verify(
         client_ip,
         data.user_agent
     );
+
+    if let Some(cid) = &data.challenge_id {
+        let mut challenges = state.active_challenges.lock().unwrap();
+        if !challenges.remove(cid) {
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Invalid or expired challenge ID."));
+        }
+    }
 
     // 2. Replay Protection (Nonce & Timestamp)
     let current_time = std::time::SystemTime::now()
@@ -604,7 +612,8 @@ async fn verify(
 
     if (current_time - data.timestamp).abs() > 300_000 {
         // 5 minutes window
-        return HttpResponse::BadRequest().json(VerifyResponse::err("Request timestamp invalid or expired."));
+        return HttpResponse::BadRequest()
+            .json(VerifyResponse::err("Request timestamp invalid or expired."));
     }
 
     let pow = match &data.pow {
@@ -740,11 +749,19 @@ async fn get_challenge(state: web::Data<AppState>) -> impl Responder {
     hasher.update(format!("{}:{}:challenge", now, pubkey_hex).as_bytes());
     let challenge_id = hex::encode(hasher.finalize());
 
+    {
+        let mut challenges = state.active_challenges.lock().unwrap();
+        if challenges.len() > 5000 {
+            challenges.clear();
+        }
+        challenges.insert(challenge_id.clone());
+    }
+
     HttpResponse::Ok().json(ChallengeResponse {
         challenge_id,
         expires_at,
         public_key: pubkey_hex,
-        algorithm: "HPKE-X25519-AES-256-GCM",
+        algorithm: "Ed25519-AES-256-GCM",
     })
 }
 
@@ -813,7 +830,10 @@ async fn compat_siteverify(
     let verifying_key = signing_key.verifying_key();
 
     let success = match verify_verification_token(&verifying_key, &req_data.response) {
-        Ok(claims) => claims.get("passed").and_then(|p| p.as_bool()).unwrap_or(false),
+        Ok(claims) => claims
+            .get("passed")
+            .and_then(|p| p.as_bool())
+            .unwrap_or(false),
         Err(_) => false,
     };
 
@@ -821,7 +841,11 @@ async fn compat_siteverify(
         success,
         challenge_ts: iso8601_timestamp(),
         hostname: req_hostname(&req),
-        error_codes: if success { vec![] } else { vec!["invalid-input-response".into()] },
+        error_codes: if success {
+            vec![]
+        } else {
+            vec!["invalid-input-response".into()]
+        },
     })
 }
 
@@ -899,7 +923,8 @@ async fn receive_threat_intel(
             Some(s) => s,
             None => {
                 log::warn!("Missing signature from peer: {}", intel.source_node);
-                return HttpResponse::Forbidden().json(VerifyResponse::err("Missing cryptographic signature."));
+                return HttpResponse::Forbidden()
+                    .json(VerifyResponse::err("Missing cryptographic signature."));
             }
         };
 
@@ -907,14 +932,16 @@ async fn receive_threat_intel(
             Ok(b) => b,
             Err(_) => {
                 log::warn!("Invalid signature format from peer: {}", intel.source_node);
-                return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid signature format."));
+                return HttpResponse::BadRequest()
+                    .json(VerifyResponse::err("Invalid signature format."));
             }
         };
 
         let signature = match Signature::from_slice(&sig_bytes) {
             Ok(s) => s,
             Err(_) => {
-                return HttpResponse::BadRequest().json(VerifyResponse::err("Malformed signature."));
+                return HttpResponse::BadRequest()
+                    .json(VerifyResponse::err("Malformed signature."));
             }
         };
 
@@ -927,7 +954,8 @@ async fn receive_threat_intel(
                 "Cryptographic signature verification failed for peer: {}",
                 intel.source_node
             );
-            return HttpResponse::Forbidden().json(VerifyResponse::err("Signature verification failed."));
+            return HttpResponse::Forbidden()
+                .json(VerifyResponse::err("Signature verification failed."));
         }
     }
 
@@ -937,7 +965,8 @@ async fn receive_threat_intel(
             "Rejected invalid threat intel payload from {}",
             intel.source_node
         );
-        return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid threat signature data."));
+        return HttpResponse::BadRequest()
+            .json(VerifyResponse::err("Invalid threat signature data."));
     }
 
     log::info!(
@@ -1045,9 +1074,10 @@ async fn recent_threat_intel(
 
     match read_recent_threat_intel_records(&state, limit) {
         Ok(records) => HttpResponse::Ok().json(records),
-        Err(error) => HttpResponse::InternalServerError().json(VerifyResponse::err(
-            format!("Failed to read threat intel records: {}", error)
-        )),
+        Err(error) => HttpResponse::InternalServerError().json(VerifyResponse::err(format!(
+            "Failed to read threat intel records: {}",
+            error
+        ))),
     }
 }
 
@@ -1229,6 +1259,7 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = web::Data::new(AppState {
         seen_nonces: Mutex::new(HashSet::new()),
+        active_challenges: Mutex::new(HashSet::new()),
         request_counts: Mutex::new(HashMap::new()),
         metrics: Mutex::new(HashMap::new()),
         trusted_peers: Mutex::new(trusted_peers),
@@ -1327,6 +1358,7 @@ mod tests {
     fn test_state(federation_enabled: bool) -> web::Data<AppState> {
         web::Data::new(AppState {
             seen_nonces: Mutex::new(HashSet::new()),
+            active_challenges: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
             trusted_peers: Mutex::new(HashMap::new()),
@@ -1430,6 +1462,7 @@ mod tests {
 
         let state = web::Data::new(AppState {
             seen_nonces: Mutex::new(HashSet::new()),
+            active_challenges: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
             trusted_peers: Mutex::new(HashMap::new()),
@@ -1557,12 +1590,11 @@ mod tests {
     #[actix_web::test]
     async fn compat_siteverify_handles_requests() {
         let state = test_state(true);
-        let app = test::init_service(
-            App::new().app_data(state.clone()).service(
+        let app =
+            test::init_service(App::new().app_data(state.clone()).service(
                 web::resource("/compat/siteverify").route(web::post().to(compat_siteverify)),
-            ),
-        )
-        .await;
+            ))
+            .await;
 
         let now_ms = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

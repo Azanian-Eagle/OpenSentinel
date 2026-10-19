@@ -1,4 +1,4 @@
-# OpenSentinel (1.0 Stable Production Release)
+# OpenSentinel (1.1 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![Crates.io](https://img.shields.io/crates/v/opensentinel-server.svg)](https://crates.io/crates/opensentinel-server)
@@ -34,7 +34,7 @@ For production deployments, install prebuilt binaries or pull the official relea
 
 #### Install Prebuilt Binaries via Shell Script
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.0.4279/opensentinel-server-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.1.0/opensentinel-server-installer.sh | sh
 ```
 
 #### Install Prebuilt Binaries via Homebrew
@@ -44,7 +44,7 @@ brew install opensentinel-server
 
 #### Pull Tagged Docker Image
 ```bash
-docker pull ghcr.io/azanian-eagle/opensentinel:v1.0.4279
+docker pull ghcr.io/azanian-eagle/opensentinel:v1.1.0
 ```
 
 #### Official Prebuilt Binary Assets
@@ -67,11 +67,14 @@ OpenSentinel fundamentally alters this paradigm: **we categorically do not train
 
 - **Non-Invasive Verification Array:** Dynamic client-side telemetry measuring cursor trajectory linearity, velocity variance, and keystroke timing, completely eliminating intrusive image challenges.
 - **Local AI ONNX Inference:** Local execution of Random Forest machine learning models (powered by `ort` and `ndarray`), calculating bot probabilities entirely on your sovereign server without sending telemetry to external clouds.
-- **Client AES-256-GCM Encryption:** High-resolution sensor payloads are dynamically encrypted on the client side using AES-GCM and SHA-256 Proof-of-Work nonces before transmission.
+- **Client AES-256-GCM & HPKE Ephemeral Encryption:** High-resolution sensor payloads are dynamically encrypted on the client side using AES-GCM, SHA-256 Proof-of-Work nonces, and short-lived challenge tokens (`GET /challenge`).
+- **Ed25519 Signed Tokens & JWKS Verification:** Every successful verification yields an Ed25519-signed JWT token that backend rely parties can verify offline via `/.well-known/jwks.json`.
+- **Drop-in Turnstile / reCAPTCHA / hCaptcha Migration:** Standard `POST /compat/siteverify` endpoint allowing immediate 1:1 migration for existing web backends.
+- **IETF Privacy Pass Protocol Headers:** Evaluated requests attach `WWW-Authenticate: PrivateToken` and `Private-Token` headers for standard token redemption.
 - **Cryptographic Proof-of-Work (PoW):** Optional client-side PoW computation deters automated script attacks and high-volume DDoS attempts by raising the computational cost for bots.
 - **Federated Threat Intelligence Network:** Peer-to-peer threat signature sharing across instances using Ed25519 cryptographic signatures and dynamic peer discovery (`FEDERATION_DISCOVERY_URL`).
 - **Live Observability & Analytics:** An authenticated real-time dashboard at `/api/dashboard` paired with Prometheus-compatible metrics at `/metrics`, `/healthz`, and `/readyz`.
-- **First-Party SDK Ecosystem:** Ready-to-use SDKs for React (`@azanian-eagle/opensentinel-react`), Python (`azanian-eagle-opensentinel`), and UMD Vanilla JS (`@azanian-eagle/opensentinel-client`).
+- **First-Party SDK Ecosystem:** Ready-to-use SDKs with framework middleware helpers for React (`@azanian-eagle/opensentinel-react`), Python FastAPI/Flask (`azanian-eagle-opensentinel`), and UMD Vanilla JS (`@azanian-eagle/opensentinel-client`).
 - **Cloud-Native Deployment:** First-class support for Kubernetes via raw manifests (`k8s/`) and a production-grade Helm Chart (`k8s/helm/opensentinel`).
 
 ## First-Party SDKs & Client Libraries

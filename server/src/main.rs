@@ -854,7 +854,10 @@ async fn discover_peers(state: web::Data<AppState>) -> impl Responder {
 
 async fn compat_siteverify(
     req: HttpRequest,
-    form_or_json: web::Either<web::Form<CompatSiteVerifyRequest>, web::Json<CompatSiteVerifyRequest>>,
+    form_or_json: web::Either<
+        web::Form<CompatSiteVerifyRequest>,
+        web::Json<CompatSiteVerifyRequest>,
+    >,
     state: web::Data<AppState>,
 ) -> impl Responder {
     increment_metric(&state, "requests_total");
@@ -1387,12 +1390,11 @@ mod tests {
 
     #[actix_web::test]
     async fn compat_siteverify_handles_valid_and_invalid_tokens() {
-        let app = test::init_service(
-            App::new()
-                .app_data(test_state(false))
-                .service(web::resource("/compat/siteverify").route(web::post().to(compat_siteverify))),
-        )
-        .await;
+        let app =
+            test::init_service(App::new().app_data(test_state(false)).service(
+                web::resource("/compat/siteverify").route(web::post().to(compat_siteverify)),
+            ))
+            .await;
 
         let req = test::TestRequest::post()
             .uri("/compat/siteverify")
@@ -1408,7 +1410,8 @@ mod tests {
         assert!(resp.status().is_success());
 
         let body = to_bytes(resp.into_body()).await.expect("body should read");
-        let result: CompatSiteVerifyResponse = serde_json::from_slice(&body).expect("should parse JSON");
+        let result: CompatSiteVerifyResponse =
+            serde_json::from_slice(&body).expect("should parse JSON");
         assert!(result.success);
         assert_eq!(result.score, Some(0.95));
 
@@ -1424,10 +1427,16 @@ mod tests {
 
         let resp_empty = test::call_service(&app, req_empty).await;
         assert!(resp_empty.status().is_success());
-        let body_empty = to_bytes(resp_empty.into_body()).await.expect("body should read");
-        let result_empty: CompatSiteVerifyResponse = serde_json::from_slice(&body_empty).expect("should parse JSON");
+        let body_empty = to_bytes(resp_empty.into_body())
+            .await
+            .expect("body should read");
+        let result_empty: CompatSiteVerifyResponse =
+            serde_json::from_slice(&body_empty).expect("should parse JSON");
         assert!(!result_empty.success);
-        assert_eq!(result_empty.error_codes, vec!["missing-input-response".to_string()]);
+        assert_eq!(
+            result_empty.error_codes,
+            vec!["missing-input-response".to_string()]
+        );
     }
 
     #[actix_web::test]

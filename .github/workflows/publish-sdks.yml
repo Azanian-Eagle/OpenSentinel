@@ -44,6 +44,10 @@ jobs:
 
       - name: Publish React SDK
         run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NODE_AUTH_TOKEN not provided, stripping empty auth from .npmrc for OIDC Trusted Publishing"
+            sed -i '/_authToken=/d' ~/.npmrc 2>/dev/null || true
+          fi
           cd sdk/react/opensentinel-react
           npm publish --access public --provenance || echo "::warning::React SDK npm publish failed."
         env:
@@ -56,6 +60,10 @@ jobs:
 
       - name: Publish Root NPM package
         run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NODE_AUTH_TOKEN not provided, stripping empty auth from .npmrc for OIDC Trusted Publishing"
+            sed -i '/_authToken=/d' ~/.npmrc 2>/dev/null || true
+          fi
           npm publish --access public --provenance || echo "::warning::Root package npm publish failed."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -92,7 +100,16 @@ jobs:
           cd sdk/python
           python3 -m build
 
-      - name: Publish Python SDK
+      - name: Publish Python SDK (Token Fallback)
+        if: ${{ secrets.PYPI_TOKEN != '' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: sdk/python/dist/
+          password: ${{ secrets.PYPI_TOKEN }}
+          skip-existing: true
+
+      - name: Publish Python SDK (Trusted Publishing / OIDC)
+        if: ${{ secrets.PYPI_TOKEN == '' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: sdk/python/dist/

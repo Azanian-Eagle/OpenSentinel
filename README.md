@@ -1,4 +1,4 @@
-# OpenSentinel (1.1 Stable Production Release)
+# OpenSentinel (1.1.0 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![Crates.io](https://img.shields.io/crates/v/opensentinel-server.svg)](https://crates.io/crates/opensentinel-server)
@@ -31,7 +31,7 @@ docker compose up --build
 
 The server binds to `http://localhost:8080`. Visit that URL to interact with the client interface and confirm service health.
 
-### Production Release (1.0)
+### Production Release (1.1.0)
 
 For production deployments, install prebuilt binaries or pull the official release image from GitHub Container Registry:
 

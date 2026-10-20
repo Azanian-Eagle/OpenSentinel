@@ -37,7 +37,7 @@ struct AppMetrics {
 
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
-    seen_nonces: Mutex<HashMap<String, i64>>,      // Nonce key -> Timestamp ms
+    seen_nonces: Mutex<HashMap<String, i64>>, // Nonce key -> Timestamp ms
     active_challenges: Mutex<HashMap<String, i64>>, // Challenge ID -> Expiration timestamp ms
     request_counts: Mutex<HashMap<String, (u32, i64)>>,
     metrics: AppMetrics,
@@ -385,10 +385,7 @@ fn metrics_text(state: &web::Data<AppState>) -> String {
         .load(Ordering::Relaxed);
     let rate_limited = state.metrics.rate_limited_total.load(Ordering::Relaxed);
     let health_checks = state.metrics.health_checks_total.load(Ordering::Relaxed);
-    let readiness_checks = state
-        .metrics
-        .readiness_checks_total
-        .load(Ordering::Relaxed);
+    let readiness_checks = state.metrics.readiness_checks_total.load(Ordering::Relaxed);
     let verify_failed = state.metrics.verify_failed_total.load(Ordering::Relaxed);
     let verify_success = state.metrics.verify_success_total.load(Ordering::Relaxed);
 

@@ -9,6 +9,11 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "client/",
+    "README.md",
+    "LICENSE"
+  ],
   "directories": {
     "doc": "docs",
     "test": "tests"

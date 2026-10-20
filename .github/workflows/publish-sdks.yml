@@ -44,10 +44,6 @@ jobs:
 
       - name: Publish React SDK
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "Error: NPM_TOKEN secret is not set."
-            exit 1
-          fi
           cd sdk/react/opensentinel-react
           npm publish --access public --provenance || echo "::warning::React SDK npm publish failed."
         env:
@@ -60,10 +56,6 @@ jobs:
 
       - name: Publish Root NPM package
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "Error: NPM_TOKEN secret is not set."
-            exit 1
-          fi
           npm publish --access public --provenance || echo "::warning::Root package npm publish failed."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -100,21 +92,10 @@ jobs:
           cd sdk/python
           python3 -m build
 
-      - name: Check PyPI Token
-        id: check_token
-        run: |
-          if [ -z "$PYPI_TOKEN" ]; then
-            echo "Error: PYPI_TOKEN secret is not set."
-            exit 1
-          fi
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-
       - name: Publish Python SDK
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: sdk/python/dist/
-          password: ${{ secrets.PYPI_TOKEN }}
           skip-existing: true
           attestations: true
 
@@ -145,12 +126,8 @@ jobs:
 
       - name: Publish to crates.io
         run: |
-          if [ -z "$CARGO_REGISTRY_TOKEN" ]; then
-            echo "Error: CARGO_REGISTRY_TOKEN secret is not set."
-            exit 1
-          fi
           cd server
-          cargo publish --token "$CARGO_REGISTRY_TOKEN" || echo "::warning::Cargo publish failed."
+          cargo publish || echo "::warning::Cargo publish failed."
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 

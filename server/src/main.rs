@@ -26,6 +26,7 @@ use std::time::Duration;
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
     seen_nonces: Mutex<HashSet<String>>,
+    active_challenges: Mutex<HashSet<String>>,
     request_counts: Mutex<HashMap<String, (u32, i64)>>,
     metrics: Mutex<HashMap<&'static str, u64>>,
     trusted_peers: Mutex<HashMap<String, Option<VerifyingKey>>>, // Peer domain -> Optional Public Key
@@ -65,6 +66,7 @@ struct RawVerifyRequest {
     user_agent: String,
     timestamp: i64,
     pow: Option<PoWData>,
+    challenge_id: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -79,6 +81,59 @@ struct VerifyResponse {
     score: f64,
     passed: bool,
     message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    token: Option<String>,
+}
+
+impl VerifyResponse {
+    fn err(message: impl Into<String>) -> Self {
+        Self {
+            score: 0.0,
+            passed: false,
+            message: message.into(),
+            token: None,
+        }
+    }
+}
+
+#[derive(Serialize)]
+struct ChallengeResponse {
+    challenge_id: String,
+    expires_at: i64,
+    public_key: String,
+    algorithm: &'static str,
+}
+
+#[derive(Serialize)]
+struct JwkKey {
+    kty: &'static str,
+    crv: &'static str,
+    x: String,
+    r#use: &'static str,
+    alg: &'static str,
+    kid: &'static str,
+}
+
+#[derive(Serialize)]
+struct JwksResponse {
+    keys: Vec<JwkKey>,
+}
+
+#[allow(dead_code)]
+#[derive(Deserialize, Debug)]
+struct CompatSiteVerifyRequest {
+    secret: Option<String>,
+    response: String,
+    remoteip: Option<String>,
+}
+
+#[derive(Serialize)]
+struct CompatSiteVerifyResponse {
+    success: bool,
+    challenge_ts: String,
+    hostname: String,
+    #[serde(rename = "error-codes")]
+    error_codes: Vec<String>,
 }
 
 #[derive(Serialize)]
@@ -203,11 +258,7 @@ fn check_rate_limit(
 
     if entry.0 >= state.rate_limit_max_requests {
         return Err(Box::new(HttpResponse::TooManyRequests().json(
-            VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Rate limit exceeded. Please retry later.".into(),
-            },
+            VerifyResponse::err("Rate limit exceeded. Please retry later."),
         )));
     }
 
@@ -343,6 +394,94 @@ fn read_recent_threat_intel_records(
     Ok(records)
 }
 
+fn get_signing_key(state: &AppState) -> SigningKey {
+    if let Some(key) = &state.node_signing_key {
+        key.clone()
+    } else {
+        SigningKey::from_bytes(&state.payload_secret_key)
+    }
+}
+
+fn create_verification_token(
+    signing_key: &SigningKey,
+    passed: bool,
+    score: f64,
+    timestamp: i64,
+) -> String {
+    let header_json = serde_json::json!({
+        "alg": "Ed25519",
+        "typ": "JWT"
+    });
+    let payload_json = serde_json::json!({
+        "iss": "opensentinel",
+        "sub": "verification",
+        "passed": passed,
+        "score": score,
+        "iat": timestamp / 1000,
+        "exp": (timestamp / 1000) + 300
+    });
+
+    let header_b64 = base64::Engine::encode(
+        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+        header_json.to_string().as_bytes(),
+    );
+    let payload_b64 = base64::Engine::encode(
+        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+        payload_json.to_string().as_bytes(),
+    );
+
+    let signing_input = format!("{}.{}", header_b64, payload_b64);
+    let signature = signing_key.sign(signing_input.as_bytes());
+    let sig_b64 = base64::Engine::encode(
+        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+        signature.to_bytes(),
+    );
+
+    format!("{}.{}", signing_input, sig_b64)
+}
+
+fn verify_verification_token(
+    verifying_key: &VerifyingKey,
+    token: &str,
+) -> Result<serde_json::Value, String> {
+    let parts: Vec<&str> = token.split('.').collect();
+    if parts.len() != 3 {
+        return Err("Invalid token format".into());
+    }
+
+    let signing_input = format!("{}.{}", parts[0], parts[1]);
+    let sig_bytes =
+        base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, parts[2])
+            .map_err(|_| "Invalid base64 signature".to_string())?;
+
+    let signature =
+        Signature::from_slice(&sig_bytes).map_err(|_| "Invalid signature bytes".to_string())?;
+
+    verifying_key
+        .verify(signing_input.as_bytes(), &signature)
+        .map_err(|_| "Signature verification failed".to_string())?;
+
+    let payload_bytes =
+        base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, parts[1])
+            .map_err(|_| "Invalid base64 payload".to_string())?;
+
+    let claims: serde_json::Value =
+        serde_json::from_slice(&payload_bytes).map_err(|_| "Invalid payload JSON".to_string())?;
+
+    let now_secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+
+    if let Some(exp) = claims.get("exp").and_then(|v| v.as_i64()) {
+        if now_secs > exp {
+            return Err("Token expired".to_string());
+        }
+    }
+
+    Ok(claims)
+}
+
 fn parse_payload_secret_key_value(key_value: &str) -> std::io::Result<[u8; 32]> {
     let bytes = hex::decode(key_value).map_err(|_| {
         std::io::Error::new(
@@ -408,11 +547,7 @@ async fn verify(
     ) {
         Ok(b) => b,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Invalid data encoding.".into(),
-            })
+            return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid data encoding."))
         }
     };
 
@@ -422,20 +557,12 @@ async fn verify(
     ) {
         Ok(b) => b,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Invalid IV encoding.".into(),
-            })
+            return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid IV encoding."))
         }
     };
 
     if iv_bytes.len() != 12 {
-        return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Invalid IV length.".into(),
-        });
+        return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid IV length."));
     }
 
     let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
@@ -445,22 +572,16 @@ async fn verify(
     let decrypted_bytes = match cipher.decrypt(nonce, cipher_bytes.as_ref()) {
         Ok(b) => b,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Failed to decrypt payload.".into(),
-            })
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Failed to decrypt payload."))
         }
     };
 
     let data: RawVerifyRequest = match serde_json::from_slice(&decrypted_bytes) {
         Ok(d) => d,
         Err(_) => {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Invalid payload structure.".into(),
-            })
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Invalid payload structure."))
         }
     };
 
@@ -469,6 +590,14 @@ async fn verify(
         client_ip,
         data.user_agent
     );
+
+    if let Some(cid) = &data.challenge_id {
+        let mut challenges = state.active_challenges.lock().unwrap();
+        if !challenges.remove(cid) {
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Invalid or expired challenge ID."));
+        }
+    }
 
     // 2. Replay Protection (Nonce & Timestamp)
     let current_time = std::time::SystemTime::now()
@@ -483,32 +612,21 @@ async fn verify(
 
     if (current_time - data.timestamp).abs() > 300_000 {
         // 5 minutes window
-        return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Request timestamp invalid or expired.".into(),
-        });
+        return HttpResponse::BadRequest()
+            .json(VerifyResponse::err("Request timestamp invalid or expired."));
     }
 
     let pow = match &data.pow {
         Some(p) => p,
         None => {
-            return HttpResponse::BadRequest().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Missing Proof of Work.".into(),
-            });
+            return HttpResponse::BadRequest().json(VerifyResponse::err("Missing Proof of Work."));
         }
     };
 
     let nonce_key = format!("{}-{}", pow.prefix, pow.nonce);
     let mut seen = state.seen_nonces.lock().unwrap();
     if seen.contains(&nonce_key) {
-        return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Replay attack detected.".into(),
-        });
+        return HttpResponse::BadRequest().json(VerifyResponse::err("Replay attack detected."));
     }
     seen.insert(nonce_key);
 
@@ -524,11 +642,7 @@ async fn verify(
 
     // 3. Verify Proof of Work
     if !verify_pow(pow) {
-        return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Invalid Proof of Work.".into(),
-        });
+        return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid Proof of Work."));
     }
 
     // 4. Calculate Score
@@ -596,10 +710,142 @@ async fn verify(
         "Verification failed. Automated behaviour pattern detected."
     };
 
-    HttpResponse::Ok().json(VerifyResponse {
+    let signing_key = get_signing_key(&state);
+    let token = create_verification_token(&signing_key, passed, score, current_time);
+
+    let verify_resp = VerifyResponse {
         score,
         passed,
         message: message.to_string(),
+        token: Some(token.clone()),
+    };
+
+    if passed {
+        HttpResponse::Ok()
+            .insert_header((
+                "WWW-Authenticate",
+                "PrivateToken challenge=\"opensentinel-v1\", token_type=2",
+            ))
+            .insert_header(("Private-Token", token))
+            .json(verify_resp)
+    } else {
+        HttpResponse::Ok().json(verify_resp)
+    }
+}
+
+async fn get_challenge(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as i64;
+    let expires_at = now + 60_000;
+
+    let signing_key = get_signing_key(&state);
+    let pubkey_bytes = signing_key.verifying_key().to_bytes();
+    let pubkey_hex = hex::encode(pubkey_bytes);
+
+    let mut hasher = Sha256::new();
+    hasher.update(format!("{}:{}:challenge", now, pubkey_hex).as_bytes());
+    let challenge_id = hex::encode(hasher.finalize());
+
+    {
+        let mut challenges = state.active_challenges.lock().unwrap();
+        if challenges.len() > 5000 {
+            challenges.clear();
+        }
+        challenges.insert(challenge_id.clone());
+    }
+
+    HttpResponse::Ok().json(ChallengeResponse {
+        challenge_id,
+        expires_at,
+        public_key: pubkey_hex,
+        algorithm: "Ed25519-AES-256-GCM",
+    })
+}
+
+async fn jwks(state: web::Data<AppState>) -> impl Responder {
+    increment_metric(&state, "requests_total");
+    let signing_key = get_signing_key(&state);
+    let verifying_key = signing_key.verifying_key();
+    let x_b64 = base64::Engine::encode(
+        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+        verifying_key.as_bytes(),
+    );
+
+    HttpResponse::Ok().json(JwksResponse {
+        keys: vec![JwkKey {
+            kty: "OKP",
+            crv: "Ed25519",
+            x: x_b64,
+            r#use: "sig",
+            alg: "Ed25519",
+            kid: "opensentinel-node-key",
+        }],
+    })
+}
+
+fn req_hostname(req: &HttpRequest) -> String {
+    req.connection_info()
+        .host()
+        .split(':')
+        .next()
+        .unwrap_or("localhost")
+        .to_string()
+}
+
+fn iso8601_timestamp() -> String {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    format!("{}", now)
+}
+
+async fn compat_siteverify(
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> impl Responder {
+    increment_metric(&state, "requests_total");
+
+    let parsed: Option<CompatSiteVerifyRequest> = serde_json::from_slice(&body)
+        .ok()
+        .or_else(|| serde_urlencoded::from_bytes(&body).ok());
+
+    let req_data = match parsed {
+        Some(d) => d,
+        None => {
+            return HttpResponse::Ok().json(CompatSiteVerifyResponse {
+                success: false,
+                challenge_ts: iso8601_timestamp(),
+                hostname: req_hostname(&req),
+                error_codes: vec!["missing-input-response".into()],
+            });
+        }
+    };
+
+    let signing_key = get_signing_key(&state);
+    let verifying_key = signing_key.verifying_key();
+
+    let success = match verify_verification_token(&verifying_key, &req_data.response) {
+        Ok(claims) => claims
+            .get("passed")
+            .and_then(|p| p.as_bool())
+            .unwrap_or(false),
+        Err(_) => false,
+    };
+
+    HttpResponse::Ok().json(CompatSiteVerifyResponse {
+        success,
+        challenge_ts: iso8601_timestamp(),
+        hostname: req_hostname(&req),
+        error_codes: if success {
+            vec![]
+        } else {
+            vec!["invalid-input-response".into()]
+        },
     })
 }
 
@@ -668,11 +914,7 @@ async fn receive_threat_intel(
             "Rejected threat intel from untrusted source: {}",
             intel.source_node
         );
-        return HttpResponse::Forbidden().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Unauthorized peer.".into(),
-        });
+        return HttpResponse::Forbidden().json(VerifyResponse::err("Unauthorized peer."));
     }
 
     // Verify cryptographic signature if a public key is configured for this peer
@@ -681,11 +923,8 @@ async fn receive_threat_intel(
             Some(s) => s,
             None => {
                 log::warn!("Missing signature from peer: {}", intel.source_node);
-                return HttpResponse::Forbidden().json(VerifyResponse {
-                    score: 0.0,
-                    passed: false,
-                    message: "Missing cryptographic signature.".into(),
-                });
+                return HttpResponse::Forbidden()
+                    .json(VerifyResponse::err("Missing cryptographic signature."));
             }
         };
 
@@ -693,22 +932,16 @@ async fn receive_threat_intel(
             Ok(b) => b,
             Err(_) => {
                 log::warn!("Invalid signature format from peer: {}", intel.source_node);
-                return HttpResponse::BadRequest().json(VerifyResponse {
-                    score: 0.0,
-                    passed: false,
-                    message: "Invalid signature format.".into(),
-                });
+                return HttpResponse::BadRequest()
+                    .json(VerifyResponse::err("Invalid signature format."));
             }
         };
 
         let signature = match Signature::from_slice(&sig_bytes) {
             Ok(s) => s,
             Err(_) => {
-                return HttpResponse::BadRequest().json(VerifyResponse {
-                    score: 0.0,
-                    passed: false,
-                    message: "Malformed signature.".into(),
-                });
+                return HttpResponse::BadRequest()
+                    .json(VerifyResponse::err("Malformed signature."));
             }
         };
 
@@ -721,11 +954,8 @@ async fn receive_threat_intel(
                 "Cryptographic signature verification failed for peer: {}",
                 intel.source_node
             );
-            return HttpResponse::Forbidden().json(VerifyResponse {
-                score: 0.0,
-                passed: false,
-                message: "Signature verification failed.".into(),
-            });
+            return HttpResponse::Forbidden()
+                .json(VerifyResponse::err("Signature verification failed."));
         }
     }
 
@@ -735,11 +965,8 @@ async fn receive_threat_intel(
             "Rejected invalid threat intel payload from {}",
             intel.source_node
         );
-        return HttpResponse::BadRequest().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: "Invalid threat signature data.".into(),
-        });
+        return HttpResponse::BadRequest()
+            .json(VerifyResponse::err("Invalid threat signature data."));
     }
 
     log::info!(
@@ -758,6 +985,7 @@ async fn receive_threat_intel(
                 score: 1.0,
                 passed: true,
                 message: "Threat intelligence already known.".into(),
+                token: None,
             });
         }
         seen.insert(intel.anonymized_signature.clone());
@@ -809,6 +1037,7 @@ async fn receive_threat_intel(
         score: 1.0,
         passed: true,
         message: "Threat intelligence ingested successfully.".into(),
+        token: None,
     })
 }
 
@@ -845,11 +1074,10 @@ async fn recent_threat_intel(
 
     match read_recent_threat_intel_records(&state, limit) {
         Ok(records) => HttpResponse::Ok().json(records),
-        Err(error) => HttpResponse::InternalServerError().json(VerifyResponse {
-            score: 0.0,
-            passed: false,
-            message: format!("Failed to read threat intel records: {}", error),
-        }),
+        Err(error) => HttpResponse::InternalServerError().json(VerifyResponse::err(format!(
+            "Failed to read threat intel records: {}",
+            error
+        ))),
     }
 }
 
@@ -1031,6 +1259,7 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = web::Data::new(AppState {
         seen_nonces: Mutex::new(HashSet::new()),
+        active_challenges: Mutex::new(HashSet::new()),
         request_counts: Mutex::new(HashMap::new()),
         metrics: Mutex::new(HashMap::new()),
         trusted_peers: Mutex::new(trusted_peers),
@@ -1094,6 +1323,13 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/healthz").route(web::get().to(healthz)))
             .service(web::resource("/readyz").route(web::get().to(readyz)))
             .service(web::resource("/metrics").route(web::get().to(metrics)))
+            .service(web::resource("/challenge").route(web::get().to(get_challenge)))
+            .service(web::resource("/.well-known/jwks.json").route(web::get().to(jwks)))
+            .service(
+                web::resource("/compat/siteverify")
+                    .route(web::post().to(compat_siteverify))
+                    .route(web::get().to(compat_siteverify)),
+            )
             .service(
                 web::resource("/api/federation/recent").route(web::get().to(recent_threat_intel)),
             )
@@ -1122,6 +1358,7 @@ mod tests {
     fn test_state(federation_enabled: bool) -> web::Data<AppState> {
         web::Data::new(AppState {
             seen_nonces: Mutex::new(HashSet::new()),
+            active_challenges: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
             trusted_peers: Mutex::new(HashMap::new()),
@@ -1225,6 +1462,7 @@ mod tests {
 
         let state = web::Data::new(AppState {
             seen_nonces: Mutex::new(HashSet::new()),
+            active_challenges: Mutex::new(HashSet::new()),
             request_counts: Mutex::new(HashMap::new()),
             metrics: Mutex::new(HashMap::new()),
             trusted_peers: Mutex::new(HashMap::new()),
@@ -1307,5 +1545,78 @@ mod tests {
         let request = test::TestRequest::get().uri("/metrics").to_request();
         let response = test::call_service(&app, request).await;
         assert!(response.status().is_success());
+    }
+
+    #[actix_web::test]
+    async fn challenge_endpoint_returns_challenge_data() {
+        let app = test::init_service(
+            App::new()
+                .app_data(test_state(true))
+                .service(web::resource("/challenge").route(web::get().to(get_challenge))),
+        )
+        .await;
+
+        let request = test::TestRequest::get().uri("/challenge").to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+
+        let bytes = to_bytes(response.into_body()).await.unwrap();
+        let body = String::from_utf8(bytes.to_vec()).unwrap();
+        assert!(body.contains("challenge_id"));
+        assert!(body.contains("public_key"));
+    }
+
+    #[actix_web::test]
+    async fn jwks_endpoint_returns_ed25519_jwk() {
+        let app = test::init_service(
+            App::new()
+                .app_data(test_state(true))
+                .service(web::resource("/.well-known/jwks.json").route(web::get().to(jwks))),
+        )
+        .await;
+
+        let request = test::TestRequest::get()
+            .uri("/.well-known/jwks.json")
+            .to_request();
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+
+        let bytes = to_bytes(response.into_body()).await.unwrap();
+        let body = String::from_utf8(bytes.to_vec()).unwrap();
+        assert!(body.contains("Ed25519"));
+        assert!(body.contains("\"kty\":\"OKP\""));
+    }
+
+    #[actix_web::test]
+    async fn compat_siteverify_handles_requests() {
+        let state = test_state(true);
+        let app =
+            test::init_service(App::new().app_data(state.clone()).service(
+                web::resource("/compat/siteverify").route(web::post().to(compat_siteverify)),
+            ))
+            .await;
+
+        let now_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as i64;
+        let signing_key = get_signing_key(&state);
+        let token = create_verification_token(&signing_key, true, 0.95, now_ms);
+
+        let request = test::TestRequest::post()
+            .uri("/compat/siteverify")
+            .set_json(serde_json::json!({
+                "secret": "test_secret",
+                "response": token,
+                "remoteip": "127.0.0.1"
+            }))
+            .to_request();
+
+        let response = test::call_service(&app, request).await;
+        assert!(response.status().is_success());
+
+        let bytes = to_bytes(response.into_body()).await.unwrap();
+        let body = String::from_utf8(bytes.to_vec()).unwrap();
+        assert!(body.contains("\"success\":true"));
     }
 }

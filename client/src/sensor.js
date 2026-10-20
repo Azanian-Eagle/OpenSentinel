@@ -146,6 +146,21 @@
             };
         },
 
+        getChallenge: async function() {
+            for (const ep of this.endpoints) {
+                try {
+                    const baseUrl = ep.replace(/\/verify$/, '');
+                    const res = await fetch(`${baseUrl}/challenge`);
+                    if (res.ok) {
+                        return await res.json();
+                    }
+                } catch (e) {
+                    console.warn("OpenSentinel: Failed to fetch challenge", e);
+                }
+            }
+            return null;
+        },
+
         // Offline Queueing and Retry logic
         offlineQueue: [],
         isTransmitting: false,
@@ -182,9 +197,9 @@
                             if (response.ok) {
                                 const result = await response.json();
                                 if (result.passed && this.onSuccess) {
-                                    this.onSuccess(result.message || result.token || "verified");
+                                    this.onSuccess(result.token || result.message || "verified", result);
                                 } else if (!result.passed && this.onFailure) {
-                                    this.onFailure(result.message || result.error || "bot_detected");
+                                    this.onFailure(result.message || result.error || "bot_detected", result);
                                 }
                                 success = true;
                                 break;
@@ -228,12 +243,18 @@
                 pow = await this.generatePoW();
             }
 
+            let challenge = null;
+            try {
+                challenge = await this.getChallenge();
+            } catch (e) {}
+
             const rawPayload = {
                 mouse_events: this.mouseEvents,
                 key_events: this.keyEvents,
                 user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node.js/SSR',
                 timestamp: Date.now(),
-                pow: pow
+                pow: pow,
+                challenge_id: challenge ? challenge.challenge_id : null
             };
 
             // AES-GCM Encrypt the payload for secure transport
@@ -248,16 +269,14 @@
                 const oldSuccess = this.onSuccess;
                 const oldFailure = this.onFailure;
 
-                this.onSuccess = (token) => {
-                    if (oldSuccess) oldSuccess(token);
-                    // OpenSentinel server's `/verify` returns an object with `{ score, passed, message }`
-                    // This library intercepts it in processQueue and passes token. Wait, processQueue doesn't pass the raw result!
-                    resolve({ passed: true, score: 1.0, message: token || "Verified" });
+                this.onSuccess = (token, result) => {
+                    if (oldSuccess) oldSuccess(token, result);
+                    resolve(result || { passed: true, score: 1.0, token: token, message: token || "Verified" });
                 };
 
-                this.onFailure = (error) => {
-                    if (oldFailure) oldFailure(error);
-                    resolve({ passed: false, score: 0.0, message: error || "Verification failed" });
+                this.onFailure = (error, result) => {
+                    if (oldFailure) oldFailure(error, result);
+                    resolve(result || { passed: false, score: 0.0, message: error || "Verification failed" });
                 };
 
                 this.queuePayload(payload);

@@ -12,8 +12,8 @@ OpenSentinel replaces intrusive visual puzzles with frictionless telemetry analy
 - **Zero Visual Friction:** Eliminates image selection puzzles and visual challenges for end-users.
 - **Lightweight Standard Library Dependencies:** Built using Python standard libraries (`urllib`, `json`), requiring zero external pip dependencies.
 - **Privacy-First Architecture:** Zero tracking cookies, zero fingerprinting, and full compliance with South Africa's **Protection of Personal Information Act (POPIA)**, GDPR, and CCPA.
-- **Server-Side Payload Validation:** Securely transmits client telemetry payloads to your sovereign OpenSentinel server for verification.
-- **Framework Agnostic:** Easily integrates into Django, FastAPI, Flask, Pyramid, and Tornado backend applications.
+- **Server-Side Payload Validation & Siteverify Drop-In:** Verify raw telemetry or drop-in tokens via `/compat/siteverify`.
+- **Framework Middleware Helpers:** Pre-built decorators and dependencies for FastAPI and Flask (`OpenSentinelMiddleware`).
 
 ---
 
@@ -134,13 +134,30 @@ def submit_form():
 
 Submits client telemetry payload dictionary (`{'data': str, 'iv': str}`) to the backend `/verify` endpoint.
 
-- **Parameters:**
-  - `payload` (`dict`): Payload dictionary containing `'data'` (ciphertext base64) and `'iv'` (initialization vector base64).
-- **Returns:**
-  - `dict`: Response dictionary containing:
-    - `passed` (`bool`): `True` if verification passed humanity threshold, `False` otherwise.
-    - `score` (`float`): Calculated probability score (0.0 to 1.0).
-    - `message` (`str`): Verification status description or error details.
+#### Method: `siteverify(response_token: str, secret: str = None) -> dict`
+
+Drop-in verification call against `/compat/siteverify` for Turnstile/reCAPTCHA migration. Returns `{'success': bool, 'challenge_ts': str, 'hostname': str}`.
+
+#### Method: `get_challenge() -> dict`
+
+Fetches a short-lived challenge token and public key from `GET /challenge`.
+
+---
+
+## Middleware & Decorator Usage (`OpenSentinelMiddleware`)
+
+```python
+from opensentinel import OpenSentinelClient, OpenSentinelMiddleware
+
+client = OpenSentinelClient("http://localhost:8080")
+middleware = OpenSentinelMiddleware(client)
+
+# Flask view decorator
+@app.route("/protected", methods=["POST"])
+@middleware.flask_verify()
+def protected_route():
+    return {"status": "ok"}
+```
 
 ---
 

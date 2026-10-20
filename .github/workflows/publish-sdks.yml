@@ -13,6 +13,9 @@ permissions:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +50,7 @@ jobs:
             exit 0
           fi
           cd sdk/react/opensentinel-react
-          npm publish --access public || echo "::warning::React SDK npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
+          npm publish --access public --provenance || echo "::warning::React SDK npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -63,7 +66,7 @@ jobs:
             echo "NPM_TOKEN is not set. Skipping Root package npm publish."
             exit 0
           fi
-          npm publish --access public || echo "::warning::Root package npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
+          npm publish --access public --provenance || echo "::warning::Root package npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -72,6 +75,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      attestations: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -117,15 +121,24 @@ jobs:
           packages-dir: sdk/python/dist/
           password: ${{ secrets.PYPI_TOKEN }}
           skip-existing: true
+          attestations: true
 
   publish-cargo:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server -> target
 
       - name: Sync Cargo Crate Version with Git Tag
         run: |
@@ -151,6 +164,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

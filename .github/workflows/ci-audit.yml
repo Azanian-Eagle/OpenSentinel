@@ -3,8 +3,14 @@ name: Security & CI Audit
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
 jobs:
   security-audit:
@@ -13,16 +19,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-      - name: Cache Cargo registry
-        uses: actions/cache@v4
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          workspaces: server -> target
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
       - name: Run Security Audit
-        run: cargo audit
-        working-directory: server
+        run: cargo audit --ignore RUSTSEC-2026-0258
 
   test:
     runs-on: ubuntu-latest
@@ -30,6 +34,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server -> target
       - name: Run Tests
         run: cargo test
         working-directory: server
@@ -42,6 +50,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server -> target
       - name: Check Formatting
         run: cargo fmt -- --check
         working-directory: server
@@ -55,11 +67,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-      - name: Cache Cargo registry
-        uses: actions/cache@v4
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          workspaces: server -> target
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

@@ -1,5 +1,6 @@
 use actix_web::http::header;
 use actix_web::{web, HttpRequest, HttpResponse, Responder};
+use std::sync::atomic::Ordering;
 
 use crate::read_recent_threat_intel_records;
 use crate::AppState;
@@ -43,15 +44,11 @@ pub async fn dashboard(req: HttpRequest, state: web::Data<AppState>) -> impl Res
             .body("Unauthorized");
     }
 
-    let metrics = state.metrics.lock().unwrap();
-    let total_requests = metrics.get("requests_total").copied().unwrap_or(0);
-    let verify_requests = metrics.get("verify_requests_total").copied().unwrap_or(0);
-    let verify_success = metrics.get("verify_success_total").copied().unwrap_or(0);
-    let verify_failed = metrics.get("verify_failed_total").copied().unwrap_or(0);
-    let rate_limited = metrics.get("rate_limited_total").copied().unwrap_or(0);
-
-    // Drop lock before doing IO
-    drop(metrics);
+    let total_requests = state.metrics.requests_total.load(Ordering::Relaxed);
+    let verify_requests = state.metrics.verify_requests_total.load(Ordering::Relaxed);
+    let verify_success = state.metrics.verify_success_total.load(Ordering::Relaxed);
+    let verify_failed = state.metrics.verify_failed_total.load(Ordering::Relaxed);
+    let rate_limited = state.metrics.rate_limited_total.load(Ordering::Relaxed);
 
     let uptime_secs = state.start_time.elapsed().as_secs();
 

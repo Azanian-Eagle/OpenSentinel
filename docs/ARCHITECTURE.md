@@ -1,4 +1,4 @@
-# System Architecture (1.0 Production Release)
+# System Architecture (1.1 Stable Production Release)
 
 OpenSentinel is meticulously engineered from the ground up to deliver uncompromising performance, absolute privacy, and seamless ease of use for developers. This document outlines the core structural design that enables our behavioural analysis engine.
 
@@ -12,8 +12,8 @@ OpenSentinel is meticulously engineered from the ground up to deliver uncompromi
 ### The Frontend Sensor (Client)
 - **Language**: Vanilla JavaScript (ES6+ UMD / Universal Module Definition)
 - **Size Profile**: < 20kb (gzipped)
-- **Mechanism**: The lightweight `sensor.js` silently captures critical behavioural telemetry (including cursor linearity, velocity variance, and keystroke flight dynamics).
-- **Security**: Sensor payloads are dynamically encrypted using AES-256-GCM client-side encryption and signed with SHA-256 Proof-of-Work nonces before transmission.
+- **Mechanism**: The lightweight static `sensor.js` silently captures critical behavioural telemetry (including cursor linearity, velocity variance, and keystroke flight dynamics).
+- **Security**: Sensor payloads are dynamically encrypted using AES-256-GCM client-side encryption using short-lived, single-use per-challenge session keys derived on the server via SHA-256 (`PAYLOAD_SECRET_KEY` + `challenge_id`). Sensor payloads are signed with SHA-256 Proof-of-Work nonces before transmission.
 - **Reliability**: Supports fallback endpoint arrays and offline queuing with exponential backoff retries.
 
 ### The AI & Machine Learning Pipeline
@@ -24,24 +24,24 @@ OpenSentinel is meticulously engineered from the ground up to deliver uncompromi
 
 ### First-Party SDKs & Client Libraries
 - **React SDK (`@azanian-eagle/opensentinel-react`)**: TypeScript wrapper providing the `useOpenSentinel` hook with automated dependency handling and SSR safety checks.
-- **Python SDK (`opensentinel`)**: Lightweight client wrapper relying strictly on Python standard libraries (`urllib`).
+- **Python SDK (`azanian-eagle-opensentinel`)**: Lightweight client wrapper relying strictly on Python standard libraries (`urllib`).
 - **NPM Vanilla JS (`@azanian-eagle/opensentinel-client`)**: UMD client asset usable across bundlers or direct CDN script inclusions.
 
 ## Observability, Analytics & Management
 
 - **Authenticated Dashboard (`/api/dashboard`)**: Visual telemetry monitoring request volumes, bot detection ratios, and system health secured via HTTP Basic Authentication using `ADMIN_TOKEN`.
-- **Prometheus Exporter (`/metrics`)**: Standardized Prometheus metrics exposing total requests, verification outcomes (`verify_success_total`, `verify_failed_total`), rate limit events, and federation ingests.
+- **Prometheus Exporter (`/metrics`)**: Standardized Prometheus metrics using lock-free `AtomicU64` counters exposing total requests, verification outcomes (`verify_success_total`, `verify_failed_total`), rate limit events, and federation ingests.
 - **Container Health Probes**: Runtime checking via `/healthz` and `/readyz` endpoints.
 
 ## The Verification Data Flow
 
-1. **Passive Collection**: The JavaScript sensor silently accumulates non-identifying behavioural telemetry during organic user interaction.
-2. **Client-Side Encryption & PoW**: The sensor calculates a SHA-256 Proof-of-Work nonce, encrypts payload telemetry using AES-256-GCM, and dispatches the payload to the `/verify` endpoint.
-3. **Decryption & Replay Protection**: The Rust backend decrypts the payload, verifies the PoW hash difficulty, and checks timestamp freshness and nonce uniqueness to prevent replay attacks.
+1. **Passive Collection & Challenge Acquisition**: The JavaScript sensor silently accumulates non-identifying behavioural telemetry during organic user interaction and fetches a single-use challenge (`GET /challenge`) containing a short-lived derived session key.
+2. **Client-Side Encryption & PoW**: The sensor calculates a SHA-256 Proof-of-Work nonce, encrypts payload telemetry using AES-256-GCM with the single-use session key, and dispatches the payload to the `/verify` endpoint.
+3. **Decryption & Replay Protection**: The Rust backend derives the single-use session key, decrypts the payload, verifies the PoW hash difficulty, consumes the single-use challenge ID, and enforces timestamped TTL nonce uniqueness (5-minute window) to prevent replay attacks.
 4. **Analytical Inference**: Extracted feature vectors (deviation, speed variance, typing intervals) are evaluated against the local ONNX machine-learning model (`ort`).
-5. **Verdict & Response**: The server returns a score (0.0 to 1.0) and boolean pass/fail status, logging metrics locally.
+5. **Verdict & Response**: The server returns a score (0.0 to 1.0) and boolean pass/fail status, updating atomic metrics locally.
 
-## Decentralised Peer-to-Peer Federation (Phase 3)
+## Decentralised Peer-to-Peer Federation
 
 - **Ed25519 Cryptographic Signatures**: Nodes sign threat intelligence payloads using Ed25519 private keys (`NODE_PRIVATE_KEY`) to ensure signature validation across peers.
 - **Dynamic Peer Discovery**: Nodes periodically fetch peer registry lists from `FEDERATION_DISCOVERY_URL` to update trusted peer maps safely in memory.

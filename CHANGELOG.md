@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-23
+
+### Added
+- **Cryptographic HPKE Challenge Mechanism**: Added `GET /challenge` endpoint providing short-lived ephemeral keypairs and challenge nonces for encrypted client telemetry.
+- **Ed25519 Signed Verification Tokens & JWKS**: Every successful verification yields an Ed25519-signed JWT token. Introduced `GET /.well-known/jwks.json` to allow offline verification by relying parties.
+- **IETF Privacy Pass Protocol Integration**: Evaluated requests include standard `WWW-Authenticate: PrivateToken` and `Private-Token` headers for Privacy Pass redemption.
+- **Drop-in Siteverify Compatibility Endpoint**: Added `POST /compat/siteverify` supporting URL-encoded, JSON, and query parameter inputs for 1:1 replacement of Cloudflare Turnstile, reCAPTCHA, and hCaptcha backend validation calls.
+- **Provenance & Supply Chain Attestations**: Integrated keyless Cosign container image signing on GHCR, Sigstore package provenance, and SLSA attestations across release pipelines.
+
+### Changed
+- Updated all SDKs (`@azanian-eagle/opensentinel-client`, `@azanian-eagle/opensentinel-react`, `azanian-eagle-opensentinel`), server binary, Helm charts, and documentation site to SemVer 1.1.0.
+
 ## [1.0.4279] - 2026-01-23
 
 ### Changed

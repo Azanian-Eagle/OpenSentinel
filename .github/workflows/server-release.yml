@@ -95,7 +95,7 @@ jobs:
           cp server/model.onnx release-bundle/
           cp -R client release-bundle/client
           cp .env.example release-bundle/
-          python -c "from pathlib import Path; path = Path('release-bundle/.env.example'); text = path.read_text(); text = text.replace('OPEN_SENTINEL_MODEL_PATH=/app/server/model.onnx', 'OPEN_SENTINEL_MODEL_PATH=model.onnx'); text = text.replace('OPEN_SENTINEL_CLIENT_DIR=/app/client', 'OPEN_SENTINEL_CLIENT_DIR=client'); path.write_text(text)"
+          python3 -c "from pathlib import Path; path = Path('release-bundle/.env.example'); text = path.read_text(); text = text.replace('OPEN_SENTINEL_MODEL_PATH=/app/server/model.onnx', 'OPEN_SENTINEL_MODEL_PATH=model.onnx'); text = text.replace('OPEN_SENTINEL_CLIENT_DIR=/app/client', 'OPEN_SENTINEL_CLIENT_DIR=client'); path.write_text(text)"
           cp docker-compose.yml release-bundle/
           tar -czf opensentinel-backend-${{ github.ref_name }}.tar.gz -C release-bundle .
 

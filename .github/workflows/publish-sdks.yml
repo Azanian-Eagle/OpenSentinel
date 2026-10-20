@@ -46,11 +46,11 @@ jobs:
         # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
         run: |
           if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "NPM_TOKEN is not set. Skipping React SDK npm publish."
-            exit 0
+            echo "Error: NPM_TOKEN secret is not set."
+            exit 1
           fi
           cd sdk/react/opensentinel-react
-          npm publish --access public --provenance || echo "::warning::React SDK npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
+          npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -63,10 +63,10 @@ jobs:
         # Note: NPM_TOKEN must be configured as an Automation Token on npmjs.com to bypass 2FA (EOTP) in automated CI environments.
         run: |
           if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "NPM_TOKEN is not set. Skipping Root package npm publish."
-            exit 0
+            echo "Error: NPM_TOKEN secret is not set."
+            exit 1
           fi
-          npm publish --access public --provenance || echo "::warning::Root package npm publish failed (check if @opensentinel scope exists on npmjs.org and NPM_TOKEN is an Automation Token)."
+          npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -105,17 +105,14 @@ jobs:
       - name: Check PyPI Token
         id: check_token
         run: |
-          if [ -n "$PYPI_TOKEN" ]; then
-            echo "has_token=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "PYPI_TOKEN is not set. Skipping PyPI publish."
-            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          if [ -z "$PYPI_TOKEN" ]; then
+            echo "Error: PYPI_TOKEN secret is not set."
+            exit 1
           fi
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
 
       - name: Publish Python SDK
-        if: steps.check_token.outputs.has_token == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: sdk/python/dist/
@@ -151,8 +148,8 @@ jobs:
       - name: Publish to crates.io
         run: |
           if [ -z "$CARGO_REGISTRY_TOKEN" ]; then
-            echo "CARGO_REGISTRY_TOKEN is not set. Skipping cargo publish."
-            exit 0
+            echo "Error: CARGO_REGISTRY_TOKEN secret is not set."
+            exit 1
           fi
           cd server
           cargo publish

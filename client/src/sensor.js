@@ -60,9 +60,6 @@
 
         recordKey: function(e) {
             if (this.keyEvents.length >= this.maxEvents) this.keyEvents.shift();
-            // Privacy: Do not record the actual key, just "Key" or general category if strict privacy needed.
-            // But prompt says "keystroke dynamics", usually implies timing + code.
-            // We will store key code for this PoC but in real prod we might just store timing.
             this.keyEvents.push([e.code, Date.now()]);
         },
 
@@ -75,7 +72,6 @@
             let nonce = 0;
             let hash = "";
 
-            // Simple hash function for client-side PoW
             const simpleHash = async (str) => {
                 const msgBuffer = new TextEncoder().encode(str);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -89,27 +85,26 @@
                     return { prefix, nonce, hash };
                 }
                 nonce++;
-                // Add a fail-safe break to prevent UI blocking
                 if (nonce > 50000) return null;
             }
         },
 
-        // Helper to encrypt the payload using AES-GCM and a shared key
-        encryptPayload: async function(plainText) {
-            // The key is dynamically injected by the server at runtime.
-            // DO NOT modify the __OPEN_SENTINEL_SECRET_KEY__ placeholder below manually.
-            const injectedKeyString = "__OPEN_SENTINEL_SECRET_KEY__";
-
+        // Helper to encrypt payload using short-lived session key or fallback
+        encryptPayload: async function(plainText, sessionKeyHex) {
             let rawKey;
-            // Fallback for local development if not injected (not recommended for prod)
-            if (injectedKeyString === "__OPEN" + "_SENTINEL_SECRET_KEY__") {
+            if (sessionKeyHex && typeof sessionKeyHex === 'string' && sessionKeyHex.length === 64) {
+                const match = sessionKeyHex.match(/.{1,2}/g);
+                if (match) {
+                    rawKey = new Uint8Array(match.map(byte => parseInt(byte, 16)));
+                }
+            }
+
+            if (!rawKey) {
+                // Development fallback key
                 rawKey = new Uint8Array([
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
                 ]);
-            } else {
-                // Parse the comma-separated injected key
-                rawKey = new Uint8Array(injectedKeyString.split(',').map(Number));
             }
 
             const key = await crypto.subtle.importKey(
@@ -120,7 +115,6 @@
                 ["encrypt"]
             );
 
-            // Generate a random IV
             const iv = crypto.getRandomValues(new Uint8Array(12));
             const encoder = new TextEncoder();
             const encodedText = encoder.encode(plainText);
@@ -136,7 +130,6 @@
 
             const cipherBytes = new Uint8Array(cipherBuffer);
 
-            // Convert to base64 for transport
             const ivBase64 = btoa(String.fromCharCode.apply(null, iv));
             const cipherBase64 = btoa(String.fromCharCode.apply(null, cipherBytes));
 
@@ -214,23 +207,22 @@
                         retryCount++;
                         if (retryCount < maxRetries) {
                             console.log(`OpenSentinel: Network unstable. Retrying in ${backoffTime}ms...`);
-                            // Dispatch a custom event to update UI
                             if (typeof window !== 'undefined') {
                                 window.dispatchEvent(new CustomEvent('opensentinel-network-unstable', { detail: { retryCount, backoffTime } }));
                             }
                             await new Promise(resolve => setTimeout(resolve, backoffTime));
-                            backoffTime *= 2; // Exponential backoff
+                            backoffTime *= 2;
                         }
                     }
                 }
 
                 if (success) {
-                    this.offlineQueue.shift(); // Remove from queue on success
+                    this.offlineQueue.shift();
                 } else {
                     console.error("OpenSentinel Verification Error: All endpoints failed after retries.", lastError);
                     const errResult = { passed: false, error: "Network failure. All endpoints unreachable." };
                     if (this.onFailure) this.onFailure(errResult.error);
-                    break; // Stop processing queue, try again later
+                    break;
                 }
             }
 
@@ -257,12 +249,13 @@
                 challenge_id: challenge ? challenge.challenge_id : null
             };
 
-            // AES-GCM Encrypt the payload for secure transport
-            const encryptedData = await this.encryptPayload(JSON.stringify(rawPayload));
+            const sessionKey = challenge && challenge.session_key ? challenge.session_key : null;
+            const encryptedData = await this.encryptPayload(JSON.stringify(rawPayload), sessionKey);
 
             const payload = {
                 data: encryptedData.ciphertext,
-                iv: encryptedData.iv
+                iv: encryptedData.iv,
+                challenge_id: challenge ? challenge.challenge_id : null
             };
 
             return new Promise((resolve, reject) => {

@@ -17,18 +17,30 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::env;
 use std::io::{BufRead, BufReader, Read};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Mutex;
 use std::time::Duration;
 
+#[derive(Default)]
+struct AppMetrics {
+    requests_total: AtomicU64,
+    verify_requests_total: AtomicU64,
+    federation_ingests_total: AtomicU64,
+    rate_limited_total: AtomicU64,
+    health_checks_total: AtomicU64,
+    readiness_checks_total: AtomicU64,
+    verify_failed_total: AtomicU64,
+    verify_success_total: AtomicU64,
+}
+
 // Rate limiting, Replay protection, and Federation state
 struct AppState {
-    seen_nonces: Mutex<HashSet<String>>,
-    active_challenges: Mutex<HashSet<String>>,
+    seen_nonces: Mutex<HashMap<String, i64>>, // Nonce key -> Timestamp ms
+    active_challenges: Mutex<HashMap<String, i64>>, // Challenge ID -> Expiration timestamp ms
     request_counts: Mutex<HashMap<String, (u32, i64)>>,
-    metrics: Mutex<HashMap<&'static str, u64>>,
+    metrics: AppMetrics,
     trusted_peers: Mutex<HashMap<String, Option<VerifyingKey>>>, // Peer domain -> Optional Public Key
     federation_enabled: bool,
     http_client: Client,
@@ -51,11 +63,13 @@ struct ThreatIntelPayload {
     signature: Option<String>, // Hex-encoded ed25519 signature
 }
 
-// Client Obfuscated Payload
+// Client Encrypted Verification Request
 #[derive(Deserialize, Debug)]
 struct EncodedVerifyRequest {
     data: String,
     iv: String,
+    #[serde(default)]
+    challenge_id: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -102,6 +116,7 @@ struct ChallengeResponse {
     expires_at: i64,
     public_key: String,
     algorithm: &'static str,
+    session_key: String,
 }
 
 #[derive(Serialize)]
@@ -158,13 +173,51 @@ struct RecentThreatIntelRecord {
     log_source: String,
 }
 
+fn derive_session_key(payload_secret_key: &[u8; 32], challenge_id: &str) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(payload_secret_key);
+    hasher.update(challenge_id.as_bytes());
+    let result = hasher.finalize();
+    let mut key = [0u8; 32];
+    key.copy_from_slice(&result);
+    key
+}
+
+fn extract_client_ip(req: &HttpRequest) -> String {
+    if let Some(hdr) = req.headers().get("CF-Connecting-IP") {
+        if let Ok(ip) = hdr.to_str() {
+            if !ip.trim().is_empty() {
+                return ip.trim().to_string();
+            }
+        }
+    }
+    if let Some(hdr) = req.headers().get("X-Forwarded-For") {
+        if let Ok(ips) = hdr.to_str() {
+            if let Some(first_ip) = ips.split(',').next() {
+                if !first_ip.trim().is_empty() {
+                    return first_ip.trim().to_string();
+                }
+            }
+        }
+    }
+    if let Some(hdr) = req.headers().get("X-Real-IP") {
+        if let Ok(ip) = hdr.to_str() {
+            if !ip.trim().is_empty() {
+                return ip.trim().to_string();
+            }
+        }
+    }
+    req.peer_addr()
+        .map(|a| a.ip().to_string())
+        .unwrap_or_else(|| "127.0.0.1".into())
+}
+
 fn verify_pow(pow: &PoWData) -> bool {
     let mut hasher = Sha256::new();
     let msg = format!("{}{}", pow.prefix, pow.nonce);
     hasher.update(msg.as_bytes());
     let result = hasher.finalize();
     let hash_hex = hex::encode(result);
-    // require difficulty 3 (leading 000)
     hash_hex.starts_with("000") && hash_hex == pow.hash
 }
 
@@ -273,24 +326,68 @@ fn check_rate_limit(
 }
 
 fn increment_metric(state: &web::Data<AppState>, metric_name: &'static str) {
-    let mut metrics = state.metrics.lock().unwrap();
-    *metrics.entry(metric_name).or_insert(0) += 1;
+    match metric_name {
+        "requests_total" => {
+            state.metrics.requests_total.fetch_add(1, Ordering::Relaxed);
+        }
+        "verify_requests_total" => {
+            state
+                .metrics
+                .verify_requests_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "federation_ingests_total" => {
+            state
+                .metrics
+                .federation_ingests_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "rate_limited_total" => {
+            state
+                .metrics
+                .rate_limited_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "health_checks_total" => {
+            state
+                .metrics
+                .health_checks_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "readiness_checks_total" => {
+            state
+                .metrics
+                .readiness_checks_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "verify_failed_total" => {
+            state
+                .metrics
+                .verify_failed_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        "verify_success_total" => {
+            state
+                .metrics
+                .verify_success_total
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        _ => {}
+    }
 }
 
 fn metrics_text(state: &web::Data<AppState>) -> String {
-    let metrics = state.metrics.lock().unwrap();
-
-    let total_requests = metrics.get("requests_total").copied().unwrap_or(0);
-    let verify_requests = metrics.get("verify_requests_total").copied().unwrap_or(0);
-    let federation_ingests = metrics
-        .get("federation_ingests_total")
-        .copied()
-        .unwrap_or(0);
-    let rate_limited = metrics.get("rate_limited_total").copied().unwrap_or(0);
-    let health_checks = metrics.get("health_checks_total").copied().unwrap_or(0);
-    let readiness_checks = metrics.get("readiness_checks_total").copied().unwrap_or(0);
-    let verify_failed = metrics.get("verify_failed_total").copied().unwrap_or(0);
-    let verify_success = metrics.get("verify_success_total").copied().unwrap_or(0);
+    let total_requests = state.metrics.requests_total.load(Ordering::Relaxed);
+    let verify_requests = state.metrics.verify_requests_total.load(Ordering::Relaxed);
+    let federation_ingests = state
+        .metrics
+        .federation_ingests_total
+        .load(Ordering::Relaxed);
+    let rate_limited = state.metrics.rate_limited_total.load(Ordering::Relaxed);
+    let health_checks = state.metrics.health_checks_total.load(Ordering::Relaxed);
+    let readiness_checks = state.metrics.readiness_checks_total.load(Ordering::Relaxed);
+    let verify_failed = state.metrics.verify_failed_total.load(Ordering::Relaxed);
+    let verify_success = state.metrics.verify_success_total.load(Ordering::Relaxed);
 
     format!(
         concat!(
@@ -535,10 +632,7 @@ async fn verify(
 ) -> impl Responder {
     increment_metric(&state, "requests_total");
     increment_metric(&state, "verify_requests_total");
-    let client_ip = req
-        .peer_addr()
-        .map(|a| a.ip().to_string())
-        .unwrap_or_else(|| "unknown".into());
+    let client_ip = extract_client_ip(&req);
 
     // 1. Decode and Decrypt Payload
     let cipher_bytes = match base64::Engine::decode(
@@ -565,15 +659,40 @@ async fn verify(
         return HttpResponse::BadRequest().json(VerifyResponse::err("Invalid IV length."));
     }
 
-    let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
-    let cipher = Aes256Gcm::new(key);
-    let nonce = Nonce::from_slice(&iv_bytes);
+    // Try session key derived from challenge_id first, then fallback to master key
+    let challenge_key = encoded_data
+        .challenge_id
+        .as_ref()
+        .map(|cid| derive_session_key(&state.payload_secret_key, cid));
 
-    let decrypted_bytes = match cipher.decrypt(nonce, cipher_bytes.as_ref()) {
-        Ok(b) => b,
-        Err(_) => {
-            return HttpResponse::BadRequest()
-                .json(VerifyResponse::err("Failed to decrypt payload."))
+    let decrypted_bytes = if let Some(ck) = challenge_key {
+        let key = aes_gcm::Key::<Aes256Gcm>::from_slice(&ck);
+        let cipher = Aes256Gcm::new(key);
+        let nonce = Nonce::from_slice(&iv_bytes);
+        match cipher.decrypt(nonce, cipher_bytes.as_ref()) {
+            Ok(b) => b,
+            Err(_) => {
+                let master_key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
+                let master_cipher = Aes256Gcm::new(master_key);
+                match master_cipher.decrypt(nonce, cipher_bytes.as_ref()) {
+                    Ok(b) => b,
+                    Err(_) => {
+                        return HttpResponse::BadRequest()
+                            .json(VerifyResponse::err("Failed to decrypt payload."));
+                    }
+                }
+            }
+        }
+    } else {
+        let master_key = aes_gcm::Key::<Aes256Gcm>::from_slice(&state.payload_secret_key);
+        let master_cipher = Aes256Gcm::new(master_key);
+        let nonce = Nonce::from_slice(&iv_bytes);
+        match master_cipher.decrypt(nonce, cipher_bytes.as_ref()) {
+            Ok(b) => b,
+            Err(_) => {
+                return HttpResponse::BadRequest()
+                    .json(VerifyResponse::err("Failed to decrypt payload."));
+            }
         }
     };
 
@@ -591,27 +710,32 @@ async fn verify(
         data.user_agent
     );
 
-    if let Some(cid) = &data.challenge_id {
-        let mut challenges = state.active_challenges.lock().unwrap();
-        if !challenges.remove(cid) {
-            return HttpResponse::BadRequest()
-                .json(VerifyResponse::err("Invalid or expired challenge ID."));
-        }
-    }
-
-    // 2. Replay Protection (Nonce & Timestamp)
     let current_time = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_millis() as i64;
 
+    // Validate and consume single-use challenge ID
+    let cid_to_check = encoded_data
+        .challenge_id
+        .as_ref()
+        .or(data.challenge_id.as_ref());
+    if let Some(cid) = cid_to_check {
+        let mut challenges = state.active_challenges.lock().unwrap();
+        challenges.retain(|_, exp| *exp > current_time);
+        if challenges.remove(cid).is_none() {
+            return HttpResponse::BadRequest()
+                .json(VerifyResponse::err("Invalid or expired challenge ID."));
+        }
+    }
+
+    // 2. Replay Protection & Rate Limiting
     if let Err(response) = check_rate_limit(&client_ip, &state, current_time) {
         increment_metric(&state, "rate_limited_total");
         return *response;
     }
 
     if (current_time - data.timestamp).abs() > 300_000 {
-        // 5 minutes window
         return HttpResponse::BadRequest()
             .json(VerifyResponse::err("Request timestamp invalid or expired."));
     }
@@ -625,20 +749,13 @@ async fn verify(
 
     let nonce_key = format!("{}-{}", pow.prefix, pow.nonce);
     let mut seen = state.seen_nonces.lock().unwrap();
-    if seen.contains(&nonce_key) {
+    let cutoff = current_time.saturating_sub(300_000);
+    seen.retain(|_, ts| *ts >= cutoff);
+
+    if seen.contains_key(&nonce_key) {
         return HttpResponse::BadRequest().json(VerifyResponse::err("Replay attack detected."));
     }
-    seen.insert(nonce_key);
-
-    // Prevent set from growing indefinitely in memory
-    // A better approach would be to use a TTL cache (e.g. moka)
-    // For now, we drain a portion to prevent completely wiping the history at once
-    if seen.len() > 10000 {
-        let keys_to_remove: Vec<String> = seen.iter().take(5000).cloned().collect();
-        for key in keys_to_remove {
-            seen.remove(&key);
-        }
-    }
+    seen.insert(nonce_key, current_time);
 
     // 3. Verify Proof of Work
     if !verify_pow(pow) {
@@ -647,11 +764,10 @@ async fn verify(
 
     // 4. Calculate Score
     let score = calculate_score(&data);
-    let passed = score > 0.7; // Increased threshold for security
+    let passed = score > 0.7;
 
     // 5. Federated Threat Sharing (Gossip Protocol)
     if !passed && state.federation_enabled {
-        // Create an anonymized threat signature (hash of features)
         let features = format!("{}_{}", data.mouse_events.len(), data.key_events.len());
         let mut hasher = Sha256::new();
         hasher.update(features.as_bytes());
@@ -686,7 +802,6 @@ async fn verify(
             .collect::<Vec<String>>();
         let client = state.http_client.clone();
 
-        // Broadcast asynchronously without blocking the client response
         actix_web::rt::spawn(async move {
             for peer in peers {
                 let url = format!("{}/api/federation/intel", peer);
@@ -745,16 +860,18 @@ async fn get_challenge(state: web::Data<AppState>) -> impl Responder {
     let pubkey_bytes = signing_key.verifying_key().to_bytes();
     let pubkey_hex = hex::encode(pubkey_bytes);
 
+    let random_val: u64 = rand::random();
     let mut hasher = Sha256::new();
-    hasher.update(format!("{}:{}:challenge", now, pubkey_hex).as_bytes());
+    hasher.update(format!("{}:{}:challenge:{}", now, pubkey_hex, random_val).as_bytes());
     let challenge_id = hex::encode(hasher.finalize());
+
+    let session_key_bytes = derive_session_key(&state.payload_secret_key, &challenge_id);
+    let session_key_hex = hex::encode(session_key_bytes);
 
     {
         let mut challenges = state.active_challenges.lock().unwrap();
-        if challenges.len() > 5000 {
-            challenges.clear();
-        }
-        challenges.insert(challenge_id.clone());
+        challenges.retain(|_, exp| *exp > now);
+        challenges.insert(challenge_id.clone(), expires_at);
     }
 
     HttpResponse::Ok().json(ChallengeResponse {
@@ -762,6 +879,7 @@ async fn get_challenge(state: web::Data<AppState>) -> impl Responder {
         expires_at,
         public_key: pubkey_hex,
         algorithm: "Ed25519-AES-256-GCM",
+        session_key: session_key_hex,
     })
 }
 
@@ -849,7 +967,7 @@ async fn compat_siteverify(
     })
 }
 
-// Serve sensor.js and dynamically inject the symmetric key
+// Serve sensor.js static file
 async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
     increment_metric(&state, "requests_total");
     let sensor_path = std::path::Path::new(&client_dir()).join("src/sensor.js");
@@ -863,19 +981,9 @@ async fn serve_sensor_js(state: web::Data<AppState>) -> impl Responder {
         return HttpResponse::InternalServerError().body("Failed to read sensor script");
     }
 
-    // Convert the [u8; 32] array into a comma-separated string
-    let key_string = state
-        .payload_secret_key
-        .iter()
-        .map(|b| b.to_string())
-        .collect::<Vec<String>>()
-        .join(",");
-
-    let injected_contents = contents.replace("__OPEN_SENTINEL_SECRET_KEY__", &key_string);
-
     HttpResponse::Ok()
         .content_type("application/javascript")
-        .body(injected_contents)
+        .body(contents)
 }
 
 fn parse_payload_secret_key() -> std::io::Result<[u8; 32]> {
@@ -900,7 +1008,6 @@ async fn receive_threat_intel(
         return HttpResponse::Forbidden().body("Federation is disabled on this node");
     }
 
-    // 1. Peer and Cryptographic Signature Validation
     let peer_pubkey_opt;
     let is_trusted_peers_empty;
     {
@@ -917,7 +1024,6 @@ async fn receive_threat_intel(
         return HttpResponse::Forbidden().json(VerifyResponse::err("Unauthorized peer."));
     }
 
-    // Verify cryptographic signature if a public key is configured for this peer
     if let Some(Some(pubkey)) = &peer_pubkey_opt {
         let sig_hex = match &intel.signature {
             Some(s) => s,
@@ -959,7 +1065,6 @@ async fn receive_threat_intel(
         }
     }
 
-    // 2. Data Validation
     if intel.score > 0.7 || intel.anonymized_signature.is_empty() {
         log::warn!(
             "Rejected invalid threat intel payload from {}",
@@ -977,10 +1082,13 @@ async fn receive_threat_intel(
     );
     increment_metric(&state, "federation_ingests_total");
 
-    // Gossip Protocol: Prevent infinite loops by tracking seen signatures
     {
         let mut seen = state.seen_nonces.lock().unwrap();
-        if seen.contains(&intel.anonymized_signature) {
+        let current_time = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as i64;
+        if seen.contains_key(&intel.anonymized_signature) {
             return HttpResponse::Ok().json(VerifyResponse {
                 score: 1.0,
                 passed: true,
@@ -988,10 +1096,9 @@ async fn receive_threat_intel(
                 token: None,
             });
         }
-        seen.insert(intel.anonymized_signature.clone());
+        seen.insert(intel.anonymized_signature.clone(), current_time);
     }
 
-    // Write to a local threat intelligence database for model retraining
     if let Err(e) = append_threat_intel_record(
         &state,
         intel.timestamp,
@@ -1002,7 +1109,6 @@ async fn receive_threat_intel(
         log::error!("Failed to write threat intel to disk: {}", e);
     }
 
-    // Gossip Protocol: Forward to other trusted peers
     let peers: Vec<String> = state
         .trusted_peers
         .lock()
@@ -1012,7 +1118,6 @@ async fn receive_threat_intel(
         .collect();
     let client = state.http_client.clone();
     let source_node = intel.source_node.clone();
-    // We must clone the payload to forward it exactly as received (including the original signature)
     let intel_payload = ThreatIntelPayload {
         anonymized_signature: intel.anonymized_signature.clone(),
         score: intel.score,
@@ -1082,12 +1187,10 @@ async fn recent_threat_intel(
 }
 
 fn calculate_score(data: &RawVerifyRequest) -> f64 {
-    // 1. Minimum Data Requirements
     if data.mouse_events.len() < 5 && data.key_events.is_empty() {
         return 0.0;
     }
 
-    // 2. Extract features
     let mut avg_deviation = 0.0;
     let mut avg_speed = 0.0;
     let mut speed_variance = 0.0;
@@ -1099,7 +1202,7 @@ fn calculate_score(data: &RawVerifyRequest) -> f64 {
         speed_variance = var;
     }
 
-    let mut keystroke_interval = 200.0; // Default human-like
+    let mut keystroke_interval = 200.0;
     let mut keystroke_variance = 50.0;
 
     if data.key_events.len() >= 2 {
@@ -1108,7 +1211,6 @@ fn calculate_score(data: &RawVerifyRequest) -> f64 {
         keystroke_variance = var;
     }
 
-    // 3. Use ONNX model to predict if human or bot
     match ml::predict_bot_probability(
         avg_deviation,
         avg_speed,
@@ -1119,7 +1221,7 @@ fn calculate_score(data: &RawVerifyRequest) -> f64 {
         Ok(human_prob) => human_prob,
         Err(e) => {
             log::error!("ML prediction failed: {}", e);
-            0.0 // Fail secure
+            0.0
         }
     }
 }
@@ -1258,10 +1360,10 @@ async fn main() -> std::io::Result<()> {
     let admin_token = env::var("ADMIN_TOKEN").ok();
 
     let app_state = web::Data::new(AppState {
-        seen_nonces: Mutex::new(HashSet::new()),
-        active_challenges: Mutex::new(HashSet::new()),
+        seen_nonces: Mutex::new(HashMap::new()),
+        active_challenges: Mutex::new(HashMap::new()),
         request_counts: Mutex::new(HashMap::new()),
-        metrics: Mutex::new(HashMap::new()),
+        metrics: AppMetrics::default(),
         trusted_peers: Mutex::new(trusted_peers),
         federation_enabled,
         http_client: Client::builder()
@@ -1342,7 +1444,6 @@ async fn main() -> std::io::Result<()> {
             )
             .service(web::resource("/api/dashboard").route(web::get().to(dashboard::dashboard)))
             .service(web::resource("/src/sensor.js").route(web::get().to(serve_sensor_js)))
-            // Serve static files from the client directory
             .service(fs::Files::new("/", client_dir.clone()).index_file("index.html"))
     })
     .bind(address)?
@@ -1357,10 +1458,10 @@ mod tests {
 
     fn test_state(federation_enabled: bool) -> web::Data<AppState> {
         web::Data::new(AppState {
-            seen_nonces: Mutex::new(HashSet::new()),
-            active_challenges: Mutex::new(HashSet::new()),
+            seen_nonces: Mutex::new(HashMap::new()),
+            active_challenges: Mutex::new(HashMap::new()),
             request_counts: Mutex::new(HashMap::new()),
-            metrics: Mutex::new(HashMap::new()),
+            metrics: AppMetrics::default(),
             trusted_peers: Mutex::new(HashMap::new()),
             federation_enabled,
             http_client: Client::builder().build().expect("test client should build"),
@@ -1461,10 +1562,10 @@ mod tests {
         .expect("should write log file");
 
         let state = web::Data::new(AppState {
-            seen_nonces: Mutex::new(HashSet::new()),
-            active_challenges: Mutex::new(HashSet::new()),
+            seen_nonces: Mutex::new(HashMap::new()),
+            active_challenges: Mutex::new(HashMap::new()),
             request_counts: Mutex::new(HashMap::new()),
-            metrics: Mutex::new(HashMap::new()),
+            metrics: AppMetrics::default(),
             trusted_peers: Mutex::new(HashMap::new()),
             federation_enabled: true,
             http_client: Client::builder().build().expect("test client should build"),
@@ -1563,7 +1664,7 @@ mod tests {
         let bytes = to_bytes(response.into_body()).await.unwrap();
         let body = String::from_utf8(bytes.to_vec()).unwrap();
         assert!(body.contains("challenge_id"));
-        assert!(body.contains("public_key"));
+        assert!(body.contains("session_key"));
     }
 
     #[actix_web::test]

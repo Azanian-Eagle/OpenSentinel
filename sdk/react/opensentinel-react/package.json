@@ -8,7 +8,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "node --test test/index.test.js"
   },
   "repository": {
     "type": "git",

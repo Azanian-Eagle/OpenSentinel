@@ -5,8 +5,11 @@
 [![npm react](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg?label=npm%20react)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-react)
 [![npm client](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg?label=npm%20client)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-client)
 [![PyPi SDK](https://img.shields.io/pypi/v/azanian-eagle-opensentinel.svg?label=PyPi%20SDK)](https://pypi.org/project/azanian-eagle-opensentinel/)
+[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.0)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.0)
+[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Licence: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 **An [Azanian Eagle](https://Azanian-Eagle.github.io/) Project**
 

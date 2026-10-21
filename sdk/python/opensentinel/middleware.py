@@ -4,8 +4,9 @@ class OpenSentinelMiddleware:
     """
     Framework middleware helpers for OpenSentinel token verification.
     """
-    def __init__(self, client):
+    def __init__(self, client, secret: str = ""):
         self.client = client
+        self.secret = secret
 
     def flask_verify(self, param_name="opensentinel_token"):
         """
@@ -26,7 +27,8 @@ class OpenSentinelMiddleware:
                 if not token:
                     return jsonify({"error": "Missing verification token"}), 400
 
-                res = self.client.siteverify(token)
+                remoteip = request.remote_addr
+                res = self.client.siteverify(secret=self.secret, response_token=token, remoteip=remoteip)
                 if not res.get("success"):
                     return jsonify({"error": "Verification failed"}), 403
 
@@ -44,7 +46,8 @@ class OpenSentinelMiddleware:
                 from fastapi import HTTPException
                 raise HTTPException(status_code=400, detail="Missing verification token")
 
-            res = self.client.siteverify(token)
+            remoteip = getattr(getattr(request, "client", None), "host", None)
+            res = self.client.siteverify(secret=self.secret, response_token=token, remoteip=remoteip)
             if not res.get("success"):
                 from fastapi import HTTPException
                 raise HTTPException(status_code=403, detail="Verification failed")

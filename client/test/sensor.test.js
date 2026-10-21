@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const OpenSentinel = require('../src/sensor.js');
 
-test('OpenSentinel initialization', () => {
+test('OpenSentinel initialization with singular endpoint', () => {
     // Re-instantiate or reset
     OpenSentinel.initialized = false;
     OpenSentinel.init({
@@ -13,6 +13,22 @@ test('OpenSentinel initialization', () => {
     assert.strictEqual(OpenSentinel.initialized, true);
     assert.deepStrictEqual(OpenSentinel.endpoints, ['/custom-verify']);
     assert.strictEqual(OpenSentinel.enablePoW, true);
+});
+
+test('OpenSentinel initialization with endpoints array', () => {
+    OpenSentinel.initialized = false;
+    OpenSentinel.init({
+        endpoints: ['/ep1', '/ep2']
+    });
+
+    assert.strictEqual(OpenSentinel.initialized, true);
+    assert.deepStrictEqual(OpenSentinel.endpoints, ['/ep1', '/ep2']);
+});
+
+test('OpenSentinel bindEvents and SSR window safety', () => {
+    assert.doesNotThrow(() => {
+        OpenSentinel.bindEvents();
+    });
 });
 
 test('OpenSentinel mouse and key event recording', () => {

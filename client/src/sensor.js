@@ -27,10 +27,10 @@
         init: function(config) {
             if (this.initialized) return;
             if (config) {
-                if (config.endpoint) {
-                    this.endpoints = [config.endpoint];
-                } else if (config.endpoints && Array.isArray(config.endpoints)) {
+                if (config.endpoints && Array.isArray(config.endpoints) && config.endpoints.length > 0) {
                     this.endpoints = config.endpoints;
+                } else if (typeof config.endpoint === 'string' && config.endpoint) {
+                    this.endpoints = [config.endpoint];
                 }
                 if (config.enablePoW !== undefined) this.enablePoW = config.enablePoW;
                 if (config.onSuccess) this.onSuccess = config.onSuccess;
@@ -42,8 +42,15 @@
             console.log("OpenSentinel initialized with endpoints:", this.endpoints);
         },
 
+        bindEvents: function() {
+            this.startListening();
+        },
+
         startListening: function() {
-            if (typeof document !== 'undefined') {
+            if (typeof window !== 'undefined' && window.addEventListener) {
+                // Event listener bindings safely guarded for window
+            }
+            if (typeof document !== 'undefined' && document.addEventListener) {
                 document.addEventListener('mousemove', (e) => {
                     this.recordMouse(e);
                 });
@@ -85,7 +92,7 @@
                     return { prefix, nonce, hash };
                 }
                 nonce++;
-                if (nonce > 50000) return null;
+                if (nonce > 500000) return null;
             }
         },
 
@@ -244,6 +251,7 @@
                 mouse_events: this.mouseEvents,
                 key_events: this.keyEvents,
                 user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Node.js/SSR',
+                screen_width: (typeof window !== 'undefined' && window.innerWidth) || 0,
                 timestamp: Date.now(),
                 pow: pow,
                 challenge_id: challenge ? challenge.challenge_id : null

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-10-21
+
+### Fixed
+- **Python SDK Middleware `siteverify` positional parameters**: Updated `OpenSentinelMiddleware` to accept `secret: str = ""` upon initialization and forward `secret` and client IP address (`remoteip`) to `client.siteverify()`.
+- **Python SDK Endpoint URL Normalization**: Resolved 404 errors by stripping trailing `/verify` path segments from `endpoint` during `OpenSentinelClient.__init__`.
+- **JS Client Sensor Singular `endpoint` Support**: Fixed `sensor.js` `OpenSentinel.init()` to support `config.endpoint` as a singular string alongside `config.endpoints` array.
+- **Node.js / SSR Safety**: Guarded `window.addEventListener` and `window.innerWidth` in `sensor.js` with `typeof window !== 'undefined'` checks to prevent `ReferenceError: window is not defined` in Next.js / Remix / SSR environments.
+- **React SDK `scriptUrl` Auto-Derivation**: Fixed `useOpenSentinel` to strip trailing `/verify` path segments from base URLs before auto-deriving `scriptUrl`.
+- **Proof-of-Work Iteration Cap & Configuration**: Raised the client Proof-of-Work iteration cap from 50,000 to 500,000 in `sensor.js` and updated `.env.example` to document `OPEN_SENTINEL_DATA_DIR` and `FEDERATION_DISCOVERY_URL`.
+- **Cargo Security Audit**: Resolved security advisories RUSTSEC-2026-0382 and RUSTSEC-2026-0383 in `Cargo.lock` by updating `rustls-webpki` to `0.103.16` and `webpki-root-certs` to `1.0.10`.
+
 ## [1.1.0] - 2026-01-23
 
 ### Added

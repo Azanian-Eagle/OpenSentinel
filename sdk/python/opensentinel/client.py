@@ -1,4 +1,5 @@
 import json
+import re
 import urllib.request
 import urllib.error
 
@@ -9,7 +10,7 @@ class OpenSentinelClient:
 
         :param endpoint: The URL of the OpenSentinel server (e.g. 'http://localhost:8080')
         """
-        self.endpoint = endpoint.rstrip('/')
+        self.endpoint = re.sub(r'/verify/?$', '', endpoint.rstrip('/'))
         self.verify_url = f"{self.endpoint}/verify"
         self.challenge_url = f"{self.endpoint}/challenge"
         self.siteverify_url = f"{self.endpoint}/compat/siteverify"
@@ -55,15 +56,19 @@ class OpenSentinelClient:
         except Exception as e:
             raise Exception(f"Failed to verify payload: {str(e)}")
 
-    def siteverify(self, response_token: str, secret: str = None, remoteip: str = None) -> dict:
+    def siteverify(self, secret: str = None, response_token: str = None, remoteip: str = None) -> dict:
         """
         Verify a response token against the drop-in siteverify endpoint.
 
+        :param secret: Secret key or response token if called with 1 positional argument
         :param response_token: The verification token received from the client
-        :param secret: Optional secret key
         :param remoteip: Optional client IP address
         :return: Standard siteverify response dictionary ({'success': True, ...})
         """
+        if response_token is None and secret is not None:
+            response_token = secret
+            secret = None
+
         payload = {
             'response': response_token,
         }

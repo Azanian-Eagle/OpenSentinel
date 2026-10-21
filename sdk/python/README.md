@@ -44,7 +44,7 @@ Initialize `OpenSentinelClient` with your self-hosted or managed OpenSentinel en
 ```python
 from opensentinel import OpenSentinelClient
 
-# Initialize client with OpenSentinel server endpoint URL
+# Initialize client with OpenSentinel server endpoint URL (base URL or base URL with /verify)
 client = OpenSentinelClient(endpoint="https://api.yourdomain.com")
 
 # Payload received from frontend sensor (contains encrypted telemetry and IV)
@@ -134,9 +134,9 @@ def submit_form():
 
 Submits client telemetry payload dictionary (`{'data': str, 'iv': str}`) to the backend `/verify` endpoint.
 
-#### Method: `siteverify(response_token: str, secret: str = None) -> dict`
+#### Method: `siteverify(secret: str = None, response_token: str = None, remoteip: str = None) -> dict`
 
-Drop-in verification call against `/compat/siteverify` for Turnstile/reCAPTCHA migration. Returns `{'success': bool, 'challenge_ts': str, 'hostname': str}`.
+Drop-in verification call against `/compat/siteverify` for Turnstile/reCAPTCHA migration. Supports single positional parameter `siteverify(token)` or keyword arguments `siteverify(secret=secret, response_token=token, remoteip=ip)`. Returns `{'success': bool, 'challenge_ts': str, 'hostname': str}`.
 
 #### Method: `get_challenge() -> dict`
 
@@ -150,7 +150,7 @@ Fetches a short-lived challenge token and public key from `GET /challenge`.
 from opensentinel import OpenSentinelClient, OpenSentinelMiddleware
 
 client = OpenSentinelClient("http://localhost:8080")
-middleware = OpenSentinelMiddleware(client)
+middleware = OpenSentinelMiddleware(client, secret="your_siteverify_secret")
 
 # Flask view decorator
 @app.route("/protected", methods=["POST"])

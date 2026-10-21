@@ -1,12 +1,12 @@
-# OpenSentinel (1.1.0 Stable Production Release)
+# OpenSentinel (1.1.1 Stable Production Release)
 
 ![Security & CI Audit](https://github.com/Azanian-Eagle/OpenSentinel/actions/workflows/ci-audit.yml/badge.svg)
 [![Crates.io](https://img.shields.io/crates/v/opensentinel-server.svg)](https://crates.io/crates/opensentinel-server)
 [![npm react](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg?label=npm%20react)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-react)
 [![npm client](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-client.svg?label=npm%20client)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-client)
 [![PyPi SDK](https://img.shields.io/pypi/v/azanian-eagle-opensentinel.svg?label=PyPi%20SDK)](https://pypi.org/project/azanian-eagle-opensentinel/)
-[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.0)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.0)
-[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)
+[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.1)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-client/1.1.1)
+[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.1)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.1)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Licence: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -31,13 +31,13 @@ docker compose up --build
 
 The server binds to `http://localhost:8080`. Visit that URL to interact with the client interface and confirm service health.
 
-### Production Release (1.1.0)
+### Production Release (1.1.1 - 2026-10-21)
 
 For production deployments, install prebuilt binaries or pull the official release image from GitHub Container Registry:
 
 #### Install Prebuilt Binaries via Shell Script
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.1.0/opensentinel-server-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Azanian-Eagle/OpenSentinel/releases/download/1.1.1/opensentinel-server-installer.sh | sh
 ```
 
 #### Install Prebuilt Binaries via Homebrew
@@ -47,7 +47,7 @@ brew install opensentinel-server
 
 #### Pull Tagged Docker Image
 ```bash
-docker pull ghcr.io/azanian-eagle/opensentinel:v1.1.0
+docker pull ghcr.io/azanian-eagle/opensentinel:v1.1.1
 ```
 
 #### Official Prebuilt Binary Assets

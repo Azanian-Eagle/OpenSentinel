@@ -1,7 +1,7 @@
 # @azanian-eagle/opensentinel-react
 
 [![npm version](https://img.shields.io/npm/v/@azanian-eagle/opensentinel-react.svg)](https://www.npmjs.com/package/@azanian-eagle/opensentinel-react)
-[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.0)
+[![Socket Badge](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.1)](https://badge.socket.dev/npm/package/@azanian-eagle/opensentinel-react/1.1.1)
 
 Official React SDK and hook library for **OpenSentinel**, engineered by **Azanian Eagle** to provide seamless, non-invasive CAPTCHA-free human verification and bot detection for modern React applications.
 

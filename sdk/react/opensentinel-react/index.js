@@ -4,8 +4,10 @@ exports.useOpenSentinel = useOpenSentinel;
 const react_1 = require("react");
 function useOpenSentinel(config) {
     (0, react_1.useEffect)(() => {
-        // If the script isn't specified, default to pulling from the first endpoint (assuming standard setup)
-        const scriptUrl = config.scriptUrl || (config.endpoint ? `${config.endpoint}/src/sensor.js` : undefined) || (config.endpoints && config.endpoints.length > 0 ? `${config.endpoints[0]}/src/sensor.js` : '');
+        // If the script isn't specified, default to pulling from endpoint or first endpoints entry (stripping any trailing /verify)
+        const rawEndpoint = config.endpoint || (config.endpoints && config.endpoints.length > 0 ? config.endpoints[0] : undefined);
+        const cleanBase = rawEndpoint ? rawEndpoint.replace(/\/verify\/?$/, '').replace(/\/$/, '') : undefined;
+        const scriptUrl = config.scriptUrl || (cleanBase ? `${cleanBase}/src/sensor.js` : '');
         if (!scriptUrl) {
             console.warn("OpenSentinel: No scriptUrl or endpoint provided.");
             return;

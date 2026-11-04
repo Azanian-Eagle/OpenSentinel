@@ -1,14 +1,26 @@
 repository:
   # See https://github.com/probot/settings for documentation
+  has_discussions: true
   topics:
     - captcha
+    - captcha-alternative
+    - recaptcha-alternative
+    - turnstile-alternative
+    - hcaptcha-alternative
+    - bot-detection
+    - anti-bot
     - security
     - privacy
+    - privacy-first
+    - zero-click
+    - proof-of-work
     - rust
-    - javascript
+    - actix-web
+    - onnx
+    - machine-learning
     - behavioral-analysis
-    - bot-detection
-    - gdpr-compliant
+    - gdpr
+    - popia
     - opensentinel
   default_branch: master
   allow_squash_merge: true

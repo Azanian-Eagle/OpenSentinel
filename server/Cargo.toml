@@ -3,14 +3,14 @@ name = "opensentinel-server"
 version = "1.1.1"
 edition = "2021"
 authors = ["Azanian Eagle <azanian.eagle@gmail.com>"]
-description = "OpenSentinel high-performance backend server and local ONNX machine learning engine for non-invasive bot detection, engineered by Azanian Eagle. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile."
+description = "Self-Hosted Invisible CAPTCHA Replacement & Local ONNX Engine in Rust by Azanian Eagle: Privacy-first, zero-click bot detection. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile."
 license = "MIT"
 repository = "https://github.com/Azanian-Eagle/OpenSentinel"
 homepage = "https://azanian-eagle.github.io/OpenSentinel/"
 documentation = "https://github.com/Azanian-Eagle/OpenSentinel#readme"
 readme = "README.md"
-keywords = ["captcha", "security", "bot-detection", "privacy", "anti-bot"]
-categories = ["web-programming", "network-programming", "science"]
+keywords = ["captcha", "bot-detection", "security", "privacy", "anti-bot"]
+categories = ["web-programming", "network-programming", "authentication", "cryptography"]
 
 [dependencies]
 actix-web = "4"

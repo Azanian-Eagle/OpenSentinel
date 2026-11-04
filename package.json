@@ -1,7 +1,7 @@
 {
   "name": "@azanian-eagle/opensentinel-client",
   "version": "1.1.1",
-  "description": "Client-side sensor library for OpenSentinel by Azanian Eagle: The ultimate privacy-first, zero-click CAPTCHA replacement and bot detection service. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle to learn more about the creator.",
+  "description": "Self-Hosted Invisible CAPTCHA Replacement & Bot Detection Client Sensor by Azanian Eagle: Privacy-first, zero-click bot detection. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle to learn more about the creator.",
   "main": "client/src/sensor.js",
   "exports": {
     ".": "./client/src/sensor.js"
@@ -29,6 +29,7 @@
   "keywords": [
     "opensentinel",
     "captcha",
+    "captcha-alternative",
     "bot-detection",
     "security",
     "privacy",
@@ -45,7 +46,9 @@
     "captcha-replacement",
     "zero-click-captcha",
     "bot-protection-service",
-    "azanian-eagle-creator"
+    "azanian-eagle-creator",
+    "popia",
+    "gdpr"
   ],
   "author": "Azanian Eagle <azanian.eagle@gmail.com> (https://github.com/Azanian-Eagle)",
   "license": "MIT",

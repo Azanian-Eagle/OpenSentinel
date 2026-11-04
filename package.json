@@ -58,6 +58,6 @@
   },
   "homepage": "https://azanian-eagle.github.io/OpenSentinel/",
   "devDependencies": {
-    "javascript-obfuscator": "^5.1.0"
+    "javascript-obfuscator": "^5.10.0"
   }
 }

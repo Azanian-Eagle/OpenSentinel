@@ -1,0 +1,6 @@
+# Artifact Hub repository configuration
+# https://artifacthub.io/docs/topics/repositories/repository-metadata/
+repositoryID: 9481ec0a-6e3a-4467-bc5b-4654f59e99a4
+owners:
+  - name: Azanian Eagle
+    email: azanian.eagle@gmail.com

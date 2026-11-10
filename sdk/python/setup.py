@@ -6,8 +6,8 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8") if
 
 setup(
     name="azanian-eagle-opensentinel",
-    version="1.1.1",
-    description="Self-Hosted Invisible CAPTCHA Replacement & Bot Detection Python SDK by Azanian Eagle: Zero-click verification and middleware for FastAPI and Flask. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile.",
+    version="1.1.2",
+    description="Self-Hosted Invisible CAPTCHA Replacement & Bot Detection Python SDK by Azanian Eagle: Zero-click verification and middleware for FastAPI, Flask, and Django. Visit https://azanian-eagle.github.io/OpenSentinel/ to explore the service and https://github.com/Azanian-Eagle for creator profile.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Azanian Eagle",
@@ -49,6 +49,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Framework :: Django",
         "Framework :: FastAPI",
         "Framework :: Flask",
         "Topic :: Security",

@@ -1,4 +1,4 @@
-name: Publish SDKs & Registries (v1.1.1 Synchronized Release)
+name: Publish SDKs & Registries (v1.1.2 Synchronized Release)
 
 on:
   push:

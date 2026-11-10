@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-11-10
+
+### Changed
+- **Synchronized Multi-Registry Ecosystem Release**: Bumped workspace and package manifests across `@azanian-eagle/opensentinel-client`, `@azanian-eagle/opensentinel-react`, `azanian-eagle-opensentinel`, `opensentinel-server`, and Helm chart `k8s/helm/opensentinel` to version `1.1.2`.
+- **PyPI Metadata & Trove Classifiers**: Added `Framework :: Django` classifier alongside `FastAPI` and `Flask`.
+- **Artifact Hub Repository Metadata**: Added `artifacthub-repo.yml` repository configuration for automated indexing and official Kubernetes Helm chart verification.
+
 ## [1.1.1] - 2026-10-21
 
 ### Fixed
